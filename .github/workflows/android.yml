@@ -73,6 +73,17 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon assembleDebug assembleRelease bundleRelease
 
+      - name: Yig'ilgan fayllarni ko'rsatish
+        working-directory: android
+        run: |
+          echo "── Yig'ilgan fayllar ─────────────────────────────"
+          ls -lh app/build/outputs/apk/debug/*.apk \
+                 app/build/outputs/apk/release/*.apk \
+                 app/build/outputs/bundle/release/*.aab
+          echo "── Imzo holati (debug APK) ──────────────────────"
+          "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs \
+            app/build/outputs/apk/debug/*.apk | head -4 || true
+
       - name: Natijalarni yuklab olish uchun saqlash
         uses: actions/upload-artifact@v4
         with:
