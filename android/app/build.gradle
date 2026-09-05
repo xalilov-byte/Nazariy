@@ -1,0 +1,86 @@
+apply plugin: 'com.android.application'
+
+/* Yig'ilgan fayllar nomi: Nazariy-release.apk / Nazariy-debug.apk /
+   Nazariy-release.aab (standart "app-..." o'rniga). */
+base {
+    archivesName = "Nazariy"
+}
+
+android {
+    namespace = "uz.nazariy.app"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "uz.nazariy.app"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    /* ── Imzo (signing) ────────────────────────────────────────────────
+       Kalit fayli va parollar loyihada SAQLANMAYDI. Ikki manba:
+         1) mahalliy:  android/keystore.properties  (git'ga tushmaydi)
+         2) CI:        NAZARIY_KEYSTORE / NAZARIY_STORE_PASSWORD /
+                       NAZARIY_KEY_ALIAS / NAZARIY_KEY_PASSWORD muhit
+                       o'zgaruvchilari (GitHub Secrets)
+       Kalit topilmasa release baribir yig'iladi — faqat imzosiz
+       (Play Market'ga yuklash uchun imzo shart).                        */
+    signingConfigs {
+        release {
+            def props = new Properties()
+            def f = rootProject.file("keystore.properties")
+            if (f.exists()) props.load(new FileInputStream(f))
+            def storePath = props['storeFile'] ?: System.getenv('NAZARIY_KEYSTORE')
+            if (storePath && file(storePath).exists()) {
+                storeFile file(storePath)
+                storePassword props['storePassword'] ?: System.getenv('NAZARIY_STORE_PASSWORD')
+                keyAlias props['keyAlias'] ?: System.getenv('NAZARIY_KEY_ALIAS')
+                keyPassword props['keyPassword'] ?: System.getenv('NAZARIY_KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (signingConfigs.release.storeFile != null && signingConfigs.release.storeFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
