@@ -226,6 +226,12 @@
     },
   };
 
+  /* Qisqa taxallus. Mantiqda satrlar qoʻshilib yasalganda
+     ("3" + "/20 savol") butun natijani lugʻatdan topib boʻlmaydi —
+     shuning uchun faqat MATN boʻlagi oʻgiriladi: n + "/20 " + nzT("savol").
+     Shu qisqa nom oʻqilishini saqlaydi. */
+  window.nzT = t;
+
   // Boshlangʻich til: saqlangani bor boʻlsa u, yoʻqsa oʻzbek lotin.
   window.nzI18n.set(read() || 'uz');
 })();

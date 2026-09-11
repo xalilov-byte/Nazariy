@@ -1940,9 +1940,9 @@ function plansFrom(pr) {
   const perMonth = Math.round(pr.year / 12);
   const save = Math.round((1 - pr.year / (pr.month * 12)) * 100);
   return [
-    { id: "month", label: "1 oy", sub: "Har oy yangilanadi", price: fmt(pr.month) + " soʻm" },
-    { id: "year",  label: "12 oy", sub: "Oyiga " + fmt(perMonth) + " soʻm", price: fmt(pr.year) + " soʻm",
-      badge: save > 0 ? save + "% tejaysiz" : "" }
+    { id: "month", label: "1 oy", sub: "Har oy yangilanadi", price: fmt(pr.month) + " " + T("soʻm") },
+    { id: "year",  label: "12 oy", sub: T("Oyiga") + " " + fmt(perMonth) + " " + T("soʻm"), price: fmt(pr.year) + " " + T("soʻm"),
+      badge: save > 0 ? save + "% " + T("tejaysiz") : "" }
   ];
 }
 // To'lov yo'llari. Logotiplar CHIZILMAYDI — bular boshqa kompaniyalarning
@@ -2117,6 +2117,17 @@ const ICON_OK = ["M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z", "M8.2 12.3l2.6 2.6 5-5
 const ICON_WARN = ["M10.3 3.1 2.9 16.9a2 2 0 0 0 1.7 3h14.8a2 2 0 0 0 1.7-3L13.7 3.1a2 2 0 0 0-3.4 0z", "M12 9.4v3.4M12 16.4h.01"];
 const ICON_BAD = ["M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z", "M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6"];
 function fmt(n) { return Math.round(n).toLocaleString("ru-RU").replace(/\u00a0/g, " "); }
+
+/* TARJIMA YORDAMCHISI.
+
+   renderVals() natijasidagi satrlar i18n qatlami tomonidan avtomatik
+   oʻgiriladi, lekin satrlar QOʻSHIB yasalganda ("3" + "/20 savol")
+   butun natijani lugʻatdan topib boʻlmaydi. Bunday joylarda faqat matn
+   boʻlagi shu funksiya bilan oʻgiriladi: n + "/20 " + T("savol").
+
+   i18n qatlami boʻlmasa (masalan dizayn kanvasida koʻrilganda) matn
+   oʻzgarmaydi — ilova baribir ishlaydi. */
+function T(s) { return window.nzT ? window.nzT(s) : s; }
 // Ommaviy importning yuragi: matnni qatorlarga ajratadi va HAR BIR qatorni
 // alohida tekshiradi. Muhim qaror — bitta xato butun importni to'xtatmaydi:
 // yaroqli qatorlar o'tadi, xatolari sabab bilan ko'rsatiladi.
@@ -2385,7 +2396,7 @@ class Component extends DCLogic {
 
     return [
       { id: "daily_20", group: "daily", reward: 50, mode: "topics",
-        title: "20 savol yech", sub: Math.min(answered, 20) + "/20 savol",
+        title: "20 savol yech", sub: Math.min(answered, 20) + "/20 " + T("savol"),
         done: answered >= 20 },
 
       { id: "daily_exam", group: "daily", reward: 100, mode: "exam",
@@ -2400,7 +2411,7 @@ class Component extends DCLogic {
 
       { id: "once_signs", group: "once", reward: 300, mode: "signs",
         title: "Barcha yoʻl belgilarini koʻrish",
-        sub: signsHave + "/" + signsTotal + " belgi",
+        sub: signsHave + "/" + signsTotal + " " + T("belgi"),
         done: signsTotal > 0 && signsHave >= signsTotal },
 
       // Profilni tahrirlash ekrani yo'q — hisob tizimi bilan keladi.
@@ -2565,8 +2576,8 @@ class Component extends DCLogic {
       // Profilga qaytadi.
       exitQuiz: () => this.setState({ quiz: null }),
 
-      marathonBestLabel: "Rekord: " + s.marathonBest,
-      mistakesCountLabel: s.wrongIds.length + " savol",
+      marathonBestLabel: T("Rekord:") + " " + s.marathonBest,
+      mistakesCountLabel: s.wrongIds.length + " " + T("savol"),
       openSaved: this.startQuizMode("saved"),
 
     };
@@ -3291,7 +3302,7 @@ class Component extends DCLogic {
       })),
       payCtaLabel: "Pro'ni faollashtirish",
 
-      coinRateLabel: s.pricing.coin.toLocaleString("ru-RU").replace(/\u00a0/g, " ") + " ◆ = 1 oy Pro",
+      coinRateLabel: s.pricing.coin.toLocaleString("ru-RU").replace(/\u00a0/g, " ") + " ◆ = " + T("1 oy Pro"),
       coinPriceLabel: s.pricing.coin.toLocaleString("ru-RU").replace(/\u00a0/g, " "),
       coinAfterLabel: Math.max(s.points - s.pricing.coin, 0).toLocaleString("ru-RU").replace(/\u00a0/g, " "),
       coinBarStyle: {
@@ -3365,7 +3376,7 @@ class Component extends DCLogic {
         pay: { step: "done", method: st.pay ? st.pay.method : null }
       })),
       savedCountLabel: s.savedIds.length
-        ? s.savedIds.length + " ta savol · qayta yechish"
+        ? s.savedIds.length + " " + T("ta savol · qayta yechish")
         : "Hozircha boʻsh — testda xatchoʻp bilan saqlang",
 
       groups: [
@@ -3420,7 +3431,7 @@ class Component extends DCLogic {
         { value: "1 248", label: "Yechilgan savollar", color: "--foreground" },
         { value: "87%", label: "Toʻgʻri javob", color: "--success" },
         { value: "36", label: "Imtihonlar", color: "--purple" },
-        { value: "9 kun", label: "Eng uzun streak", color: "--green" }
+        { value: "9 " + T("kun"), label: "Eng uzun streak", color: "--green" }
       ].map(x => Object.assign({}, x, {
         valStyle: { fontSize: "24px", fontWeight: 800, fontVariantNumeric: "tabular-nums", color: "var(" + x.color + ")" }
       })),
@@ -3714,7 +3725,7 @@ class Component extends DCLogic {
         // toʻgʻri javob harfini shu yerda darhol koʻrsatish (variantlar orasidagi
         // yashil hoshiya bilan bir vaqtda) tushunarli va tarbiyaviy signal beradi —
         // foydalanuvchi variantlar orasidan qidirib o'tirmaydi.
-        verdict: ok ? "Toʻgʻri! +10 ball" : "Notoʻgʻri · toʻgʻri javob — " + "ABCD"[item.correct],
+        verdict: ok ? T("Toʻgʻri! +10 ball") : T("Notoʻgʻri · toʻgʻri javob —") + " " + "ABCD"[item.correct],
         verdictStyle: { fontSize: "15px", fontWeight: 800, color: ok ? "var(--success)" : "var(--destructive)" },
         options: item.options.map((text, i) => {
           const isSel = q.selected === i;

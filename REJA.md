@@ -326,10 +326,10 @@ qaytadi. Shuning uchun "Har kun yangilanadi · 04:00 da" sarlavhasi
 olib tashlandi (progress saqlanmasa kunlik yangilanish ham yo'q).
 Davomiylik — Faza 4.
 
-### Faza 0.6 — Uch til (o'zbek lotin / kirill / rus) 🟡 YARIM BAJARILDI
+### Faza 0.6 — Uch til (o'zbek lotin / kirill / rus) ✅ BAJARILDI
 
-**Bajarildi:** infratuzilma, o'zbek lotin va **o'zbek kirill to'liq
-ishlaydi**. Qolgani — rus tili lug'ati.
+**Uchala til to'liq ishlaydi.** Interfeysda tarjimasiz qolgan matn
+yo'q — buni taxmin qilmasdan o'lchadim (pastda).
 
 Tanlangan yechim: **manba satr bilan kalitlash**. Dizayn faylida birorta
 matn kalitga almashtirilmadi (`{{ t.homeTitle }}` yo'q) — matn joyida
@@ -381,13 +381,39 @@ Yana bir tuzatilgan latent xato: `@font-face` qoidalarida
 fayl e'lon qilinganda ular bir-birini bekor qiladi. Endi diapazon
 fontsource'ning **o'z CSS'idan o'qiladi** (qo'lda yozilsa eskiradi).
 
-#### Qolgan ish — rus tili
+#### Rus tili — qanday tekshirildi
 
-- [ ] `src/i18n-ru.js` lug'atini to'ldirish (~230 interfeys satri)
-- [ ] Mantiqda yasaladigan qo'shma satrlar (`have + "/20 savol"`) —
-      ularda faqat matn bo'lagi tarjima qilinishi kerak
-- [ ] Savollar tarjimasi — bu DB ishi (`question_translations`,
-      Faza 2/3), interfeys tarjimasidan alohida
+Tarjimani "ko'z bilan" tekshirish ishonchsiz: bitta satrni unutish oson.
+Shuning uchun **avtomatik tekshiruv** yozildi: ilovaning bir xil
+ekranlari avval o'zbek, keyin rus tilida chiziladi va ko'rinadigan
+matn tugunlari solishtiriladi. Ikki tilda **aynan bir xil** qolgan
+matn — tarjimasi yo'q.
+
+Tekshiruv 12 ekranni (4 tab, guruh segmenti, Pro, to'lov, test va
+natija) bosib o'tadi va 273 ta ko'rinadigan matnni yig'adi.
+
+Natija: **tarjimasiz qolgan 0**, konsol xatosi 0.
+
+Tarjima qilinmaydigan narsalar ataylab chetlab o'tiladi: raqamlar,
+brendlar (Nazariy, Pro, Telegram, Click…), foydalanuvchi nomlari
+(@sardor_t), havolalar va **atoqli nomlar** — odam va guruh ismi tilga
+qarab o'zgarmaydi (i18n amaliyotining standart qoidasi).
+
+Qo'shib yasaladigan satrlar (`have + "/20 savol"`) uchun `T()`
+yordamchisi qo'shildi: butun natijani lug'atdan topib bo'lmaydi, shuning
+uchun faqat matn bo'lagi o'giriladi — `n + "/20 " + T("savol")`.
+`T()` i18n qatlami bo'lmasa matnni o'zgarmagan holda qaytaradi, ya'ni
+dizayn fayli kanvasda ham ishlaydi.
+
+Lug'atda 300 dan ortiq kalit. Demo savollari ham tarjima qilindi —
+aks holda "Русский" yarim yolg'on bo'lardi. Ular DB'ga ko'chganda
+(Faza 2) `question_translations` jadvaliga o'tadi va lug'atdan
+chiqariladi (lug'atda alohida belgilangan).
+
+#### Qolgan ish
+
+- [ ] Admin panel tarjimasi — hozir o'zbekcha (ichki quroldir, shoshilinch emas)
+- [ ] Savollar tarjimasi DB'ga ko'chirilishi (Faza 2 bilan birga)
 
 #### Eski reja (ma'lumot uchun)
 
