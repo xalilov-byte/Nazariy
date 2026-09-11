@@ -2201,7 +2201,11 @@ class Component extends DCLogic {
     // shu yerning oʻzida "qiymat almashinadi" naqshi bilan ishlaydi (pastda
     // ONLAR UCHUN onClick qoʻshilgan sabab bilan izohlangan).
     soundOn: true,
-    notifOn: true
+    notifOn: true,
+    // Bildirishnoma qurilma plaginini talab qiladi. Brauzerda (sayt,
+    // Telegram) u yo'q, shuning uchun sozlama qatori KO'RSATILMAYDI —
+    // bootstrap.js plagin borligini aniqlab shu bayroqni yoqadi.
+    notifAvailable: false
   };
 
   componentDidMount() {
@@ -3381,9 +3385,11 @@ class Component extends DCLogic {
           path2: "M15.8 9.6a3.6 3.6 0 0 1 0 4.8M18.6 7a7.4 7.4 0 0 1 0 10" },
         { label: "Bildirishnoma", value: s.notifOn ? "Har kuni 19:00" : "Oʻchirilgan",
           onClick: () => this.setState(st => ({ notifOn: !st.notifOn })),
+          needsDevice: true,
           path1: "M17.8 9.6a5.8 5.8 0 0 0-11.6 0c0 4.4-1.8 5.6-2.4 6.2a.7.7 0 0 0 .5 1.2h15.4a.7.7 0 0 0 .5-1.2c-.6-.6-2.4-1.8-2.4-6.2z",
           path2: "M10.2 20a2 2 0 0 0 3.6 0" }
-      ].map((x, i, arr) => Object.assign({}, x, {
+      ].filter(x => !x.needsDevice || s.notifAvailable)
+       .map((x, i, arr) => Object.assign({}, x, {
         // "Til" qatorida onClick yo'q (haqiqiy til tanlagich hali qurilmagan —
         // keyingi sikl uchun tanqid sifatida qoldirilgan), lekin qator hamon
         // shevron bilan "bosilsa davom etadi" deb va'da berardi va bosilganda

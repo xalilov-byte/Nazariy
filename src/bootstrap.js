@@ -32,9 +32,31 @@
      bajarish qurilma qatlamining ishi. Har setState'dan keyin holat
      qatlamlarga ko'chiriladi — shunda sozlama va haqiqiy xulq bir-biridan
      ajralib qolmaydi (ilgari "Ovoz" tugmasi faqat yozuvni o'zgartirardi). */
+  let firstSync = true;
+
   function syncSettings() {
     if (window.nzFeedback) window.nzFeedback.setEnabled(app.state.soundOn);
-    if (window.nzNotify) window.nzNotify.setEnabled(app.state.notifOn);
+    if (window.nzNotify) {
+      // Ruxsat rad etilsa sozlama "yoniq" ko'rinib, aslida hech narsa
+      // kelmasligi mumkin emas — holat haqiqatga qaytariladi.
+      // setEnabled o'zgarish bo'lmasa qayta ishlamaydi, shuning uchun bu
+      // setState qaytalanuvchi tsikl yaratmaydi.
+      //
+      // interactive: birinchi sinxronizatsiya ilova ochilishida bo'ladi —
+      // unda ruxsat SO'RALMAYDI va xato ham ko'rsatilmaydi. Foydalanuvchi
+      // tugmani o'zi bosgandan keyingina tizim oynasi chiqadi.
+      const first = firstSync;
+      firstSync = false;
+      window.nzNotify.setEnabled(app.state.notifOn, {
+        interactive: !first,
+        onDenied: function (reason) {
+          app.setState({ notifOn: false });
+          if (reason === 'denied') {
+            toast('Bildirishnomaga ruxsat berilmagan — tizim sozlamalaridan yoqing');
+          }
+        }
+      });
+    }
   }
 
   // Tema o'zgarganda status bar ham ergashsin
@@ -42,6 +64,12 @@
   app.setState = function (patch) { origSetState(patch); syncChrome(); syncSettings(); };
   syncChrome();
   syncSettings();
+
+  /* Bildirishnoma sozlamasi faqat u HAQIQATAN mumkin bo'lgan joyda
+     ko'rsatiladi: APK ichida plagin bor, brauzerda yo'q. Bosib
+     bo'lmaydigan qator ko'rsatgandan ko'ra uni butunlay yashirish
+     halolroq. */
+  if (window.nzNotify && window.nzNotify.available()) app.setState({ notifAvailable: true });
 
   /* ── Android "orqaga" tugmasi ──────────────────────────────────────────
      Standart xulq: WebView'da orqaga bosilsa ilova darhol yopiladi.

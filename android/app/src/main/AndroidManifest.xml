@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -33,4 +34,14 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Bildirishnoma plagini o'z manifestida SCHEDULE_EXACT_ALARM ruxsatini
+         so'raydi. Bizga u KERAK EMAS: kunlik eslatma aniq alarm bilan
+         qo'yilmaydi (notify.js dagi isExactNotification: false). Google Play
+         bu ruxsatni faqat budilnik/kalendar ilovalariga beradi, shuning uchun
+         uni birlashtirilgan manifestdan olib tashlaymiz — aks holda Play
+         Console'da asoslash talab qilinadi va ilova qaytarilishi mumkin. -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        tools:node="remove" />
 </manifest>
