@@ -328,22 +328,59 @@ if (CFG.app) {
 }
 
 /* ── 5. Offline shriftlar ────────────────────────────────────────────── */
+/* Subsetlar har bir shrift uchun ALOHIDA.
+
+   Space Grotesk'da kirill YOʻQ (fontsource'da latin, latin-ext va
+   vietnamese bor) — tekshirilgan. Manrope'da bor. Sarlavhalar uslubi
+   'Space Grotesk', Manrope, … tartibida yozilgani uchun kirill harflar
+   avtomatik Manrope'ga tushadi (brauzer har bir belgi uchun alohida
+   zaxira shrift tanlaydi) — qoʻshimcha CSS shart emas.
+
+   MUHIM: oʻzbek kirillidagi "қ", "ғ", "ҳ" harflari `cyrillic` subsetda
+   YOʻQ, ular `cyrillic-ext` da (tekshirilgan: U+049B, U+0493, U+04B3).
+   Faqat `cyrillic` qoʻshilsa, oʻzbek tilida eng koʻp uchraydigan uchta
+   harf tushib qolardi. Shuning uchun ikkalasi ham kerak. */
 const FONTS = [
-  ['Manrope', 'manrope', [500, 600, 700, 800]],
-  ['Space Grotesk', 'space-grotesk', [600, 700]],
+  ['Manrope', 'manrope', [500, 600, 700, 800], ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext']],
+  ['Space Grotesk', 'space-grotesk', [600, 700], ['latin', 'latin-ext']],
 ];
-const SUBSETS = ['latin', 'latin-ext'];
+
+/* unicode-range fontsource'ning OʻZ CSS'idan oʻqiladi.
+
+   Nima uchun shart: bir xil font-family va font-weight uchun bir necha
+   @font-face e'lon qilinsa va ularda unicode-range boʻlmasa, ular
+   bir-birini bekor qiladi — oxirgisi yutadi va qolgan subsetlar
+   yoʻqoladi. Diapazonni qoʻlda yozish esa eskiradi. */
+function unicodeRanges(slug, weight) {
+  const css = readFileSync(join('node_modules', '@fontsource', slug, `${weight}.css`), 'utf8');
+  const re = new RegExp(
+    `url\\(\\./files/${slug}-([a-z-]+)-${weight}-normal\\.woff2\\)[\\s\\S]*?unicode-range:\\s*([^;]+);`,
+    'g');
+  const out = {};
+  let m;
+  while ((m = re.exec(css)) !== null) out[m[1]] = m[2].trim();
+  return out;
+}
 
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(join(OUT, 'fonts'), { recursive: true });
 
 let fontCss = '';
-for (const [family, slug, weights] of FONTS) {
+let fontCount = 0;
+for (const [family, slug, weights, subsets] of FONTS) {
   for (const w of weights) {
-    for (const sub of SUBSETS) {
+    const ranges = unicodeRanges(slug, w);
+    for (const sub of subsets) {
       const file = `${slug}-${sub}-${w}-normal.woff2`;
+      const range = ranges[sub];
+      if (!range) {
+        throw new Error(`[build] ${slug} ${w} uchun "${sub}" subsetining unicode-range'i topilmadi — ` +
+                        `fontsource paketi oʻzgargan boʻlishi mumkin`);
+      }
       copyFileSync(join('node_modules', '@fontsource', slug, 'files', file), join(OUT, 'fonts', file));
-      fontCss += `@font-face{font-family:'${family}';font-style:normal;font-weight:${w};font-display:swap;src:url(./fonts/${file}) format('woff2')}\n`;
+      fontCss += `@font-face{font-family:'${family}';font-style:normal;font-weight:${w};font-display:swap;` +
+                 `src:url(./fonts/${file}) format('woff2');unicode-range:${range}}\n`;
+      fontCount++;
     }
   }
 }
@@ -352,6 +389,8 @@ for (const [family, slug, weights] of FONTS) {
 const runtime = readFileSync(join(SRC, 'runtime.js'), 'utf8');
 const feedback = readFileSync(join(SRC, 'feedback.js'), 'utf8');
 const notify = readFileSync(join(SRC, 'notify.js'), 'utf8');
+const i18n = readFileSync(join(SRC, 'i18n.js'), 'utf8');
+const ruDict = readFileSync(join(SRC, 'i18n-ru.js'), 'utf8');
 const shellCss = readFileSync(join(SRC, CFG.shell), 'utf8');
 const bootstrap = readFileSync(join(SRC, 'bootstrap.js'), 'utf8');
 
@@ -383,6 +422,12 @@ ${shellCss}</style>
 <template id="nz-tpl">
 ${markup}
 </template>
+<script>
+${ruDict}
+</script>
+<script>
+${i18n}
+</script>
 <script>
 ${runtime}
 </script>
@@ -443,6 +488,6 @@ for (const img of ['reyting-bg.jpg', 'hafta-bg.jpg']) copyFileSync(join(SRC, img
 const kb = n => (n / 1024).toFixed(0) + ' KB';
 console.log(`maqsad: ${TARGET} → ${OUT}/`);
 console.log(`${OUT}/index.html — ${kb(html.length)}`);
-console.log(`${OUT}/fonts     — ${FONTS.reduce((a, f) => a + f[2].length, 0) * SUBSETS.length} ta woff2`);
+console.log(`${OUT}/fonts     — ${fontCount} ta woff2`);
 console.log(`${OUT}/*.jpg     — 2 ta fon surati`);
 if (removed.length) console.log(`kesildi        — admin qatlami (${removed.length} ta nom)`);

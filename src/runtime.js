@@ -39,12 +39,46 @@ function bindValue(raw, scope) {
   return raw;
 }
 
+/* Matnni joriy tilga oʻgiradi (i18n.js). Bogʻlanish qiymatlari allaqachon
+   oʻgirilgan holda keladi (renderVals natijasi nzI18n.deep orqali oʻtadi),
+   shuning uchun bu yerda faqat MARKUP'dagi statik matn oʻgiriladi.
+
+   Nima uchun runtime ichida: dizayn faylida yuzlab matn bor va ularning
+   har birini kalitga almashtirish dizaynni oʻqilmas qilardi. Manba matn
+   joyida qoladi, tarjima esa chizish paytida qoʻllanadi. */
+function tr(text) {
+  return (window.nzI18n && text) ? window.nzI18n.t(text) : text;
+}
+
+/* Matn tuguni uchun: bogʻlanish qiymatlari qanday boʻlsa qoʻyiladi,
+   ULAR ORASIDAGI matn esa oʻgiriladi.
+
+   Nima uchun alohida funksiya: "{{ streak }} kun" kabi tugunlarda matn
+   va qiymat aralash. Butun satrni oʻgirish mumkin emas (qiymat ikki
+   marta oʻgirilardi), oʻgirmaslik ham mumkin emas (" kun" tarjimasiz
+   qolardi). Shuning uchun faqat statik boʻlaklar oʻgiriladi.
+
+   interp() esa oʻzgarmaydi: u uslub va boshqa atributlar uchun ham
+   ishlatiladi, ularni oʻgirish CSS'ni buzadi. */
+function interpText(str, scope) {
+  return str.replace(/([^{]*)(\{\{\s*[\w.$]+\s*\}\})?/g, (m, lit, bind) => {
+    let out = lit ? tr(lit) : '';
+    if (bind) {
+      const path = bind.replace(/[{}\s]/g, '');
+      const v = getPath(scope, path);
+      out += v == null ? '' : String(v);
+    }
+    return out;
+  });
+}
+
 /* Template daraxtini (inert) qiymatlar bilan haqiqiy DOM'ga aylantiradi. */
 function build(tplNodes, scope, out) {
   for (const n of tplNodes) {
     if (n.nodeType === 3) {
       const t = n.nodeValue;
-      out.appendChild(document.createTextNode(t.indexOf('{{') !== -1 ? interp(t, scope) : t));
+      const filled = t.indexOf('{{') !== -1 ? interpText(t, scope) : tr(t);
+      out.appendChild(document.createTextNode(filled));
       continue;
     }
     if (n.nodeType !== 1) continue;
@@ -94,6 +128,13 @@ function build(tplNodes, scope, out) {
       }
       if (val == null || val === false) el.removeAttribute(name);
       else el.setAttribute(name, String(val));
+    }
+
+    /* Matnli atributlar (ekran oʻqiruvchi uchun) ham oʻgiriladi. Bunda
+       bogʻlanishsiz, toʻgʻridan-toʻgʻri yozilgan qiymatlar qamraladi. */
+    for (const name of ['aria-label', 'placeholder', 'title']) {
+      const raw = el.getAttribute(name);
+      if (raw && raw.indexOf('{{') === -1) el.setAttribute(name, tr(raw));
     }
 
     build(n.childNodes, scope, el);

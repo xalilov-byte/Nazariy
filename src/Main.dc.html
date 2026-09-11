@@ -2225,6 +2225,9 @@ class Component extends DCLogic {
     // ONLAR UCHUN onClick qoʻshilgan sabab bilan izohlangan).
     soundOn: true,
     notifOn: true,
+    // Joriy til. Haqiqiy manba — nzI18n (u qurilmada saqlaydi); state'da
+    // nusxasi turadi, chunki til oʻzgarganda ekran qayta chizilishi kerak.
+    lang: (window.nzI18n && window.nzI18n.get()) || "uz",
     // VAZIFALAR uchun haqiqiy hisoblagichlar. Ilgari vazifalar paneli
     // qo'lda yozilgan matn edi ("Bugun · 8/20") va hech qachon
     // o'zgarmasdi. Endi shu raqamlardan hisoblanadi.
@@ -2475,7 +2478,13 @@ class Component extends DCLogic {
   // ═══════════════════════════════════════════════════════════════════
   renderVals() {
     const s = this.state;
-    return Object.assign(
+    /* Barcha satr qiymatlari joriy tilga oʻgiriladi (i18n.js). Nima uchun
+       shu yerda: vals* modullari yuzlab satr qaytaradi va har birini
+       qoʻlda T() bilan oʻrash ham zerikarli, ham bittasini unutish oson.
+       Bitta joyda oʻgirish — unutib qolish mumkin emas.
+       Uslub obyektlari (…Style) chetlab oʻtiladi: "flex" soʻzini
+       oʻgirish CSS'ni buzadi. */
+    const vals = Object.assign(
       {},
       this.valsShell(s),      // tema, ko'rinish almashtirish, ilova ekranlari
       this.valsAnalytics(s),  // admin → Tahlil
@@ -2484,6 +2493,7 @@ class Component extends DCLogic {
       this.valsTasks(s),      // kunlik / bir martalik / ijtimoiy vazifalar
       this.valsQuiz(s)        // faol test (test yo'q bo'lsa bo'sh)
     );
+    return window.nzI18n ? window.nzI18n.deep(vals) : vals;
   }
 
   // Segment/tab tugmasining yagona uslubi — ilgari renderVals ichidagi
@@ -3476,7 +3486,19 @@ class Component extends DCLogic {
       // buni ishonchli taqlid qilib boʻlmaydi, shuning uchun hozircha
       // statik qoldirilgan (keyingi siklga tanqid sifatida qoldiriladi).
       settings: [
-        { label: "Til", value: "Oʻzbek (lotin)", onClick: null,
+        // Uch til bitta bosishda aylanadi: lotin → kirill → rus → lotin.
+        // Yangi ekran ochilmaydi — bu "Ovoz" va "Bildirishnoma"
+        // qatorlaridagi "qiymat almashinadi" naqshining oʻzi (dizaynda
+        // shu naqsh ataylab tanlangan). Til nomi HAR DOIM oʻz alifbosida
+        // koʻrsatiladi, shuning uchun tanlov bir qarashda tushunarli.
+        { label: "Til", value: (window.nzI18n ? window.nzI18n.labels[s.lang] : "Oʻzbek (lotin)"),
+          onClick: () => {
+            if (!window.nzI18n) return;
+            const list = window.nzI18n.langs;
+            const next = list[(list.indexOf(s.lang) + 1) % list.length];
+            window.nzI18n.set(next);
+            this.setState({ lang: next });
+          },
           path1: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z",
           path2: "M3.2 12h17.6M12 3.2c4.3 4.9 4.3 12.7 0 17.6-4.3-4.9-4.3-12.7 0-17.6z" },
         { label: "Ovoz", value: s.soundOn ? "Yoniq" : "Oʻchiq",

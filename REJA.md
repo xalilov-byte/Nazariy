@@ -326,7 +326,70 @@ qaytadi. Shuning uchun "Har kun yangilanadi · 04:00 da" sarlavhasi
 olib tashlandi (progress saqlanmasa kunlik yangilanish ham yo'q).
 Davomiylik — Faza 4.
 
-### Faza 0.6 — Uch til (o'zbek lotin / kirill / rus)
+### Faza 0.6 — Uch til (o'zbek lotin / kirill / rus) 🟡 YARIM BAJARILDI
+
+**Bajarildi:** infratuzilma, o'zbek lotin va **o'zbek kirill to'liq
+ishlaydi**. Qolgani — rus tili lug'ati.
+
+Tanlangan yechim: **manba satr bilan kalitlash**. Dizayn faylida birorta
+matn kalitga almashtirilmadi (`{{ t.homeTitle }}` yo'q) — matn joyida
+qoladi, tarjima chizish paytida qo'llanadi. Ikki mexanizm:
+
+| Til | Mexanizm | Lug'at kerakmi? |
+|---|---|---|
+| O'zbek (lotin) | manba tili | — |
+| Ўзбек (кирилл) | avtomatik transliteratsiya | **yo'q** |
+| Русский | lug'at (`i18n-ru.js`) | ha |
+
+Kirill uchun lug'at kerak emasligi eng katta tejamkorlik: yuzlab satrni
+qo'lda o'girish kerak emas va **yangi matn qo'shilganda o'zi ishlaydi**.
+
+Ulanish nuqtalari: `runtime.js` markup matnini o'giradi (binding aralash
+tugunlar ham — `"{{ streak }} kun"` → `"5 кун"`), `renderVals()` chiqishi
+esa `nzI18n.deep()` orqali o'tadi. Til `localStorage` da saqlanadi.
+
+**Ikki tuzatilgan xato (transliteratsiya nozikliklari):**
+
+1. `Yoʻl` → `Ёʻл` bo'lib qolardi; to'g'risi `Йўл`. Sabab: `yo` digrafi
+   `oʻ` dan oldin tekshirilardi. `yoʻ` qoidasi qo'shildi.
+2. SVG chizma yo'llari ham o'girilardi (`M9 11l3 3` → `M9 11л3 3`) —
+   brauzer "Expected path command" xatosi berib, ikonkalar chizilmasdi.
+   Endi qiymat shakliga qarab (kalit nomiga emas) SVG yo'llari, CSS
+   qiymatlari va uslub obyektlari chetlab o'tiladi.
+
+**Shrift — tekshirilgan va hal qilingan:**
+
+| Shrift | Qayerda | Kirill |
+|---|---|---|
+| Manrope | asosiy matn | ✅ `cyrillic` + `cyrillic-ext` |
+| Space Grotesk | sarlavhalar | ❌ yo'q |
+
+Ikki topilma bu yerda muhim bo'ldi:
+
+- O'zbek kirillidagi **`қ`, `ғ`, `ҳ` harflari `cyrillic` subsetda YO'Q** —
+  ular `cyrillic-ext` da (U+049B, U+0493, U+04B3). Faqat `cyrillic`
+  qo'shilsa, o'zbekchada eng ko'p uchraydigan uchta harf tushib qolardi.
+- Sarlavhalar uslubi `'Space Grotesk', Manrope, …` tartibida yozilgan,
+  brauzer esa zaxira shriftni **har bir belgi uchun alohida** tanlaydi —
+  shuning uchun kirill harflar o'zi Manrope'ga tushadi. Qo'shimcha CSS
+  shart emas (avvalgi rejadagi "sarlavhalar tizim shriftiga tushadi"
+  degan xulosam noto'g'ri edi — u faqat Manrope kirilli yuklanmagan
+  holatda to'g'ri).
+
+Yana bir tuzatilgan latent xato: `@font-face` qoidalarida
+`unicode-range` yo'q edi. Bir xil shrift va og'irlik uchun bir necha
+fayl e'lon qilinganda ular bir-birini bekor qiladi. Endi diapazon
+fontsource'ning **o'z CSS'idan o'qiladi** (qo'lda yozilsa eskiradi).
+
+#### Qolgan ish — rus tili
+
+- [ ] `src/i18n-ru.js` lug'atini to'ldirish (~230 interfeys satri)
+- [ ] Mantiqda yasaladigan qo'shma satrlar (`have + "/20 savol"`) —
+      ularda faqat matn bo'lagi tarjima qilinishi kerak
+- [ ] Savollar tarjimasi — bu DB ishi (`question_translations`,
+      Faza 2/3), interfeys tarjimasidan alohida
+
+#### Eski reja (ma'lumot uchun)
 
 Eng katta ish: hozir **i18n qatlami umuman yo'q**, barcha matnlar
 o'zbekcha holda markup ichiga yozilgan. Sozlamalardagi "Til" qatori
@@ -338,28 +401,11 @@ tanlagich hali qurilmagan").
 
 Reja:
 
-- [ ] Interfeys matnlarini ajratish: `src/i18n/uz.json`, `ru.json`
-      (markup'dagi har bir satr kalitga aylanadi)
-- [ ] Lotin→kirill transliterator (bitta funksiya, tarjima fayli kerak emas)
-- [ ] `state.lang` va til tanlagich (sozlamalardagi qator ishlaydi)
-- [ ] Tanlangan til saqlanadi (Faza 1 dan keyin serverda, undan oldin
-      qurilmada)
-- [ ] **Shrift muammosi (tekshirilgan, hal qilinishi shart).**
-      Hozir ikki shrift ishlatiladi va faqat bittasi kirillni biladi:
-
-      | Shrift | Qayerda | Kirill bormi? |
-      |---|---|---|
-      | Manrope | asosiy matn | ✅ `cyrillic` subseti bor |
-      | Space Grotesk | sarlavhalar (`class="display"`) | ❌ faqat `latin`, `vietnamese` |
-
-      Ya'ni kirill yoki rus tilida **sarlavhalar tizim shriftiga
-      tushib ketadi** — dizayn buziladi. Yechim: kirill/rus tanlanganda
-      `display` sarlavhalari ham Manrope'ga o'tadi (yangi shrift yuklash
-      kerak emas, bepul). Muqobil — kirillni biladigan boshqa display
-      shrift topish, lekin bu dizaynning ko'rinishini o'zgartiradi.
-
-- [ ] Manrope `cyrillic` subsetini `build.mjs` ga qo'shish
-      (APK ~40 KB o'sadi; faqat kerakli og'irliklar)
+- [x] Interfeys tarjimasi mexanizmi (manba satr bilan kalitlash)
+- [x] Lotin→kirill transliterator
+- [x] `state.lang` va til tanlagich (sozlamalardagi qator ishlaydi)
+- [x] Tanlangan til qurilmada saqlanadi (serverga ko'chirish — Faza 4)
+- [x] Shrift subsetlari va `unicode-range` — yuqorida batafsil
 
 **Savollar ham tarjima talab qiladi** — bu DB sxemasiga ta'sir qiladi:
 
