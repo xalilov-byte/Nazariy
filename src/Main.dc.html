@@ -2327,6 +2327,10 @@ class Component extends DCLogic {
       if (!q || q.selected !== null) return;
       const realIdx = q.pool[q.index];
       const ok = i === QUESTIONS[realIdx].correct;
+      // Ovoz va tebranish — feedback.js qatlami (sozlamadagi "Ovoz" bilan
+      // bog'langan). Dizayn faqat "to'g'ri/xato" faktini aytadi; u qanday
+      // eshitilishi qurilma qatlamining ishi.
+      if (window.nzFeedback) window.nzFeedback[ok ? "correct" : "wrong"]();
       this.setState(s => ({
         quiz: Object.assign({}, s.quiz, {
           selected: i,
@@ -3572,6 +3576,7 @@ class Component extends DCLogic {
           if (cur.mode === "marathon") {
             if (!wasOk) {
               // Birinchi xato — marafon shu yerda toʻxtaydi; rekord yangilanadi.
+              if (window.nzFeedback) window.nzFeedback.finish();
               this.setState(st => {
                 const isNewBest = st.quiz.correct > st.marathonBest;
                 return {
@@ -3586,6 +3591,7 @@ class Component extends DCLogic {
             return;
           }
           if (cur.index === cur.pool.length - 1) {
+            if (window.nzFeedback) window.nzFeedback.finish();
             this.setState(st => ({ quiz: Object.assign({}, st.quiz, { finished: true }) , points: st.points + (st.quiz.wrong <= 2 ? 100 : 0) }));
           } else {
             this.setState(st => ({ quiz: Object.assign({}, st.quiz, { index: st.quiz.index + 1, selected: null }) }));

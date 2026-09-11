@@ -27,10 +27,21 @@
 
   mq.addEventListener('change', () => { app.setState({ theme: themeOf() }); });
 
+  /* ── Sozlamalarni qurilma qatlamiga ulash ────────────────────────────
+     Dizayn sozlamalarni state'da ushlaydi ("Ovoz: Yoniq"), lekin ularni
+     bajarish qurilma qatlamining ishi. Har setState'dan keyin holat
+     qatlamlarga ko'chiriladi — shunda sozlama va haqiqiy xulq bir-biridan
+     ajralib qolmaydi (ilgari "Ovoz" tugmasi faqat yozuvni o'zgartirardi). */
+  function syncSettings() {
+    if (window.nzFeedback) window.nzFeedback.setEnabled(app.state.soundOn);
+    if (window.nzNotify) window.nzNotify.setEnabled(app.state.notifOn);
+  }
+
   // Tema o'zgarganda status bar ham ergashsin
   const origSetState = app.setState.bind(app);
-  app.setState = function (patch) { origSetState(patch); syncChrome(); };
+  app.setState = function (patch) { origSetState(patch); syncChrome(); syncSettings(); };
   syncChrome();
+  syncSettings();
 
   /* ── Android "orqaga" tugmasi ──────────────────────────────────────────
      Standart xulq: WebView'da orqaga bosilsa ilova darhol yopiladi.

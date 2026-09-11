@@ -350,6 +350,7 @@ for (const [family, slug, weights] of FONTS) {
 
 /* ── 6. index.html ───────────────────────────────────────────────────── */
 const runtime = readFileSync(join(SRC, 'runtime.js'), 'utf8');
+const feedback = readFileSync(join(SRC, 'feedback.js'), 'utf8');
 const shellCss = readFileSync(join(SRC, CFG.shell), 'utf8');
 const bootstrap = readFileSync(join(SRC, 'bootstrap.js'), 'utf8');
 
@@ -383,6 +384,9 @@ ${markup}
 </template>
 <script>
 ${runtime}
+</script>
+<script>
+${feedback}
 </script>
 <script>
 ${logic}
