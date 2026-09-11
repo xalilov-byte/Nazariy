@@ -592,14 +592,29 @@
 
         <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
         <div style="flex:1;padding:20px 16px 84px;display:flex;flex-direction:column;gap:12px;animation:nzRise .22s ease-out">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0">
-            <div style="width:80px;height:80px;border-radius:999px;background:var(--purple);color:#fff;display:grid;place-items:center;font-size:30px;font-weight:800">S</div>
-            <div style="text-align:center">
-              <div style="font-size:20px;font-weight:800">Sardor Toshmatov</div>
+          <!-- IXCHAM SARLAVHA.
+               Ilgari avatar 80px, ism, username va liga nishoni ustma-ust
+               markazda turardi va 844px ekranning ~250px ini yeb qo'yardi —
+               foydalanuvchi allaqachon biladigan ma'lumot (o'z ismi) uchun.
+               Endi bir qatorda: avatar chapda, ism va username o'ngda, liga
+               nishoni pastda. Tejalgan joy statistika va mavzular progressini
+               (foydalanuvchi aslida ko'rgani keladigan narsani) yuqoriga
+               ko'taradi.
+
+               O'ngdagi tishli g'ildirak sozlamalarga olib boradi: ular
+               ekranning eng pastida turadi va til almashtirish kabi tez-tez
+               kerak bo'ladigan narsa uchun uzoq scroll qilish kerak edi. -->
+          <div style="display:flex;align-items:center;gap:12px;padding:4px 0 2px">
+            <div style="width:56px;height:56px;border-radius:999px;background:var(--purple);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:800;flex:none">S</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Sardor Toshmatov</div>
               <div style="font-size:13px;font-weight:500;color:var(--muted-foreground)">@sardor_t</div>
             </div>
-            <span style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--surface-alt);font-size:13px;font-weight:700">Kumush liga · #142</span>
+            <button onClick="{{ goSettings }}" aria-label="Sozlamalar" style="width:44px;height:44px;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);color:var(--muted-foreground);display:grid;place-items:center;flex:none">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.9 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.7 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.03z"></path></svg>
+            </button>
           </div>
+          <span style="display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:7px 12px;border-radius:999px;background:var(--surface-alt);font-size:12px;font-weight:700">Kumush liga · #142</span>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <sc-for list="{{ profileStats }}" as="s" hint-placeholder-count="4">
               <div style="background:var(--surface);border-radius:20px;padding:16px;box-shadow:var(--shadow)">
@@ -669,19 +684,14 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"></path></svg>
           </button>
 
-          <div style="background:var(--gold);border-radius:20px;padding:18px;box-shadow:var(--shadow);color:#2A1B00">
-            <div style="font-size:16px;font-weight:800">Doʻst taklif qiling</div>
-            <div style="margin-top:4px;font-size:13px;font-weight:600;opacity:.8">Har bir doʻst uchun +200 ball</div>
-            <!-- Taklif havolasini kuzatish (kim kimni chaqirgani, +200 ball)
-                 serverni talab qiladi — REJA.md Faza 4. Tugma ishlamasligi
-                 uchun "Guruh yaratish" bilan bir xil halol naqsh: bosilmaydi
-                 va "Tez kunda" deb belgilangan. -->
-            <button disabled aria-disabled="true" style="margin-top:14px;width:100%;padding:13px;border-radius:14px;background:rgba(42,27,0,.14);color:#2A1B00;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:default">
-              Havolani ulashish
-              <span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;background:rgba(42,27,0,.16)">Tez kunda</span>
-            </button>
-          </div>
-          <div style="background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden">
+          <!-- "Doʻst taklif qiling" kartasi OLIB TASHLANDI.
+               Ikki sabab: (1) u Vazifalar ekranidagi "Doʻst taklif qilish"
+               vazifasi bilan bir xil narsani takrorlaydi — bitta ish ikki
+               joyda; (2) taklif havolasini kuzatish serverni talab qiladi,
+               ya'ni tugma ishlamasdi. Vazifalar ekranida u "Tez kunda"
+               nishoni bilan turadi; server qo'shilgach shu yerga
+               qaytarilishi mumkin (REJA.md Faza 4). -->
+          <div id="nz-settings" style="background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden">
             <sc-for list="{{ settings }}" as="s" hint-placeholder-count="3">
               <button onClick="{{ s.onClick }}" style="{{ s.rowStyle }}">
                 <span style="width:36px;height:36px;border-radius:10px;background:var(--surface-alt);display:grid;place-items:center;color:var(--muted-foreground);flex:none">
@@ -3565,6 +3575,18 @@ class Component extends DCLogic {
       dailyTasks: of("daily"),
       onceTasks: of("once"),
       socialTasks: of("social"),
+      /* Sozlamalar profil ekranining eng pastida turadi (mazmun avval
+         ko'rsatiladi — foydalanuvchi progressini ko'rgani keladi). Lekin
+         til almashtirish kabi narsa uchun 1000+ piksel scroll qilish
+         kerak edi. Sarlavhadagi tishli g'ildirak shu kartani ko'rinishga
+         olib keladi — yangi ekran qo'shmasdan.
+
+         DOM'ga murojaat: runtime daraxtni morph qiladi (qayta yaratmaydi),
+         shuning uchun id barqaror qoladi. */
+      goSettings: () => {
+        const el = document.getElementById("nz-settings");
+        if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      },
       tasksSubtitle: "Kunlik, bir martalik va ijtimoiy vazifalar",
       dailyProgress: have + "/20",
       dailyBarStyle: {
