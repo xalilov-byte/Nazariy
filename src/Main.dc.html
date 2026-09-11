@@ -375,11 +375,11 @@
             <div style="flex:1">
               <div style="font-size:16px;font-weight:600">Bugun 20 savol yech</div>
               <div style="margin-top:8px;height:8px;border-radius:999px;background:var(--surface-alt);overflow:hidden">
-                <div style="width:40%;height:100%;background:var(--gold);border-radius:999px"></div>
+                <div style="{{ dailyBarStyle }}"></div>
               </div>
             </div>
             <span style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none">
-              <span style="font-size:15px;font-weight:800;color:var(--muted-foreground);font-variant-numeric:tabular-nums">8/20</span>
+              <span style="font-size:15px;font-weight:800;color:var(--muted-foreground);font-variant-numeric:tabular-nums">{{ dailyProgress }}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)"><path d="M9 6l6 6-6 6"></path></svg>
             </span>
           </button>
@@ -441,10 +441,16 @@
         <sc-if value="{{ isTasks }}" hint-placeholder-val="{{ false }}">
         <div style="flex:1;padding:20px 16px 84px;display:flex;flex-direction:column;gap:12px;animation:nzRise .22s ease-out">
           <h1 class="display" style="margin:0;font-size:28px;font-weight:800;letter-spacing:-.02em">Vazifalar</h1>
-          <p style="margin:0;font-size:13px;font-weight:500;color:var(--muted-foreground)">Har kun yangilanadi · 04:00 da</p>
+          <!-- Ilgari "Har kun yangilanadi · 04:00 da" deb yozilgan edi. Bu
+               hali to'g'ri emas: progress saqlanmaydi, ya'ni kunlik
+               yangilanish ham yo'q (REJA.md Faza 4 — server va
+               sinxronizatsiya). Bajarilmaydigan va'da o'rniga shunchaki
+               nima borligini aytamiz; 04:00 da'gisi progress saqlanadigan
+               bo'lgach qaytariladi. -->
+          <p style="margin:0;font-size:13px;font-weight:500;color:var(--muted-foreground)">{{ tasksSubtitle }}</p>
           <h2 style="margin:10px 0 0;font-size:20px;font-weight:700">Kunlik</h2>
           <sc-for list="{{ dailyTasks }}" as="t" hint-placeholder-count="3">
-            <div style="display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow)">
+            <button onClick="{{ t.onClick }}" disabled="{{ t.soon }}" aria-disabled="{{ t.soon }}" style="{{ t.rowStyle }}">
               <span style="width:44px;height:44px;border-radius:12px;background:var(--surface-alt);display:grid;place-items:center;color:var(--gold-ink);flex:none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="8.8"></circle><path d="M8.2 12.3l2.6 2.6 5-5.4"></path></svg>
               </span>
@@ -456,11 +462,11 @@
                 <sc-if value="{{ t.done }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12.5l4.5 4.5L19.5 7.5"></path></svg></sc-if>
                 <sc-if value="{{ t.notDone }}" hint-placeholder-val="{{ true }}">{{ t.badge }}</sc-if>
               </span>
-            </div>
+            </button>
           </sc-for>
           <h2 style="margin:12px 0 0;font-size:20px;font-weight:700">Bir martalik</h2>
           <sc-for list="{{ onceTasks }}" as="t" hint-placeholder-count="2">
-            <div style="display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow)">
+            <button onClick="{{ t.onClick }}" disabled="{{ t.soon }}" aria-disabled="{{ t.soon }}" style="{{ t.rowStyle }}">
               <span style="width:44px;height:44px;border-radius:12px;background:var(--surface-alt);display:grid;place-items:center;color:var(--teal-ink);flex:none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3.6 14.5 9l5.9.7-4.4 4 1.2 5.8-5.2-2.9-5.2 2.9 1.2-5.8-4.4-4 5.9-.7z"></path></svg>
               </span>
@@ -472,11 +478,11 @@
                 <sc-if value="{{ t.done }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12.5l4.5 4.5L19.5 7.5"></path></svg></sc-if>
                 <sc-if value="{{ t.notDone }}" hint-placeholder-val="{{ true }}">{{ t.badge }}</sc-if>
               </span>
-            </div>
+            </button>
           </sc-for>
           <h2 style="margin:12px 0 0;font-size:20px;font-weight:700">Ijtimoiy</h2>
           <sc-for list="{{ socialTasks }}" as="t" hint-placeholder-count="2">
-            <div style="display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow)">
+            <button onClick="{{ t.onClick }}" disabled="{{ t.soon }}" aria-disabled="{{ t.soon }}" style="{{ t.rowStyle }}">
               <span style="width:44px;height:44px;border-radius:12px;background:var(--surface-alt);display:grid;place-items:center;color:var(--pink-ink);flex:none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M19 8v6M22 11h-6"></path></svg>
               </span>
@@ -488,7 +494,7 @@
                 <sc-if value="{{ t.done }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12.5l4.5 4.5L19.5 7.5"></path></svg></sc-if>
                 <sc-if value="{{ t.notDone }}" hint-placeholder-val="{{ true }}">{{ t.badge }}</sc-if>
               </span>
-            </div>
+            </button>
           </sc-for>
         </div>
         </sc-if>
@@ -666,7 +672,14 @@
           <div style="background:var(--gold);border-radius:20px;padding:18px;box-shadow:var(--shadow);color:#2A1B00">
             <div style="font-size:16px;font-weight:800">Doʻst taklif qiling</div>
             <div style="margin-top:4px;font-size:13px;font-weight:600;opacity:.8">Har bir doʻst uchun +200 ball</div>
-            <button style="margin-top:14px;width:100%;padding:13px;border-radius:14px;background:#2A1B00;color:var(--gold);font-size:15px;font-weight:700">Havolani ulashish</button>
+            <!-- Taklif havolasini kuzatish (kim kimni chaqirgani, +200 ball)
+                 serverni talab qiladi — REJA.md Faza 4. Tugma ishlamasligi
+                 uchun "Guruh yaratish" bilan bir xil halol naqsh: bosilmaydi
+                 va "Tez kunda" deb belgilangan. -->
+            <button disabled aria-disabled="true" style="margin-top:14px;width:100%;padding:13px;border-radius:14px;background:rgba(42,27,0,.14);color:#2A1B00;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:default">
+              Havolani ulashish
+              <span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;background:rgba(42,27,0,.16)">Tez kunda</span>
+            </button>
           </div>
           <div style="background:var(--surface);border-radius:20px;box-shadow:var(--shadow);overflow:hidden">
             <sc-for list="{{ settings }}" as="s" hint-placeholder-count="3">
@@ -2202,6 +2215,17 @@ class Component extends DCLogic {
     // ONLAR UCHUN onClick qoʻshilgan sabab bilan izohlangan).
     soundOn: true,
     notifOn: true,
+    // VAZIFALAR uchun haqiqiy hisoblagichlar. Ilgari vazifalar paneli
+    // qo'lda yozilgan matn edi ("Bugun · 8/20") va hech qachon
+    // o'zgarmasdi. Endi shu raqamlardan hisoblanadi.
+    // Diqqat: hisoblagichlar SESSIYA ichida yashaydi. Kunlik yangilanish
+    // (04:00) va kunlar bo'yicha streak serverni talab qiladi — REJA.md
+    // Faza 4. Shu sababli "Kunlik kirish" vazifasi hozir ilova ochilishi
+    // bilan bajarilgan hisoblanadi.
+    answeredCount: 0,
+    examsDone: 0,
+    signsAnswered: [],
+    tasksAwarded: [],
     // Bildirishnoma qurilma plaginini talab qiladi. Brauzerda (sayt,
     // Telegram) u yo'q, shuning uchun sozlama qatori KO'RSATILMAYDI —
     // bootstrap.js plagin borligini aniqlab shu bayroqni yoqadi.
@@ -2209,6 +2233,9 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
+    // "Kunlik kirish" vazifasi ilova ochilishi bilan bajariladi —
+    // mukofotni birinchi javobni kutmasdan beramiz.
+    this.awardTasks();
     this.tick = setInterval(() => {
       const q = this.state.quiz;
       if (!q || q.finished || q.time <= 0) return;
@@ -2325,6 +2352,73 @@ class Component extends DCLogic {
     };
   }
 
+  /* ─── VAZIFALAR: bitta manba ───────────────────────────────────────
+     Ilgari vazifalar qo'lda yozilgan matn edi va ustiga bosilganda hech
+     narsa sodir bo'lmasdi. Endi har bir vazifa HAQIQIY holatdan
+     hisoblanadi va bosilganda kerakli rejimni ochadi.
+
+     Bajarib bo'lmaydigan vazifalar (server yoki yangi ekran talab
+     qiladigan) "Tez kunda" nishoni bilan va BOSILMAYDIGAN holda
+     ko'rsatiladi — dizaynda "Guruh yaratish" tugmasi uchun ishlatilgan
+     naqshning o'zi. Sabab bir xil: ishlamaydigan narsa ishlaydigandek
+     ko'rinmasligi kerak.
+
+     Bu ro'yxat ikki joyda ishlatiladi — ko'rsatish (valsTasks) va
+     mukofot (awardTasks). Ikkisi ayrilib ketmasligi uchun bitta manba. */
+  taskList(s) {
+    const signsTotal = SIGN_INDICES.length;
+    const signsHave = s.signsAnswered.length;
+    const answered = s.answeredCount;
+
+    return [
+      { id: "daily_20", group: "daily", reward: 50, mode: "topics",
+        title: "20 savol yech", sub: Math.min(answered, 20) + "/20 savol",
+        done: answered >= 20 },
+
+      { id: "daily_exam", group: "daily", reward: 100, mode: "exam",
+        title: "Bitta imtihon topshir",
+        sub: s.examsDone >= 1 ? "Topshirildi" : "Har qanday natija bilan",
+        done: s.examsDone >= 1 },
+
+      // Ilova ochilgani — bajarilgan. Kunlar bo'yicha streak serverni
+      // talab qiladi, shuning uchun hozir shunchaki "ochildi".
+      { id: "daily_open", group: "daily", reward: 30,
+        title: "Kunlik kirish", sub: "Ilova ochildi", done: true },
+
+      { id: "once_signs", group: "once", reward: 300, mode: "signs",
+        title: "Barcha yoʻl belgilarini koʻrish",
+        sub: signsHave + "/" + signsTotal + " belgi",
+        done: signsTotal > 0 && signsHave >= signsTotal },
+
+      // Profilni tahrirlash ekrani yo'q — hisob tizimi bilan keladi.
+      { id: "once_profile", group: "once", reward: 50, soon: true,
+        title: "Profilni toʻldirish", sub: "Ism va toifa", done: false },
+
+      // Obunani tekshirish uchun Telegram bot va server kerak.
+      { id: "social_channel", group: "social", reward: 100, soon: true,
+        title: "Kanalga obuna boʻlish", sub: "@nazariy_uz", done: false },
+
+      // Taklif havolasini kuzatish uchun server kerak.
+      { id: "social_invite", group: "social", reward: 200, soon: true,
+        title: "Doʻst taklif qilish", sub: "Havola orqali", done: false }
+    ];
+  }
+
+  /* Bajarilgan vazifa mukofoti BIR MARTA beriladi: tasksAwarded ro'yxati
+     shuni kafolatlaydi. Aks holda har bir javobdan keyin "20 savol"
+     vazifasi qayta-qayta ball qo'shib yuborardi. */
+  awardTasks() {
+    const s = this.state;
+    const due = this.taskList(s).filter(t =>
+      t.done && !t.soon && s.tasksAwarded.indexOf(t.id) === -1);
+    if (!due.length) return;
+    const gain = due.reduce((sum, t) => sum + t.reward, 0);
+    this.setState(st => ({
+      points: st.points + gain,
+      tasksAwarded: st.tasksAwarded.concat(due.map(t => t.id))
+    }));
+  }
+
   answer(i) {
     return () => {
       const q = this.state.quiz;
@@ -2343,12 +2437,21 @@ class Component extends DCLogic {
           wrong: s.quiz.wrong + (ok ? 0 : 1)
         }),
         points: s.points + (ok ? 10 : 0),
+        answeredCount: s.answeredCount + 1,
+        // Yoʻl belgisi savollari alohida sanaladi — "Barcha belgilarni
+        // koʻrish" vazifasi shundan hisoblanadi (takror sanalmaydi).
+        signsAnswered: (QUESTIONS[realIdx].sign && s.signsAnswered.indexOf(realIdx) === -1)
+          ? s.signsAnswered.concat(realIdx)
+          : s.signsAnswered,
         // Toʻgʻri javob — savol "xatolarim" roʻyxatidan chiqadi (xatoni yengish
         // hissi); notoʻgʻri — roʻyxatga (agar hali yoʻq boʻlsa) qoʻshiladi.
         wrongIds: ok
           ? s.wrongIds.filter(id => id !== realIdx)
           : (s.wrongIds.includes(realIdx) ? s.wrongIds : s.wrongIds.concat(realIdx))
       }));
+      // setState holatni darhol yangilaydi (render keyinga qoldiriladi),
+      // shuning uchun mukofotni shu yerda tekshirish xavfsiz.
+      this.awardTasks();
     };
   }
 
@@ -2368,6 +2471,7 @@ class Component extends DCLogic {
       this.valsAnalytics(s),  // admin → Tahlil
       this.valsManage(s),     // admin → Boshqaruv
       this.valsMoney(s),      // Pro obuna va to'lov oqimi
+      this.valsTasks(s),      // kunlik / bir martalik / ijtimoiy vazifalar
       this.valsQuiz(s)        // faol test (test yo'q bo'lsa bo'sh)
     );
   }
@@ -3244,20 +3348,6 @@ class Component extends DCLogic {
         ? s.savedIds.length + " ta savol · qayta yechish"
         : "Hozircha boʻsh — testda xatchoʻp bilan saqlang",
 
-      dailyTasks: [
-        Object.assign({ title: "20 savol yech", sub: "Bugun · 8/20" }, this.badge("+50 ◆", false)),
-        Object.assign({ title: "Bitta imtihon topshir", sub: "Har qanday natija bilan" }, this.badge("+100 ◆", false)),
-        Object.assign({ title: "Kunlik kirish", sub: "Streak 5 kun" }, this.badge("+30 ◆", true))
-      ],
-      onceTasks: [
-        Object.assign({ title: "Profilni toʻldirish", sub: "Ism va toifa (B)" }, this.badge("+50 ◆", true)),
-        Object.assign({ title: "Barcha yoʻl belgilarini koʻrish", sub: "184/240 belgi" }, this.badge("+300 ◆", false))
-      ],
-      socialTasks: [
-        Object.assign({ title: "Kanalga obuna boʻlish", sub: "@nazariy_uz" }, this.badge("+100 ◆", false)),
-        Object.assign({ title: "Doʻst taklif qilish", sub: "2 doʻst qoʻshildi" }, this.badge("+200 ◆", false))
-      ],
-
       groups: [
         { rank: 1, name: "Toshkent Avto 7", members: 24, points: "184 300" },
         { rank: 2, name: "B toifa 2026", members: 31, points: "162 850" },
@@ -3440,6 +3530,51 @@ class Component extends DCLogic {
   }
 
   // ─── MODUL 5: faol test ─────────────────────────────────────────────
+  /* Vazifalar paneli. taskList() dan keladigan holatni ko'rinishga
+     aylantiradi: nishon, uslub va bosish xulqi. */
+  valsTasks(s) {
+    const rows = this.taskList(s).map(t => {
+      const label = t.soon ? "Tez kunda" : "+" + t.reward + " ◆";
+      const view = Object.assign({ id: t.id, group: t.group, title: t.title, sub: t.sub },
+                                 this.badge(label, t.done));
+      if (t.soon) {
+        // "Tez kunda" nishoni mukofot nishoni kabi diqqat tortmasligi
+        // kerak — u va'da emas, izoh.
+        view.badgeStyle = Object.assign({}, view.badgeStyle, {
+          background: "var(--surface-alt)", color: "var(--muted-foreground)",
+          fontSize: "11px", fontWeight: 800
+        });
+      }
+      view.soon = !!t.soon;
+      // Bajarilgan yoki "tez kunda" vazifada bosishdan ma'no yo'q.
+      view.onClick = (t.soon || t.done || !t.mode) ? null : this.startQuizMode(t.mode);
+      view.rowStyle = {
+        display: "flex", alignItems: "center", gap: "14px", width: "100%",
+        textAlign: "left", background: "var(--surface)", borderRadius: "20px",
+        padding: "14px 16px", boxShadow: "var(--shadow)", color: "var(--foreground)",
+        cursor: view.onClick ? "pointer" : "default",
+        opacity: t.soon ? 0.7 : 1
+      };
+      return view;
+    });
+    const of = g => rows.filter(r => r.group === g);
+    // Bosh ekrandagi "Bugun 20 savol yech" kartasi ham SHU hisoblagichdan
+    // oziqlanadi — ilgari u "8/20" va 40% chiziq bilan qotib qolgan edi.
+    const have = Math.min(s.answeredCount, 20);
+    return {
+      dailyTasks: of("daily"),
+      onceTasks: of("once"),
+      socialTasks: of("social"),
+      tasksSubtitle: "Kunlik, bir martalik va ijtimoiy vazifalar",
+      dailyProgress: have + "/20",
+      dailyBarStyle: {
+        width: Math.round(have / 20 * 100) + "%", height: "100%",
+        background: "var(--gold)", borderRadius: "999px",
+        transition: "width .25s ease-out"
+      }
+    };
+  }
+
   valsQuiz(s) {
     const q = s.quiz;
     if (!q) return {};
@@ -3598,7 +3733,13 @@ class Component extends DCLogic {
           }
           if (cur.index === cur.pool.length - 1) {
             if (window.nzFeedback) window.nzFeedback.finish();
-            this.setState(st => ({ quiz: Object.assign({}, st.quiz, { finished: true }) , points: st.points + (st.quiz.wrong <= 2 ? 100 : 0) }));
+            const wasExam = cur.mode === "exam" || !cur.mode;
+            this.setState(st => ({
+              quiz: Object.assign({}, st.quiz, { finished: true }),
+              points: st.points + (st.quiz.wrong <= 2 ? 100 : 0),
+              examsDone: st.examsDone + (wasExam ? 1 : 0)
+            }));
+            this.awardTasks();
           } else {
             this.setState(st => ({ quiz: Object.assign({}, st.quiz, { index: st.quiz.index + 1, selected: null }) }));
           }
