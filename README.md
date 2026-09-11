@@ -16,21 +16,46 @@ uslubi o'zgartirilmagan.
 ```
 nazariy-app/
 ├─ src/
-│  ├─ Main.dc.html      ← DIZAYN MANBASI. Butun ilova shu faylda.
+│  ├─ Main.dc.html      ← DIZAYN MANBASI. Uchala ilova shu faylda.
 │  ├─ reyting-bg.jpg    ← "Reyting" plitkasi fon surati
 │  ├─ hafta-bg.jpg      ← "Bu hafta" plitkasi fon surati
 │  ├─ runtime.js        ← kichik render (sc-if / sc-for / {{ }}), 140 qator
 │  ├─ shell.css         ← maketni qurilma ekraniga moslash (§4)
+│  ├─ shell-admin.css   ← admin paneli qobig'i (matn tanlanadi, ramka yo'q)
 │  └─ bootstrap.js      ← tema, Android "orqaga" tugmasi, status bar
-├─ build.mjs            ← src/ → www/  (node build.mjs)
-├─ www/                 ← yig'ilgan web ilova (Capacitor shuni oladi)
+├─ build.mjs            ← src/ → www/ | dist/web/ | dist/admin/
+├─ www/                 ← mobil build (Capacitor shuni oladi)
+├─ dist/web/            ← sayt build'i
+├─ dist/admin/          ← admin panel build'i
 ├─ android/             ← Android Studio loyihasi
 ├─ resources/           ← ilova ikonkasi va splash manbalari
 ├─ tools/               ← ikonka generatori
+├─ REJA.md              ← ishlab chiqish rejasi (bosqichlar, qarorlar)
 └─ .github/workflows/   ← GitHub'da avtomatik APK/AAB yig'ish
 ```
 
 Umumiy hajm: **~500 KB** (shriftlar bilan). APK taxminan 4–6 MB chiqadi.
+
+### Uchta build maqsadi
+
+Manba faylda uchta mustaqil ilova bir joyda yashaydi. `build.mjs` har bir
+maqsad uchun **keraksiz qatlamni kesib tashlaydi**:
+
+| Buyruq | Chiqish | Nima kiradi |
+|---|---|---|
+| `npm run build` | `www/` | Foydalanuvchi ilovasi. Admin va landing **kesiladi** |
+| `npm run build:web` | `dist/web/` | Foydalanuvchi ilovasi + landing. Admin **kesiladi** |
+| `npm run build:admin` | `dist/admin/` | Faqat admin panel |
+
+**Nima uchun kesiladi, yashirilmaydi:** admin panel APK ichida qolsa,
+ilovani ochgan har qanday odam admin ekranlarini ko'radi va API'ga qo'lda
+so'rov yuborishga urinadi. Shuning uchun admin qatlami mobil va sayt
+build'lariga **umuman kirmaydi**. Buni `build.mjs` o'zi tekshiradi —
+admin nomlaridan bittasi qolsa, build yiqiladi.
+
+Kesish foydalanuvchi ilovasining ko'rinishiga **tegmaydi**: eski va yangi
+build'ning barcha ekranlari piksel darajasida bir xil (tekshirilgan).
+Mobil build hajmi 254 KB dan 147 KB ga tushdi.
 
 ---
 
@@ -66,6 +91,8 @@ npm install
 npm run sync          # src/ → www/ → android/
 npm run aab           # Play Market uchun .aab
 npm run apk           # telefonda sinash uchun .apk
+
+npm run build:all     # uchala maqsadni yig'ish (mobil + sayt + admin)
 ```
 
 Natijalar:

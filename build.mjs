@@ -1,19 +1,51 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   src/Main.dc.html (dizayn manbasi)  →  www/ (Capacitor oladigan web ilova)
+   src/Main.dc.html (dizayn manbasi)  →  uchta mustaqil ilova
 
-   Ishga tushirish:  node build.mjs
+   Ishga tushirish:
+     node build.mjs                    → www/        (Android APK ichiga)
+     node build.mjs --target=web       → dist/web/   (sayt)
+     node build.mjs --target=admin     → dist/admin/ (admin panel)
 
-   Dizayn fayli TAHRIR QILINMAYDI. Bu skript uning nusxasini olib, faqat
-   maketga xos ikki narsani moslaydi (chrome yashiriladi, ramka ekranga
-   cho'ziladi) va shriftlarni offline qiladi. Har bir almashtirish
-   assert bilan tekshiriladi — manba o'zgarsa, skript jim qolmay yiqiladi.
+   Dizayn fayli TAHRIR QILINMAYDI. Bu skript uning nusxasini olib,
+   maqsadga kerak bo'lmagan qatlamlarni KESIB TASHLAYDI va qolganini
+   qurilma ekraniga moslaydi.
+
+   NIMA UCHUN KESISH KERAK — xavfsizlik:
+   Manba faylda uchta mustaqil ilova bir joyda yashaydi (foydalanuvchi
+   ilovasi, admin panel, landing). Maketda bu qulay. Lekin admin panel
+   APK ichida qolsa, telefonidagi ilovani ochgan HAR QANDAY odam admin
+   ekranlarini ko'radi va API'ga qo'lda so'rov yuborishga urinadi. Admin
+   qatlami mobil va sayt build'lariga UMUMAN kirmasligi kerak — shunchaki
+   yashirilmasligi, balki yig'ilgan fayldan yo'q bo'lishi.
+
+   Har bir kesish va almashtirish assert bilan tekshiriladi — manba
+   o'zgarsa, skript jim qolmay yiqiladi. Kesishdan keyin yana bir
+   tekshiruv bor: o'chirilgan nom qolgan kodda hali ishlatilsa, build
+   yiqiladi (ishlash vaqtidagi jimgina buzilish o'rniga baland xato).
    ───────────────────────────────────────────────────────────────────── */
 
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync, rmSync } from 'fs';
 import { join } from 'path';
 
 const SRC = 'src';
-const OUT = 'www';
+
+/* ── 0. Maqsad (target) ──────────────────────────────────────────────── */
+/* mobile — foydalanuvchi ilovasi (APK). Admin va landing kesiladi.
+   web    — sayt: foydalanuvchi ilovasi + landing. Admin kesiladi.
+   admin  — faqat admin panel. Foydalanuvchi ilovasi va landing kesiladi. */
+const TARGETS = {
+  mobile: { out: 'www',        app: true,  admin: false, landing: false, shell: 'shell.css' },
+  web:    { out: 'dist/web',   app: true,  admin: false, landing: true,  shell: 'shell.css' },
+  admin:  { out: 'dist/admin', app: false, admin: true,  landing: false, shell: 'shell-admin.css' },
+};
+
+const targetArg = process.argv.slice(2).find(a => a.startsWith('--target='));
+const TARGET = targetArg ? targetArg.slice('--target='.length) : 'mobile';
+const CFG = TARGETS[TARGET];
+if (!CFG) {
+  throw new Error(`[build] noma'lum maqsad: "${TARGET}". Mumkin: ${Object.keys(TARGETS).join(', ')}`);
+}
+const OUT = CFG.out;
 
 const src = readFileSync(join(SRC, 'Main.dc.html'), 'utf8');
 
@@ -33,9 +65,226 @@ const styleCss = src.slice(cssStart, cssEnd);
 let markup = src.split('</helmet>')[1].split('<script type="text/x-dc"')[0];
 markup = markup.replace(/<\/x-dc>\s*$/, '').trim();
 
-const logic = src.split('data-dc-script')[1].split('>').slice(1).join('>').split('</script>')[0];
+let logic = src.split('data-dc-script')[1].split('>').slice(1).join('>').split('</script>')[0];
 
-/* ── 2. Maketni qurilma ekraniga moslash (klass qo'shish) ────────────── */
+/* ── 2. Kesish asboblari ─────────────────────────────────────────────── */
+
+/* Markup'dagi yuqori darajali <sc-if value="{{ NAME }}"> blokini butunlay
+   olib tashlaydi. Ichma-ich sc-if'lar hisobga olinadi (chuqurlik). */
+function cutSection(html, name) {
+  const open = `<sc-if value="{{ ${name} }}"`;
+  const i = html.indexOf(open);
+  if (i === -1) throw new Error(`[build] "${name}" bo'limi topilmadi`);
+  if (html.indexOf(open, i + 1) !== -1) throw new Error(`[build] "${name}" bo'limi bir necha marta uchraydi`);
+
+  const re = /<sc-if\b|<\/sc-if>/g;
+  re.lastIndex = i;
+  let depth = 0, end = -1, m;
+  while ((m = re.exec(html)) !== null) {
+    if (m[0] === '</sc-if>') {
+      depth--;
+      if (depth === 0) { end = m.index + m[0].length; break; }
+    } else depth++;
+  }
+  if (end === -1) throw new Error(`[build] "${name}" bo'limi yopilmagan`);
+  return html.slice(0, i) + html.slice(end);
+}
+
+/* Qavslarni hisoblab, JS blokining oxirini topadi. Satr va izoh ichidagi
+   qavslar hisoblanmaydi (bir qatorli va ko'p qatorli izohlar ham).
+   Manba faylda template literal yo'q va regex literallari qavs saqlamaydi
+   (/ /g) — tekshirilgan, shuning uchun ular alohida ishlanmaydi. */
+function blockEnd(code, openIdx) {
+  const PAIRS = { '{': '}', '[': ']', '(': ')' };
+  const openCh = code[openIdx];
+  const closeCh = PAIRS[openCh];
+  if (!closeCh) throw new Error(`[build] ${openIdx} pozitsiyada qavs kutilgan, "${openCh}" keldi`);
+
+  let depth = 0, st = 'code';
+  for (let i = openIdx; i < code.length; i++) {
+    const c = code[i], n = code[i + 1];
+    if (st === 'code') {
+      if (c === '"') st = 'dq';
+      else if (c === "'") st = 'sq';
+      else if (c === '/' && n === '/') st = 'lc';
+      else if (c === '/' && n === '*') st = 'bc';
+      else if (c === openCh) depth++;
+      else if (c === closeCh && --depth === 0) return i;
+    }
+    else if (st === 'dq') { if (c === '\\') i++; else if (c === '"') st = 'code'; }
+    else if (st === 'sq') { if (c === '\\') i++; else if (c === "'") st = 'code'; }
+    else if (st === 'lc') { if (c === '\n') st = 'code'; }
+    else if (st === 'bc') { if (c === '*' && n === '/') { i++; st = 'code'; } }
+  }
+  throw new Error('[build] qavs yopilmadi');
+}
+
+/* Faqat TEKSHIRUV uchun: izoh va satr ichini bo'sh joyga aylantiradi,
+   qolgan "yalang'och" kodni qaytaradi. Chiqishga ta'sir qilmaydi.
+
+   Nima uchun kerak: nom qidirilganda izoh va satr yolg'on moslik beradi.
+   Ikki haqiqiy misol — manba faylning "fayl xaritasi" izohida valsManage
+   sanab o'tilgan, MONTHS_UZ satrida esa "may" oyi bor; ikkalasi ham kod
+   emas, lekin oddiy qidiruv ularni topib, tekshiruvni bekorga yiqitadi. */
+function codeOnly(code) {
+  let out = '', st = 'code';
+  const blank = c => (c === '\n' ? '\n' : ' ');
+  for (let i = 0; i < code.length; i++) {
+    const c = code[i], n = code[i + 1];
+    if (st === 'code') {
+      if (c === '/' && n === '/') { st = 'lc'; out += '  '; i++; continue; }
+      if (c === '/' && n === '*') { st = 'bc'; out += '  '; i++; continue; }
+      out += c;
+      if (c === '"') st = 'dq';
+      else if (c === "'") st = 'sq';
+    }
+    else if (st === 'dq' || st === 'sq') {
+      const quote = st === 'dq' ? '"' : "'";
+      if (c === '\\') { out += '  '; i++; }
+      else if (c === quote) { out += c; st = 'code'; }
+      else out += blank(c);
+    }
+    else if (st === 'lc') { out += blank(c); if (c === '\n') st = 'code'; }
+    else if (st === 'bc') { out += blank(c); if (c === '*' && n === '/') { out += ' '; i++; st = 'code'; } }
+  }
+  return out;
+}
+
+/* Ta'rifdan YUQORIDAGI izoh blokini ham qamrab oladi.
+
+   Kod kesilganda uni tushuntirgan izoh yetim qolib, yig'ilgan faylda
+   mavjud bo'lmagan narsani tasvirlab turadi. Bundan tashqari bu admin
+   qatlami borligini va uning ichki nomlarini oshkor qiladi — mobil
+   build'da bunga hojat yo'q.
+
+   Ko'p qatorli izoh (/* ... *(/) to'liq qamraladi: faqat oxirgi qatorini
+   kesib, ochilishini qoldirish butun qolgan kodni izohga aylantirib
+   yuboradi. */
+function withCommentAbove(code, start) {
+  for (;;) {
+    const prevEnd = code.lastIndexOf('\n', start - 1);
+    if (prevEnd === -1) return start;
+    const prevStart = code.lastIndexOf('\n', prevEnd - 1) + 1;
+    const line = code.slice(prevStart, prevEnd).trim();
+
+    if (line.startsWith('//')) { start = prevStart; continue; }
+    if (line.endsWith('*/')) {
+      // JS'da izohlar ichma-ich bo'lmaydi — eng yaqin "/*" aynan shu blokning
+      // ochilishi. Uning satr boshidan kesamiz.
+      const open = code.lastIndexOf('/*', prevEnd);
+      if (open === -1) return start;
+      start = code.lastIndexOf('\n', open) + 1;
+      continue;
+    }
+    return start;
+  }
+}
+
+/* Blokni kesib, satr oxirigacha (";" va nuqta-vergul ortidagi izoh) yutadi. */
+function cutFrom(code, start, openIdx) {
+  const end = blockEnd(code, openIdx);
+  let k = end + 1;
+  while (k < code.length && code[k] !== '\n') k++;
+  return code.slice(0, start) + code.slice(k + 1);
+}
+
+/* const NAME = [...] / {...} / (function(){...})() */
+function cutConst(code, name) {
+  const marker = `const ${name} = `;
+  const i = code.indexOf(marker);
+  if (i === -1) throw new Error(`[build] "const ${name}" topilmadi`);
+  return cutFrom(code, withCommentAbove(code, i), i + marker.length);
+}
+
+/* function NAME(...) {...}  yoki klass metodi  NAME(...) {...} */
+function cutFn(code, name, kind) {
+  const marker = kind === 'function' ? `function ${name}(` : `\n  ${name}(`;
+  const i = code.indexOf(marker);
+  if (i === -1) throw new Error(`[build] "${kind} ${name}" topilmadi`);
+  const brace = code.indexOf('{', i + marker.length);
+  if (brace === -1) throw new Error(`[build] "${name}" tanasi topilmadi`);
+  // Klass metodida marker "\n" dan boshlanadi — uni saqlaymiz.
+  const start = kind === 'function' ? i : i + 1;
+  return cutFrom(code, withCommentAbove(code, start), brace);
+}
+
+/* Aniq bitta satrni olib tashlaydi (assert bilan). */
+function cutLine(code, needle, what) {
+  must(code, needle, what);
+  const i = code.indexOf(needle);
+  let a = code.lastIndexOf('\n', i);
+  let b = code.indexOf('\n', i);
+  if (a === -1) a = 0;
+  if (b === -1) b = code.length;
+  return code.slice(0, a) + code.slice(b);
+}
+
+/* ── 3. Maqsadga kerak bo'lmagan qatlamlarni kesish ──────────────────── */
+
+/* Markup: uchta mustaqil ko'rinish bo'limi bor. */
+if (!CFG.admin)   markup = cutSection(markup, 'isAdmin');
+if (!CFG.landing) markup = cutSection(markup, 'isLanding');
+if (!CFG.app)     markup = cutSection(markup, 'isApp');
+
+/* Maket chromi'dagi ko'rinish almashtirgichi: mavjud bo'lmagan bo'limga
+   o'tkazadigan tugma qolmasligi kerak. */
+const CHROME_BUTTONS = [
+  ['Admin tugmasi',    '<button onClick="{{ showAdmin }}" style="{{ tabAdminStyle }}">Admin</button>', CFG.admin],
+  ['Web sayt tugmasi', '<button onClick="{{ showLanding }}" style="{{ tabWebStyle }}">Web sayt</button>', CFG.landing],
+  ['Mini App tugmasi', '<button onClick="{{ showApp }}" style="{{ tabAppStyle }}">Mini App</button>', CFG.app],
+];
+for (const [what, html, keep] of CHROME_BUTTONS) {
+  if (keep) continue;
+  must(markup, html, what);
+  markup = markup.replace(html, '');
+}
+
+/* Logika: admin qatlami. Bu ro'yxatdagi hamma narsa FAQAT valsAnalytics /
+   valsManage / logAction ichida ishlatiladi — tekshirilgan. */
+const ADMIN_CONSTS = ['ROLES', 'REASONS', 'ADMIN_USERS', 'ADMIN_QUESTIONS', 'AUDIT_SEED',
+                      'CSV_COLUMNS', 'BULK_SAMPLES', 'DAU_90', 'FUNNEL', 'COHORTS',
+                      'ITEMS', 'REV', 'METHOD_SHARE'];
+const ADMIN_FNS = ['nowIso', 'shortTime', 'maskPhone', 'parseBulk', 'toCsv'];
+const ADMIN_METHODS = ['valsAnalytics', 'valsManage', 'logAction', 'may'];
+
+const removed = [];
+
+if (!CFG.admin) {
+  // renderVals() endi uch modulni yig'adi — kesilgan ikkitasiga chaqiruv qolmaydi.
+  logic = cutLine(logic, 'this.valsAnalytics(s),', 'renderVals → valsAnalytics chaqiruvi');
+  logic = cutLine(logic, 'this.valsManage(s),', 'renderVals → valsManage chaqiruvi');
+
+  // state ichidagi admin ma'lumotlari
+  logic = cutLine(logic, 'users: ADMIN_USERS.map(', 'state.users');
+  logic = cutLine(logic, 'questions: ADMIN_QUESTIONS.map(', 'state.questions');
+  logic = cutLine(logic, 'audit: AUDIT_SEED.slice(),', 'state.audit');
+
+  for (const name of ADMIN_METHODS) { logic = cutFn(logic, name, 'method'); removed.push(name); }
+  for (const name of ADMIN_FNS)     { logic = cutFn(logic, name, 'function'); removed.push(name); }
+  for (const name of ADMIN_CONSTS)  { logic = cutConst(logic, name); removed.push(name); }
+}
+
+/* Kesishdan keyingi tekshiruv: o'chirilgan nom qolgan kodda ishlatilsa,
+   ilova ishlash vaqtida jimgina buziladi. Shuning uchun build yiqiladi. */
+const logicCode = codeOnly(logic);
+for (const name of removed) {
+  const re = new RegExp(`\\b${name}\\b`);
+  if (re.test(logicCode)) {
+    throw new Error(`[build] "${name}" o'chirildi, lekin qolgan kodda hali ishlatilmoqda — ` +
+                    `build.mjs dagi kesish ro'yxati yangilansin`);
+  }
+}
+
+/* Admin build'da dastlabki ko'rinish "admin" bo'lishi kerak — foydalanuvchi
+   ilovasi kesilgani uchun "app" ko'rinishi bo'sh ekran beradi. */
+if (CFG.admin) {
+  must(logic, 'view: "app",', 'state.view boshlang\'ich qiymati');
+  logic = logic.replace('view: "app",', 'view: "admin",');
+}
+
+/* ── 4. Maketni qurilma ekraniga moslash (klass qo'shish) ────────────── */
+/* Bu almashtirishlar faqat foydalanuvchi ilovasi markup'iga tegishli —
+   admin build'da u kesilgan, shuning uchun o'tkazib yuboriladi. */
 const T = [
   ['maket chromi (Mini App / Web sayt / Admin)',
    '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;position:sticky;top:0;z-index:50;background:var(--background);border-bottom:1px solid var(--hairline)">',
@@ -66,12 +315,19 @@ const T = [
    '<div class="nz-nav" style="position:absolute;left:0;right:0;bottom:0;height:68px;background:var(--surface);border-top:1px solid var(--hairline);display:grid;grid-template-columns:repeat(4,1fr);align-items:center">'],
 ];
 
-for (const [what, from, to] of T) {
-  must(markup, from, what);
-  markup = markup.replace(from, to);
+if (CFG.app) {
+  for (const [what, from, to] of T) {
+    must(markup, from, what);
+    markup = markup.replace(from, to);
+  }
+} else {
+  // Admin build'da chrome maket qoldig'i sifatida qoladi — yashiriladi.
+  const chrome = T[0];
+  must(markup, chrome[1], chrome[0]);
+  markup = markup.replace(chrome[1], chrome[2]);
 }
 
-/* ── 3. Offline shriftlar ────────────────────────────────────────────── */
+/* ── 5. Offline shriftlar ────────────────────────────────────────────── */
 const FONTS = [
   ['Manrope', 'manrope', [500, 600, 700, 800]],
   ['Space Grotesk', 'space-grotesk', [600, 700]],
@@ -92,19 +348,27 @@ for (const [family, slug, weights] of FONTS) {
   }
 }
 
-/* ── 4. index.html ───────────────────────────────────────────────────── */
+/* ── 6. index.html ───────────────────────────────────────────────────── */
 const runtime = readFileSync(join(SRC, 'runtime.js'), 'utf8');
-const shellCss = readFileSync(join(SRC, 'shell.css'), 'utf8');
+const shellCss = readFileSync(join(SRC, CFG.shell), 'utf8');
 const bootstrap = readFileSync(join(SRC, 'bootstrap.js'), 'utf8');
+
+/* Admin panel — klaviatura bilan ishlanadigan, matn nusxalanadigan ish
+   quroli: telefon ilovasining "zoom yo'q" cheklovi unga to'g'ri kelmaydi. */
+const viewport = CFG.admin
+  ? 'width=device-width,initial-scale=1'
+  : 'width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';
+
+const title = CFG.admin ? 'Nazariy — admin' : 'Nazariy';
 
 const html = `<!DOCTYPE html>
 <html lang="uz">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="${viewport}">
 <meta name="theme-color" content="#F5F3FF">
 <meta name="color-scheme" content="light dark">
-<title>Nazariy</title>
+<title>${title}</title>
 <style>
 ${fontCss}</style>
 <style>
@@ -130,16 +394,47 @@ ${bootstrap}
 </html>
 `;
 
-/* ── 5. Nazorat: kesish paytida hech narsa tushib qolmadimi ──────────── */
-for (const need of ['.nz-card-reyting{', '.nz-card-hafta{', 'url(./reyting-bg.jpg)', 'url(./hafta-bg.jpg)',
-                    'class Component extends DCLogic', 'nz-nav', 'nz-frame', 'renderVals()']) {
+/* ── 7. Nazorat: kesish paytida hech narsa tushib qolmadimi ──────────── */
+const NEED = ['.nz-card-reyting{', '.nz-card-hafta{', 'url(./reyting-bg.jpg)', 'url(./hafta-bg.jpg)',
+              'class Component extends DCLogic', 'renderVals()'];
+if (CFG.app) NEED.push('nz-nav', 'nz-frame');
+if (CFG.admin) NEED.push('valsManage', 'Admin panel');
+if (CFG.landing) NEED.push('Avtotestdan birinchi urinishda');
+
+for (const need of NEED) {
   if (html.indexOf(need) === -1) throw new Error(`[build] yig'ilgan faylda "${need}" yo'q — kesish noto'g'ri`);
+}
+
+/* Admin qatlami mobil va sayt build'iga TUSHMASLIGI kerak. Bu tekshiruv
+   xavfsizlik chegarasi: yiqilsa, kesish ishlamagan. */
+if (!CFG.admin) {
+  // Kod nomlari — izoh va satrlardan tozalangan kodda qaraladi. Manba
+  // faylning izohlarida bu nomlar sanab o'tilgan; izoh kod emas, lekin
+  // ijro etiladigan bitta qator ham qolmasligi kerak.
+  const FORBIDDEN_CODE = ['valsManage', 'valsAnalytics', 'logAction', 'parseBulk', 'toCsv',
+                          'ADMIN_USERS', 'ADMIN_QUESTIONS', 'AUDIT_SEED', 'ROLES', 'REASONS'];
+  for (const bad of FORBIDDEN_CODE) {
+    if (new RegExp(`\\b${bad}\\b`).test(logicCode)) {
+      throw new Error(`[build] XAVFSIZLIK: "${bad}" ${TARGET} build'ining KODIDA qoldi — ` +
+                      `admin qatlami kesilmagan`);
+    }
+  }
+  // Admin ekranlarining matni — yig'ilgan faylda hech qayerda bo'lmasligi kerak.
+  const FORBIDDEN_TEXT = ['Admin panel', 'adminSubtitle', 'Ommaviy import', 'Javob kaliti'];
+  for (const bad of FORBIDDEN_TEXT) {
+    if (html.indexOf(bad) !== -1) {
+      throw new Error(`[build] XAVFSIZLIK: "${bad}" matni ${TARGET} build'ida qoldi — ` +
+                      `admin markup'i kesilmagan`);
+    }
+  }
 }
 
 writeFileSync(join(OUT, 'index.html'), html);
 for (const img of ['reyting-bg.jpg', 'hafta-bg.jpg']) copyFileSync(join(SRC, img), join(OUT, img));
 
 const kb = n => (n / 1024).toFixed(0) + ' KB';
-console.log(`www/index.html — ${kb(html.length)}`);
-console.log(`www/fonts     — ${FONTS.reduce((a, f) => a + f[2].length, 0) * SUBSETS.length} ta woff2`);
-console.log('www/*.jpg     — 2 ta fon surati');
+console.log(`maqsad: ${TARGET} → ${OUT}/`);
+console.log(`${OUT}/index.html — ${kb(html.length)}`);
+console.log(`${OUT}/fonts     — ${FONTS.reduce((a, f) => a + f[2].length, 0) * SUBSETS.length} ta woff2`);
+console.log(`${OUT}/*.jpg     — 2 ta fon surati`);
+if (removed.length) console.log(`kesildi        — admin qatlami (${removed.length} ta nom)`);

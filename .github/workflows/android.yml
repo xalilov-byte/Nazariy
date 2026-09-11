@@ -48,6 +48,14 @@ jobs:
       - name: Web ilovani yig'ish (src/Main.dc.html → www/)
         run: node build.mjs
 
+      # Sayt va admin build'lari ham shu yerda yig'iladi: ularning
+      # tekshiruvlari (admin qatlami mobil build'ga tushmaganini
+      # tasdiqlash ham shunda) har push'da ishlashi kerak.
+      - name: Sayt va admin build'larini tekshirish
+        run: |
+          node build.mjs --target=web
+          node build.mjs --target=admin
+
       - name: Capacitor sync
         run: npx cap sync android
 

@@ -44,7 +44,7 @@ Admin ikki rejimda: `analytics` (Tahlil) va `manage` (Boshqaruv).
 5. **Hisob (auth) yo'q.** Foydalanuvchi kim ekani ma'lum emas.
 6. **Sayt yo'q.** Faqat APK ichidagi web ilova bor.
 
-### Darhol tuzatilishi kerak bo'lgan narsa (xavfsizlik)
+### Xavfsizlik: admin panel ilova ichida edi ✅ TUZATILDI
 
 `src/Main.dc.html:282` da shunday qator bor:
 
@@ -52,15 +52,16 @@ Admin ikki rejimda: `analytics` (Tahlil) va `manage` (Boshqaruv).
 <button onClick="{{ showAdmin }}" style="{{ tabAdminStyle }}">Admin</button>
 ```
 
-Ya'ni **admin panel foydalanuvchi ilovasining ichida** va unga oddiy
-tugma bilan kiriladi. Hozir bu zararsiz (ma'lumot mock), lekin admin
-panel haqiqiy API'ga ulangandan keyin bu to'g'ridan-to'g'ri teshik
-bo'ladi: APK'ni ochgan har bir odam admin ekranlarini ko'radi va
+Ya'ni **admin panel foydalanuvchi ilovasining ichida** edi va unga oddiy
+tugma bilan kirilardi. O'sha paytda bu zararsiz edi (ma'lumot mock),
+lekin admin panel haqiqiy API'ga ulangandan keyin to'g'ridan-to'g'ri
+teshik bo'lardi: APK'ni ochgan har bir odam admin ekranlarini ko'radi va
 so'rovlarni qo'lda yuborib ko'rishga urinadi.
 
-**Qaror:** admin paneli alohida web ilovaga ajratiladi va APK'ga
-**umuman kirmaydi** (Faza 0). Bu shunchaki tugmani yashirish emas —
-admin kodi yig'ilgan fayldan chiqarib tashlanadi.
+**Bajarildi (Faza 0):** dizayn manbasi o'zgartirilmadi — `build.mjs`
+mobil va sayt build'ida admin qatlamini **kesib tashlaydi**. Bu shunchaki
+tugmani yashirish emas: admin markup'i, ma'lumoti va metodlari yig'ilgan
+faylda umuman yo'q. Batafsil — pastdagi Faza 0 bo'limida.
 
 ---
 
@@ -217,22 +218,38 @@ ishonilmaydi.
 Har bosqich oldingisiga tayanadi. Tartibni o'zgartirish mumkin, lekin
 Faza 0 va 1 birinchi bo'lishi shart.
 
-### Faza 0 — Poydevor va admin'ni ajratish
+### Faza 0 — Poydevor va admin'ni ajratish ✅ BAJARILDI
 
 **Nima uchun birinchi:** admin kodi APK'da qolsa, keyingi hamma ish
 xavfsizlik qarzini oshiradi.
 
-- [ ] Repo tuzilishini uch maqsadga bo'lish:
-      `apps/mobile` (APK), `apps/web` (sayt + Telegram), `apps/admin`
-- [ ] `build.mjs`'ni maqsadli qilish: `--target=mobile|web|admin`.
-      Mobile build'da admin markup va `valsAnalytics`/`valsManage`
-      **kesib tashlanadi** (build tekshiruvi bilan: yig'ilgan faylda
-      `valsManage` bo'lsa — build yiqiladi)
-- [ ] `src/Main.dc.html:282` dagi Admin tugmasi mobile build'dan chiqadi
-- [ ] Umumiy qismlarni ajratish: dizayn tokenlari, runtime, ikonkalar
+- [x] `build.mjs` maqsadli: `--target=mobile|web|admin`
+      (`npm run build` / `build:web` / `build:admin` / `build:all`)
+- [x] Mobil va sayt build'ida admin qatlami **kesiladi**: markup bo'limi,
+      13 ta konstanta, 5 ta funksiya, 4 ta metod — jami 22 ta nom, ularning
+      izohlari bilan birga
+- [x] Admin tugmasi (`src/Main.dc.html:282`) mobil build'dan chiqdi
+- [x] `src/shell-admin.css` — admin uchun alohida qobiq (matn tanlanadi,
+      zoom taqiqlanmaydi, telefon ramkasi yo'q)
+- [x] Build o'z-o'zini tekshiradi: o'chirilgan nom qolgan kodda ishlatilsa
+      yoki admin nomi mobil build'da qolsa — build yiqiladi
+- [x] CI uchala maqsadni har push'da yig'adi
 
-**Tayyor mezoni:** `grep valsManage www/index.html` mobile build'da
-hech narsa topmaydi; APK hajmi kamayadi; admin build alohida ochiladi.
+**Natija:**
+
+| Ko'rsatkich | Oldin | Keyin |
+|---|---|---|
+| Mobil build hajmi | 254 KB | **147 KB** |
+| Admin kodi APK'da | bor | **yo'q** |
+| Build maqsadlari | 1 | 3 |
+
+**Tekshirildi:** uchala build brauzerda konsol xatosiz ochiladi; mobil
+ilovaning 5 ta ekrani (bosh, vazifalar, reyting, profil, test) eski
+build bilan **piksel darajasida aynan bir xil**.
+
+Repo hozircha bitta papkada qoldi (`apps/` ga bo'linmadi) — bitta manba
+fayl va bitta build skripti uchun bu ortiqcha murakkablik bo'lardi.
+Backend qo'shilganda qayta ko'rib chiqiladi.
 
 ### Faza 1 — Backend va hisob
 

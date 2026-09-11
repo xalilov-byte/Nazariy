@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "node build.mjs",
+    "build:web": "node build.mjs --target=web",
+    "build:admin": "node build.mjs --target=admin",
+    "build:all": "npm run build && npm run build:web && npm run build:admin",
     "sync": "node build.mjs && npx cap sync android",
     "open": "npx cap open android",
     "apk": "npm run sync && cd android && ./gradlew assembleRelease",

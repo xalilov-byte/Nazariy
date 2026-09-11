@@ -1,0 +1,29 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   ADMIN PANEL QOBIG'I — dizaynning o'ziga TEGILMAYDI.
+
+   shell.css telefon ilovasi uchun: 390px ramkani qurilma ekraniga cho'zadi,
+   matn tanlashni o'chiradi, zoom'ni taqiqlaydi. Admin panel esa boshqa
+   narsa — kompyuterda, klaviatura bilan ishlanadigan ish quroli. Shuning
+   uchun unga o'z qobig'i kerak:
+
+     · matn TANLANADI (ID, telefon, jurnal yozuvi nusxalanadi)
+     · zoom taqiqlanmaydi (jadvallarga yaqinlashish kerak bo'ladi)
+     · telefon ramkasi yo'q — admin bo'limi maketda ramkadan tashqarida
+
+   Admin paneli maketda o'z kengligini (max-width:1180px) o'zi belgilaydi,
+   shuning uchun bu yerda maketga deyarli aralashilmaydi.
+   ───────────────────────────────────────────────────────────────────── */
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--background);
+}
+
+/* Maket chromi (logotip + ko'rinish almashtirgichi + tema tugmasi).
+   Admin build'da almashtirgich tugmalari kesilgan — chrome ham keraksiz. */
+.nz-chrome { display: none !important }
+
+/* Telefonda tasodifiy uzun bosishda kontekst menyusi chiqmasin, lekin
+   matn tanlash saqlanadi — admin uchun nusxalash asosiy amal. */
+body { -webkit-tap-highlight-color: transparent }
