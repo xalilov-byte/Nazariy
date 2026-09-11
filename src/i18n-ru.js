@@ -13,6 +13,10 @@
 
    TARTIB: boʻlimlar ekran boʻyicha. Yangi satrni tegishli boʻlimga
    qoʻying, oxiriga emas — shunda nima qayerdaligini topish oson.
+
+   QAMROV: faqat FOYDALANUVCHI ilovasi. Admin panel o'zbek tilida
+   qoladi — u ichki ish quroli va uni faqat jamoa ishlatadi, shuning
+   uchun uni uch tilda saqlash ortiqcha yuk bo'lardi.
    ───────────────────────────────────────────────────────────────────── */
 
 window.nzRu = {

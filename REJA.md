@@ -412,8 +412,12 @@ chiqariladi (lug'atda alohida belgilangan).
 
 #### Qolgan ish
 
-- [ ] Admin panel tarjimasi — hozir o'zbekcha (ichki quroldir, shoshilinch emas)
 - [ ] Savollar tarjimasi DB'ga ko'chirilishi (Faza 2 bilan birga)
+
+**Admin panel faqat o'zbek tilida qoladi** — bu qaror, kamchilik emas.
+U ichki ish quroli va uni faqat jamoa ishlatadi, shuning uchun uch tilda
+saqlash ortiqcha yuk bo'lardi (har bir yangi admin ekrani uchun tarjima
+kerak bo'lib qolardi). Lug'at faqat foydalanuvchi ilovasini qamraydi.
 
 #### Eski reja (ma'lumot uchun)
 
