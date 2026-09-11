@@ -1,0 +1,485 @@
+# Nazariy — ishlab chiqish rejasi
+
+Bu hujjat loyihaning **dizayndan keyingi** bosqichini boshqaradi. Maqsad:
+admin panel orqali savollarni boshqarish, saytni tugatish, Play Market'ga
+chiqish, Telegram Web App sifatida ishlash va uchala ilovani bitta hisob
+ostida bog'lash.
+
+Hujjat tartibi: avval **hozir nima bor** (aniq faktlar), keyin **asosiy
+arxitektura qarori**, keyin **bosqichlar**. Har bir bosqichning "tayyor"
+mezoni bor — mezon bajarilmasa bosqich tugagan hisoblanmaydi.
+
+---
+
+## 1. Hozirgi holat — aniq manzara
+
+### Bor narsalar
+
+| Narsa | Holati | Manba |
+|---|---|---|
+| Dizayn (barcha ekranlar) | ✅ Tugallangan | `src/Main.dc.html` (3634 qator) |
+| Render runtime | ✅ Ishlaydi | `src/runtime.js` (187 qator, `sc-if` / `sc-for` / `{{ }}`) |
+| Android APK | ✅ Yig'iladi | Capacitor 8, `uz.nazariy.app`, minSdk 24, target 36 |
+| CI (APK/AAB) | ✅ Ishlaydi | `.github/workflows/android.yml` |
+| Admin panel **dizayni** | ✅ Tugallangan | `valsAnalytics()`, `valsManage()` |
+| To'lov oqimi **dizayni** | ✅ Tugallangan | Stars, Click, Payme, Uzum, UZCARD/HUMO |
+
+Foydalanuvchi ilovasining tablari: `home`, `tasks`, `league`, `profile`.
+Admin ikki rejimda: `analytics` (Tahlil) va `manage` (Boshqaruv).
+
+### Yo'q narsalar — bu rejaning ish maydoni
+
+1. **Backend yo'q.** Kodda bitta ham `fetch()`, `localStorage` yoki
+   `IndexedDB` yo'q — buni tekshirib ko'rdim, nol marta uchraydi.
+2. **Hech narsa saqlanmaydi.** Barcha holat `state` ichida, xotirada.
+   Ilova yopilsa — ballar, streak, xatolar ro'yxati, saqlangan savollar,
+   hammasi nolga qaytadi.
+3. **Savollar kodga yozib qo'yilgan.** `QUESTIONS` massivida **10 ta**
+   savol bor. README'da esa "700+ savol" deb yozilgan — bu hozircha
+   marketing matni, haqiqat emas.
+4. **Admin paneldagi ma'lumot butunlay mock.** `ADMIN_QUESTIONS` (8 ta),
+   `ADMIN_USERS` (8 ta), `AUDIT_SEED` (5 ta), `DAU_90` — barchasi
+   namunaviy konstantalar. Tugmalar `state`'ni o'zgartiradi, lekin ilova
+   yopilsa yo'qoladi.
+5. **Hisob (auth) yo'q.** Foydalanuvchi kim ekani ma'lum emas.
+6. **Sayt yo'q.** Faqat APK ichidagi web ilova bor.
+
+### Darhol tuzatilishi kerak bo'lgan narsa (xavfsizlik)
+
+`src/Main.dc.html:282` da shunday qator bor:
+
+```html
+<button onClick="{{ showAdmin }}" style="{{ tabAdminStyle }}">Admin</button>
+```
+
+Ya'ni **admin panel foydalanuvchi ilovasining ichida** va unga oddiy
+tugma bilan kiriladi. Hozir bu zararsiz (ma'lumot mock), lekin admin
+panel haqiqiy API'ga ulangandan keyin bu to'g'ridan-to'g'ri teshik
+bo'ladi: APK'ni ochgan har bir odam admin ekranlarini ko'radi va
+so'rovlarni qo'lda yuborib ko'rishga urinadi.
+
+**Qaror:** admin paneli alohida web ilovaga ajratiladi va APK'ga
+**umuman kirmaydi** (Faza 0). Bu shunchaki tugmani yashirish emas —
+admin kodi yig'ilgan fayldan chiqarib tashlanadi.
+
+---
+
+## 2. Asosiy arxitektura qarori
+
+### Muammo
+
+Ilovaning hozirgi kuchli tomoni — **to'liq offline**: savollar APK ichida,
+internet umuman kerak emas. Lekin admin panel orqali savol qo'shish
+buning teskarisini talab qiladi: savollar serverdan kelishi kerak.
+
+Ikkisini qarshi qo'yish shart emas.
+
+### Yechim: versiyalangan kontent paketi
+
+```
+┌─────────────────┐
+│  ADMIN PANEL    │  savol yoziladi, ko'rib chiqiladi, nashr etiladi
+│  (faqat web)    │
+└────────┬────────┘
+         │  "nashr etish" → yangi paket versiyasi (v42)
+         ▼
+┌─────────────────┐
+│  BACKEND + DB   │  savollar, hisoblar, progress, to'lovlar, audit
+└────────┬────────┘
+         │  GET /content/manifest → { version: 42, checksum, url }
+         ▼
+┌────────────────────────────────────────────────────┐
+│  KLIENTLAR — hammasi bitta API bilan gaplashadi    │
+│                                                    │
+│  Android (APK)   Sayt (web)   Telegram Web App     │
+│       │              │              │              │
+│       └──── bitta hisob, bitta progress ───────────┘
+└────────────────────────────────────────────────────┘
+```
+
+**Ishlash tartibi:**
+
+1. APK ichida **boshlang'ich paket** turadi (masalan v1, 300 savol).
+   Ilova birinchi ochilishda internetsiz ham to'liq ishlaydi.
+2. Internet bo'lganda ilova `manifest`ni so'raydi. Server versiyasi
+   kattaroq bo'lsa — yangi paketni yuklab olib, qurilmada saqlaydi
+   (IndexedDB).
+3. Shundan keyin yana offline: savollar qurilmada.
+4. Progress (javoblar, ballar) navbatga yoziladi va internet paydo
+   bo'lganda serverga yuboriladi.
+
+Shu sxema beshta talabni bir vaqtda bajaradi: admin savol qo'shadi →
+paket yangilanadi → uchala ilovada ko'rinadi → offline saqlanadi →
+progress sinxronlanadi.
+
+### Tavsiya etilgan stack
+
+| Qatlam | Tanlov | Sabab |
+|---|---|---|
+| DB + Auth + Storage | **Supabase** (Postgres) | SQL, qatorlar darajasida xavfsizlik (RLS), bepul tarif kifoya, admin uchun tayyor |
+| Server mantiq | Supabase Edge Functions (Deno) | Telegram `initData` tekshiruvi, to'lov webhook'lari, paket yig'ish |
+| Admin panel | Vite + hozirgi runtime | Dizayn tayyor — uni shunchaki API'ga ulaymiz, qayta yozmaymiz |
+| Sayt | Bir xil kod bazasi, boshqa build maqsadi | `build.mjs` allaqachon shunga yaqin |
+| Hosting (sayt/admin) | Cloudflare Pages yoki Vercel | Bepul, tez, SSL avtomatik |
+
+**Muqobillar:** Cloudflare Workers + D1 (arzonroq, lekin auth'ni o'zimiz
+yozamiz) yoki VPS + Node/Fastify + Postgres (to'liq nazorat, eng ko'p
+ish). Supabase'ni tavsiya qilaman, chunki auth, RLS va storage tayyor —
+bu yakka ishlayotgan jamoa uchun bir necha hafta tejaydi.
+
+**Diqqat:** Telegram Supabase'da tayyor auth provayderi emas. Telegram
+`initData`'ni HMAC bilan tekshirib, Supabase JWT beradigan Edge Function
+yozamiz (Faza 1). Bu ma'lum va sinalgan yo'l.
+
+---
+
+## 3. Ma'lumot modeli
+
+Jadvallar hozirgi kodda allaqachon mavjud tushunchalarga moslangan —
+yangi tushuncha o'ylab topilmadi.
+
+### Kontent
+
+```sql
+topics            (id, name, slug, sort_order)
+questions         (id, topic_id, text, options jsonb, correct, explain,
+                   sign, state, author_id, updated_at,
+                   key_changed_at, reviewed_by)
+question_packs    (id, version, published_at, published_by,
+                   checksum, size_bytes, question_count)
+pack_questions    (pack_id, question_id)          -- paket tarkibi
+question_stats    (question_id, attempts, correct_count,
+                   dif, dis, nfd, updated_at)
+```
+
+`state` — kodda allaqachon belgilangan holat mashinasi:
+`draft → review → published → archived`.
+
+**Muhim qoida (kodda izohlangan, saqlanadi):** javob kaliti o'zgarsa,
+savol qanday holatda bo'lsa ham **majburan** `review`ga qaytadi va
+**boshqa odam** tasdiqlashi shart ("to'rt ko'z" qoidasi). Noto'g'ri
+kalit — imtihonga tayyorlanayotgan odam uchun eng og'ir zarar.
+
+### Foydalanuvchi
+
+```sql
+profiles          (id, tg_id, phone, name, username, avatar_url,
+                   role, created_at, last_seen_at)
+user_progress     (user_id, points, streak_days, streak_updated_at,
+                   marathon_best)
+attempts          (id, client_uuid, user_id, question_id, chosen,
+                   is_correct, mode, session_id, created_at)
+quiz_sessions     (id, user_id, mode, started_at, finished_at,
+                   correct_count, wrong_count)
+saved_questions   (user_id, question_id, created_at)
+wrong_questions   (user_id, question_id, created_at)
+groups            (id, name, owner_id, invite_code, created_at)
+group_members     (group_id, user_id, joined_at)
+```
+
+`attempts.client_uuid` — **idempotentlik kaliti**. Offline navbatdan
+ikki marta yuborilsa, ikkinchisi e'tiborsiz qoldiriladi. Progress
+sinxronizatsiyasining butun ishonchliligi shu ustunga tayanadi.
+
+`attempts` jadvali ikki vazifani bajaradi: foydalanuvchining
+"Xatolarim" ro'yxati **va** admin paneldagi DIF/DIS statistikasi
+(`question_stats`) — ikkisi ham bir manbadan hisoblanadi.
+
+### Pul va boshqaruv
+
+```sql
+pricing           (id, plan, price_uzs, is_active, updated_by, updated_at)
+subscriptions     (user_id, plan, status, valid_until,
+                   provider, provider_ref)
+payments          (id, user_id, provider, amount, currency, status,
+                   provider_ref, raw_payload jsonb, created_at)
+audit_log         (id, actor_id, actor_role, action, resource,
+                   before, after, reason_code, ip, created_at)
+```
+
+**Rollar** kodda tayyor (`ROLES`): `owner`, `moderator`, `support`,
+`auditor`. Ruxsatlar: `pro`, `points`, `block`, `anonymize`, `content`,
+`publish`, `log`, `pii`.
+
+**Sabablar kod bilan** (`REASONS`) — erkin matn emas. Kodda shunday
+izohlangan: erkin matn jurnalni qidirib bo'lmaydigan qiladi. Buni
+saqlaymiz: `audit_log.reason_code` — enum.
+
+**Qoida:** har qanday yozuv amali (foydalanuvchi, savol, narx)
+`audit_log`ga tushadi. Jurnalga tushmaydigan o'zgarish bo'lmasligi
+kerak. Bu server tomonida majburlanadi (trigger yoki RPC), klientga
+ishonilmaydi.
+
+---
+
+## 4. Bosqichlar
+
+Har bosqich oldingisiga tayanadi. Tartibni o'zgartirish mumkin, lekin
+Faza 0 va 1 birinchi bo'lishi shart.
+
+### Faza 0 — Poydevor va admin'ni ajratish
+
+**Nima uchun birinchi:** admin kodi APK'da qolsa, keyingi hamma ish
+xavfsizlik qarzini oshiradi.
+
+- [ ] Repo tuzilishini uch maqsadga bo'lish:
+      `apps/mobile` (APK), `apps/web` (sayt + Telegram), `apps/admin`
+- [ ] `build.mjs`'ni maqsadli qilish: `--target=mobile|web|admin`.
+      Mobile build'da admin markup va `valsAnalytics`/`valsManage`
+      **kesib tashlanadi** (build tekshiruvi bilan: yig'ilgan faylda
+      `valsManage` bo'lsa — build yiqiladi)
+- [ ] `src/Main.dc.html:282` dagi Admin tugmasi mobile build'dan chiqadi
+- [ ] Umumiy qismlarni ajratish: dizayn tokenlari, runtime, ikonkalar
+
+**Tayyor mezoni:** `grep valsManage www/index.html` mobile build'da
+hech narsa topmaydi; APK hajmi kamayadi; admin build alohida ochiladi.
+
+### Faza 1 — Backend va hisob
+
+- [ ] Supabase loyihasi, `profiles` + `user_progress` jadvallari
+- [ ] RLS siyosatlari: foydalanuvchi faqat o'z qatorini ko'radi
+- [ ] Telegram auth: Edge Function `initData`'ni HMAC bilan tekshiradi
+      (bot tokeni bilan), Supabase JWT qaytaradi
+- [ ] Telefon + SMS OTP zaxira yo'li (Telegram'i yo'q foydalanuvchi uchun)
+- [ ] Hisoblarni bog'lash: bir odam Telegram va telefon bilan kirsa,
+      bitta `profile` bo'lishi kerak (`tg_id` va `phone` bir qatorda)
+- [ ] Admin rollari va ruxsat tekshiruvi server tomonida
+
+**Tayyor mezoni:** uchala klientdan ham kirib, bir xil `user_id`
+olinadi; RLS'ni chetlab o'tishga urinish 403 qaytaradi.
+
+### Faza 2 — Kontent quvuri
+
+Bu **admin panelning poydevori**. Bu bosqichsiz admin panel savol
+qo'sha olmaydi.
+
+- [ ] `topics`, `questions`, `question_packs` jadvallari
+- [ ] Hozirgi 10 savolni `QUESTIONS`'dan DB'ga ko'chirish (migratsiya skripti)
+- [ ] Paket yig'uvchi: `published` savollardan JSON paket + checksum
+- [ ] `GET /content/manifest` va paket yuklab olish
+- [ ] Klient tomoni: IndexedDB'da paketni saqlash, versiyani solishtirish,
+      fon rejimida yangilash
+- [ ] Boshlang'ich paketni APK ichiga joylash (offline birinchi ochilish)
+- [ ] Yo'l belgilari rasmlari uchun storage (hozir `sign` faqat kalit so'z)
+
+**Tayyor mezoni:** admin DB'da savolni `published` qiladi → paket
+versiyasi oshadi → telefon internetga chiqqanda yangi savolni ko'radi →
+internetni uzsak, savol hali ham joyida.
+
+### Faza 3 — Admin panel (mukammal holatga)
+
+Dizayn tayyor — bu bosqich uni **haqiqiy API'ga ulash**.
+
+**Savollar bo'limi:**
+- [ ] Ro'yxat: DB'dan, filtr (holat/mavzu), qidiruv, sahifalash
+- [ ] Yaratish / tahrirlash / arxivlash — haqiqiy yozuv
+- [ ] Holat mashinasi: `draft → review → published → archived`
+- [ ] "To'rt ko'z" qoidasi: kalit o'zgarsa `review`ga qaytadi,
+      o'zgartirgan odam o'zi tasdiqlay olmaydi (server majburlaydi)
+- [ ] Ommaviy import: `parseBulk()` allaqachon yozilgan va yaxshi —
+      qatorlab tekshiradi, bitta xato butun importni to'xtatmaydi.
+      Uni serverga ko'chirish kerak (klient tekshiruviga ishonilmaydi)
+- [ ] CSV eksport: `toCsv()` tayyor
+- [ ] Rasm yuklash (yo'l belgilari savollari uchun)
+
+**Tahlil bo'limi:**
+- [ ] DIF/DIS/NFD haqiqiy `attempts`'dan hisoblanadi (kunlik ish)
+- [ ] Savol sifati bayrog'i: `DIS < 0` → "javob kaliti xato bo'lishi
+      mumkin" — bu allaqachon dizaynda bor va eng qimmatli funksiya
+- [ ] DAU, voronka, kohortalar — haqiqiy ma'lumotdan
+
+**Foydalanuvchilar bo'limi:**
+- [ ] Ro'yxat, qidiruv, Pro berish/olish, ball tuzatish, bloklash
+- [ ] PII (telefon) faqat `pii` ruxsati bilan ochiladi va **ochilishi
+      jurnalga tushadi** (dizaynda shunday — saqlanadi)
+- [ ] Anonimlashtirish (ma'lumotni o'chirish so'rovi uchun)
+
+**Audit:**
+- [ ] `audit_log` haqiqiy, o'zgartirib bo'lmaydigan (faqat INSERT)
+- [ ] Filtr: kim / nima / qachon, eksport
+
+**Tayyor mezoni:** moderator savol qo'shadi, egasi nashr etadi, har
+ikki amal jurnalda ko'rinadi, telefonda yangi savol chiqadi. Moderator
+o'zi o'zgartirgan kalitni o'zi tasdiqlay olmaydi.
+
+### Faza 4 — Ilovalarni bog'lash (progress sinxronizatsiyasi)
+
+- [ ] Klientda offline navbat: javoblar `client_uuid` bilan navbatga
+- [ ] `POST /sync/attempts` — to'plamli, idempotent
+- [ ] Ballar/streak serverda hisoblanadi (klientga ishonilmaydi —
+      aks holda ball qalbakilashtiriladi)
+- [ ] Reyting: shaxsiy va guruh (`groups`, `group_members`)
+- [ ] Konflikt: `attempts` faqat qo'shiladi, shuning uchun konflikt
+      deyarli yo'q; `saved_questions` uchun "oxirgi yozgan g'olib"
+
+**Tayyor mezoni:** telefonda 10 savol yechib, saytga kirilsa — ballar,
+streak va xatolar ro'yxati bir xil. Offline yechilgan javoblar internet
+paydo bo'lgach serverga tushadi.
+
+### Faza 5 — Telegram Web App
+
+- [ ] Bot yaratish, Web App tugmasi, `initData` bilan avtomatik kirish
+      (login ekrani ko'rsatilmaydi — bu Telegram'ning asosiy afzalligi)
+- [ ] Telegram tema o'zgaruvchilarini o'z temamizga bog'lash
+      (`themeParams`) — foydalanuvchining Telegram temasiga ergashadi
+- [ ] `BackButton`, `MainButton`, `HapticFeedback`, `expand()`
+- [ ] Viewport: `viewportStableHeight` (klaviatura ochilganda maket buzilmasligi)
+- [ ] `CloudStorage` — kichik sozlamalar uchun
+- [ ] Bot xabarlari: streak eslatmasi, kunlik vazifa
+      (foydalanuvchi ruxsat bergan bo'lsa)
+
+**Tayyor mezoni:** Telegram'da bot ochiladi, hisob avtomatik ulanadi,
+telefondagi progress darhol ko'rinadi, orqaga tugmasi Telegram'ning
+o'zi bilan ishlaydi.
+
+### Faza 6 — Sayt
+
+- [ ] Landing: nima uchun kerak, ekran suratlari (`skrinshotlar/` tayyor),
+      yuklab olish tugmalari
+- [ ] Web ilova: `/app` — brauzerda to'liq ishlaydigan versiya
+- [ ] **Maxfiylik siyosati** — Play Market uchun majburiy
+- [ ] Foydalanish shartlari, aloqa
+- [ ] Ma'lumotni o'chirish so'rovi sahifasi (Play Market talabi)
+- [ ] SEO, Open Graph, `sitemap.xml`
+- [ ] PWA manifest (saytni telefonga o'rnatish imkoniyati)
+
+**Tayyor mezoni:** domen ishlaydi, siyosat sahifasi ochiq URL bilan
+mavjud (Play Console'ga shu havola kiritiladi).
+
+### Faza 7 — To'lovlar
+
+⚠️ **Bu bosqichda muhim siyosat masalasi bor — 5-bo'limni o'qing.**
+
+- [ ] Narx serverda (`pricing`), klient faqat ko'rsatadi
+- [ ] Telegram Stars — Telegram Web App ichida
+- [ ] Click / Payme / Uzum — sayt ichida (merchant hisobi kerak)
+- [ ] Webhook'lar: to'lov tasdiqlansa `subscriptions` yangilanadi
+- [ ] Idempotentlik: bir to'lov ikki marta hisoblanmasligi
+- [ ] Obuna tugashi, uzaytirish, qaytarish oqimi
+
+**Tayyor mezoni:** test to'lovi o'tadi, Pro faollashadi, muddati
+tugagach avtomatik o'chadi, hammasi jurnalda.
+
+### Faza 8 — Play Market
+
+- [ ] Imzo kaliti va 4 ta GitHub secret (`README.md` §3 da yozilgan)
+- [ ] `versionCode` / `versionName` boshqaruvi
+- [ ] Do'kon sahifasi: nom, tavsif, 512×512 ikonka,
+      1024×500 feature grafika, kamida 2 ta telefon skrinshoti
+- [ ] **Data safety anketasi** — 5-bo'limga qarang, javob o'zgardi
+- [ ] Kontent reytingi anketasi
+- [ ] Maxfiylik siyosati havolasi (Faza 6)
+- [ ] Internal testing → closed testing → production
+
+**Tayyor mezoni:** ilova do'konda, yangilanish quvuri ishlaydi.
+
+---
+
+## 5. Ikki muhim ogohlantirish
+
+Bularni oldindan bilish kerak — keyin bilib qolish qimmat turadi.
+
+### 5.1. Google Play va to'lovlar
+
+Google Play siyosatiga ko'ra, **Play orqali tarqatilgan ilova ichida**
+raqamli mahsulot (Pro obuna) sotilsa, odatda **Google Play Billing**
+ishlatilishi shart. Click/Payme/Uzum/Stars'ni APK ichiga qo'yish
+ilovaning do'kondan olib tashlanishiga olib kelishi mumkin.
+
+Bu dizaynga tegmaydi — to'lov oyna dizayni juda yaxshi. Lekin
+**qaysi to'lov qayerda ishlaydi** degan savol tug'iladi:
+
+| Kanal | To'lov usuli |
+|---|---|
+| Sayt (brauzer) | Click, Payme, Uzum, karta — cheklov yo'q |
+| Telegram Web App | Telegram Stars (Telegram'ning o'z tizimi) |
+| Android APK (Play) | Google Play Billing, yoki APK ichida umuman sotmaslik |
+
+Eng xavfsiz yo'l: APK ichida Pro **sotilmaydi**, faqat "Pro holati"
+ko'rsatiladi; sotib olish saytda yoki Telegram'da bo'ladi. Ko'p ilovalar
+shunday qiladi.
+
+**Diqqat:** Google Play siyosatlari o'zgarib turadi va mintaqaga qarab
+farq qiladi. Faza 7'ni boshlashdan oldin joriy siyosatni rasmiy
+manbadan tekshirish kerak — bu rejadagi eng katta noaniqlik.
+
+### 5.2. Data safety anketasi o'zgaradi
+
+README'da hozir shunday yozilgan:
+
+> **Data safety** (bu ilova internetga hech narsa yubormaydi —
+> "No data collected")
+
+Faza 1'dan keyin bu **to'g'ri bo'lmay qoladi**: hisob, progress,
+telefon raqami — hammasi serverga boradi. Play Console'da yolg'on
+javob berish ilovani do'kondan chiqarib tashlashga olib keladi.
+
+Faza 6'da maxfiylik siyosati yozilganda va Faza 8'da anketa
+to'ldirilganda yangi haqiqatni aks ettirish kerak: qanday ma'lumot
+yig'iladi, nima uchun, qancha saqlanadi, qanday o'chiriladi.
+
+---
+
+## 6. Eng katta to'siq — kontent
+
+Kodda **10 ta savol** bor, README'da "700+" deb yozilgan. Texnik ish
+qanchalik yaxshi bo'lsa ham, 10 savol bilan ilova foydasiz.
+
+Bu **kod muammosi emas** — admin panel va ommaviy import tayyor bo'lgach,
+savol yozish alohida ish sifatida qoladi. Reja:
+
+- Faza 3 tugagach CSV shablon bilan ommaviy kiritish (`parseBulk` tayyor)
+- Mavzular bo'yicha maqsad: har mavzuda kamida 40 savol
+- Har bir savolga izoh (`explain`) majburiy — bu ilovaning asosiy
+  qiymati, shunchaki test emas
+- Nashrdan keyin DIF/DIS statistikasi yomon savollarni o'zi ko'rsatadi
+
+**Huquqiy jihat:** rasmiy imtihon savollarini ko'chirish mumkin emas.
+Savollar YHQ matniga asoslangan, lekin **o'z so'zlarimiz bilan**
+yozilishi kerak. Har bir savolda YHQ bandiga havola bo'lsa yaxshi —
+bu ham huquqiy jihatdan, ham o'quv jihatdan foydali.
+
+---
+
+## 7. Nima qilmaymiz (hozircha)
+
+Qamrovni ushlab turish uchun ataylab qoldirilgan narsalar:
+
+- iOS ilovasi (Capacitor imkon beradi, lekin Apple hisobi + boshqa
+  siyosatlar = alohida loyiha)
+- Video darslar, jonli imtihon, o'qituvchi paneli
+- Ko'p tillilik (rus tili keyin qo'shilishi mumkin — DB'da
+  `questions.text` uchun tarjima jadvali o'ylab qo'yilgan)
+- Push bildirishnomalar (Telegram bot xabarlari arzonroq va samaraliroq)
+- Mikroservislar, Kubernetes va shunga o'xshash narsalar
+
+---
+
+## 8. Sizdan kerak bo'lgan qarorlar
+
+Bosqichlarni boshlashdan oldin to'rtta savolga javob kerak. Ularsiz
+ham boshlash mumkin, lekin keyin qaytarib o'zgartirish qimmat turadi.
+
+1. **Backend:** Supabase (tavsiyam) — yoki boshqa xohishingiz bormi?
+2. **Domen:** sayt uchun domen bormi, yoki olish kerakmi?
+3. **Telegram bot:** bot mavjudmi? Yo'q bo'lsa nom tanlash kerak.
+4. **To'lov:** Click/Payme merchant hisobi bormi? (Stars uchun kerak
+   emas, sayt to'lovlari uchun shart.)
+
+Va bitta tartib savoli: **qaysi bosqichdan boshlaymiz?** Mening
+tavsiyam — **Faza 0 + Faza 2**, ya'ni avval admin'ni APK'dan ajratib,
+keyin savollarni DB'ga ko'chirish. Shundan keyin admin panelni ulash
+(Faza 3) tez ketadi, chunki dizayn allaqachon tayyor.
+
+---
+
+## 9. Qisqa xulosa
+
+Loyihaning **dizayn va Android qismi tugagan**. Qolgan ish — bitta
+backend qo'shish va uchala klientni unga ulash. Dizaynda o'ylab
+qo'yilgan narsalar (holat mashinasi, to'rt ko'z qoidasi, sabab
+kodlari, audit jurnali, DIF/DIS) juda yaxshi — ularni qayta o'ylash
+kerak emas, shunchaki serverga ko'chirish kerak.
+
+Eng katta xavflar texnik emas: **Google Play to'lov siyosati** va
+**savollar yozilishi**.
