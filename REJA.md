@@ -251,6 +251,127 @@ Repo hozircha bitta papkada qoldi (`apps/` ga bo'linmadi) — bitta manba
 fayl va bitta build skripti uchun bu ortiqcha murakkablik bo'lardi.
 Backend qo'shilganda qayta ko'rib chiqiladi.
 
+### Faza 0.5 — Dizayn kamchiliklari ✅ BAJARILDI
+
+Dizayn ko'rib chiqilgandan keyin topilgan beshta kamchilik. Ularning
+to'rttasi tuzatildi; til almashtirish alohida faza sifatida pastda.
+
+**Umumiy qoida (dizaynning o'z naqshi):** ekranda ko'rinadigan har bir
+element ikki holatdan birida bo'lishi kerak — **ishlaydi**, yoki
+**bosilmaydi va "Tez kunda" deb belgilangan**. Ishlamaydigan narsa
+ishlaydigandek ko'rinmasligi kerak. Bu naqsh dizaynda "Guruh yaratish"
+tugmasi uchun allaqachon ishlatilgan edi; endi hamma joyda.
+
+#### 1. Ovoz va tebranish ✅
+
+Ilgari `soundOn` faqat "Yoniq"/"O'chiq" yozuvini tanlardi — ovoz kodi
+umuman yo'q edi (`AudioContext`, `navigator.vibrate` — nol marta).
+
+`src/feedback.js` — ovoz WebAudio bilan **joyida sintez** qilinadi:
+
+| Hodisa | Ovoz | Tebranish |
+|---|---|---|
+| To'g'ri javob | 784 → 1175 Hz (ko'tariluvchi) | qisqa |
+| Xato javob | 196 → 165 Hz (past, to'mtoq) | uch zarb |
+| Test tugadi | 1047 → 1319 → 1568 Hz | naqsh |
+
+Ovoz fayli ataylab ishlatilmadi: `.mp3` aktivlari APK'ga 50–200 KB
+qo'shardi, sintez esa nol bayt.
+
+#### 2. Bildirishnoma ✅
+
+`@capacitor/local-notifications` o'rnatildi, `src/notify.js` yozildi.
+Har kuni 19:00 ga takroriy bildirishnoma qo'yiladi.
+
+Uchta halollik qoidasi: plagin yo'q joyda (sayt, Telegram) sozlama
+qatori **ko'rsatilmaydi**; ilova ochilishida ruxsat **so'ralmaydi**
+(faqat foydalanuvchi tugmani bosganda); ruxsat berilmasa sozlama o'zi
+o'chadi va sabab aytiladi.
+
+**Play Market uchun muhim:** plagin standart holatda *aniq* alarm
+qo'yadi, bu Android 12+ da `SCHEDULE_EXACT_ALARM` ruxsatini talab
+qiladi, Google esa uni faqat budilnik va kalendar ilovalariga beradi.
+Mashq eslatmasiga daqiqagacha aniqlik kerak emas, shuning uchun
+`isExactNotification: false` qo'yildi va ruxsat birlashtirilgan
+manifestdan olib tashlandi (`tools:node="remove"`).
+
+#### 3. Vazifalar paneli ✅
+
+Ilgari markup'da bitta ham `onClick` yo'q edi va progress qo'lda
+yozilgan matn edi ("Bugun · 8/20", "184/240 belgi").
+
+Endi `taskList(s)` — **bitta manba**, undan ko'rsatish ham, mukofot ham
+oziqlanadi. Hisoblagichlar: `answeredCount`, `examsDone`,
+`signsAnswered`, `tasksAwarded` (mukofot bir marta beriladi).
+
+Bosh ekrandagi "Bugun 20 savol yech" kartasi ham shu hisoblagichdan
+oziqlanadi. Bajarib bo'lmaydigan uchta vazifa "Tez kunda" holatida.
+
+#### 4. Profil ekrani ✅
+
+O'lchangan muammo: umumiy balandlik 1441px (ekran 844px), sozlamalar
+1228px da — til almashtirish uchun uzoq scroll.
+
+Ixcham sarlavha (avatar 80→56px, gorizontal joylashuv), sarlavhada
+sozlamalarga olib boruvchi tishli g'ildirak, takroriy "Do'st taklif
+qiling" kartasi olib tashlandi (Vazifalar ekranida bor).
+
+Natija: 1441 → **1190px**, yutuqlar bo'limi endi birinchi ekran ichida,
+sozlamalar bir bosishda.
+
+#### Qolgan narsa
+
+Hisoblagichlar **sessiya ichida** yashaydi — ilova yopilsa nolga
+qaytadi. Shuning uchun "Har kun yangilanadi · 04:00 da" sarlavhasi
+olib tashlandi (progress saqlanmasa kunlik yangilanish ham yo'q).
+Davomiylik — Faza 4.
+
+### Faza 0.6 — Uch til (o'zbek lotin / kirill / rus)
+
+Eng katta ish: hozir **i18n qatlami umuman yo'q**, barcha matnlar
+o'zbekcha holda markup ichiga yozilgan. Sozlamalardagi "Til" qatori
+`onClick: null` bilan turadi (dizaynerning o'z izohi bor: "haqiqiy til
+tanlagich hali qurilmagan").
+
+**Asosiy qulaylik:** lotin ↔ kirill **avtomatik o'giriladi**
+(transliteratsiya), ya'ni qo'lda tarjima faqat **rus tili** uchun kerak.
+
+Reja:
+
+- [ ] Interfeys matnlarini ajratish: `src/i18n/uz.json`, `ru.json`
+      (markup'dagi har bir satr kalitga aylanadi)
+- [ ] Lotin→kirill transliterator (bitta funksiya, tarjima fayli kerak emas)
+- [ ] `state.lang` va til tanlagich (sozlamalardagi qator ishlaydi)
+- [ ] Tanlangan til saqlanadi (Faza 1 dan keyin serverda, undan oldin
+      qurilmada)
+- [ ] **Shrift muammosi (tekshirilgan, hal qilinishi shart).**
+      Hozir ikki shrift ishlatiladi va faqat bittasi kirillni biladi:
+
+      | Shrift | Qayerda | Kirill bormi? |
+      |---|---|---|
+      | Manrope | asosiy matn | ✅ `cyrillic` subseti bor |
+      | Space Grotesk | sarlavhalar (`class="display"`) | ❌ faqat `latin`, `vietnamese` |
+
+      Ya'ni kirill yoki rus tilida **sarlavhalar tizim shriftiga
+      tushib ketadi** — dizayn buziladi. Yechim: kirill/rus tanlanganda
+      `display` sarlavhalari ham Manrope'ga o'tadi (yangi shrift yuklash
+      kerak emas, bepul). Muqobil — kirillni biladigan boshqa display
+      shrift topish, lekin bu dizaynning ko'rinishini o'zgartiradi.
+
+- [ ] Manrope `cyrillic` subsetini `build.mjs` ga qo'shish
+      (APK ~40 KB o'sadi; faqat kerakli og'irliklar)
+
+**Savollar ham tarjima talab qiladi** — bu DB sxemasiga ta'sir qiladi:
+
+```sql
+questions              -- asosiy matn: o'zbek (lotin)
+question_translations  (question_id, lang, text, options, explain)
+                       -- faqat 'ru' uchun; kirill transliteratsiya bilan
+```
+
+Admin panelda har bir savol uchun rus tilidagi variant maydoni kerak
+bo'ladi (Faza 3 ga qo'shiladi).
+
 ### Faza 1 — Backend va hisob
 
 - [ ] Supabase loyihasi, `profiles` + `user_progress` jadvallari
