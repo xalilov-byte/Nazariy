@@ -42,6 +42,18 @@ jobs:
 
       - uses: android-actions/setup-android@v3
 
+      # Gradle distributivi va bog'liqliklari keshlanadi. Ikki foyda: yig'ish
+      # tezlashadi va har push'da services.gradle.org ga chiqilmaydi — aynan
+      # o'sha yuklab olish so'nggi yugurishlarning ko'pini yiqitgan.
+      - name: Gradle keshi
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties', 'android/**/*.gradle', 'android/gradle.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
       - name: Paketlarni o'rnatish
         run: npm ci
 
@@ -70,6 +82,24 @@ jobs:
             echo "KEYSTORE_BASE64 yo'q — imzosiz build (faqat sinash uchun)."
           fi
 
+      # Distributivni olish tarmoq uzilishi bilan yiqilishi mumkin:
+      # services.gradle.org bilan TLS ulanishi "Connection reset by peer"
+      # beradi. Bu kodga aloqasi yo'q, shuning uchun butun yig'ishni emas,
+      # faqat shu qadamni qayta urinamiz. Kesh bo'lsa u umuman tarmoqqa
+      # chiqmaydi va darhol o'tadi.
+      - name: Gradle distributivini tayyorlash
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          for i in 1 2 3 4; do
+            if ./gradlew --no-daemon --version; then exit 0; fi
+            w=$((i * 10))
+            echo "::warning::Gradle distributivi olinmadi ($i-urinish) — ${w}s dan keyin qayta."
+            sleep "$w"
+          done
+          echo "Gradle distributivini 4 urinishda ham olib bo'lmadi." >&2
+          exit 1
+
       - name: APK va AAB yig'ish
         working-directory: android
         env:
@@ -77,9 +107,7 @@ jobs:
           NAZARIY_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           NAZARIY_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           NAZARIY_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          chmod +x gradlew
-          ./gradlew --no-daemon assembleDebug assembleRelease bundleRelease
+        run: ./gradlew --no-daemon assembleDebug assembleRelease bundleRelease
 
       - name: Yig'ilgan fayllarni ko'rsatish
         working-directory: android
