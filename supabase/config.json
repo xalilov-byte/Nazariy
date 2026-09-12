@@ -1,0 +1,17 @@
+{
+  "_izoh": [
+    "Supabase loyihasining OMMAVIY sozlamalari. Bu fayl git'da turadi va",
+    "turishi kerak: publishable kalit ataylab klientga joylash uchun",
+    "mo'ljallangan — mobil ilovadan kalitni yashirib bo'lmaydi (APK'ni",
+    "ochgan odam uni topadi).",
+    "",
+    "Ya'ni ma'lumotni kalit emas, FAQAT RLS himoya qiladi. Shu sababli",
+    "supabase/migrations/0001_init.sql da har bir jadvalda RLS yoqilgan va",
+    "supabase/tests/0001_rls.sql uning haqiqatan to'sayotganini tekshiradi.",
+    "",
+    "BU YERGA HECH QACHON service_role KALITINI YOZMANG. U RLS'ni butunlay",
+    "chetlab o'tadi va faqat serverda (Edge Function) ishlatiladi."
+  ],
+  "url": "https://nnjlshvfrgosnjqezblx.supabase.co",
+  "publishableKey": "sb_publishable_PCw-NVQzh6gToMrxbTiCHA_PdnnS-jQ"
+}

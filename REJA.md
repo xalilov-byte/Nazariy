@@ -448,7 +448,68 @@ question_translations  (question_id, lang, text, options, explain)
 Admin panelda har bir savol uchun rus tilidagi variant maydoni kerak
 bo'ladi (Faza 3 ga qo'shiladi).
 
-### Faza 1 — Backend va hisob
+### Faza 1/2 — Baza sxemasi va RLS ✅ BAJARILDI
+
+Supabase loyihasi ulandi (`supabase/config.json` — URL va publishable
+kalit; ular ommaviy va git'da turishi kerak, chunki mobil ilovadan
+kalitni yashirib bo'lmaydi).
+
+**Bajarilgan:**
+
+| Narsa | Fayl |
+|---|---|
+| Sxema: profillar, mavzular, savollar, tarjimalar, paketlar, audit | `supabase/migrations/0001_init.sql` |
+| Boshlang'ich ma'lumot: 8 mavzu, 10 savol, 10 rus tarjimasi | `supabase/seed/0002_questions.sql` (generator yasaydi) |
+| RLS va "to'rt ko'z" tekshiruvi | `supabase/tests/0001_rls.sql` |
+| Seed generatori | `tools/mkseed.mjs` |
+| CI: migratsiya + seed + testlar har push'da | `.github/workflows/db.yml` |
+
+**Nima uchun RLS bu yerda eng muhim narsa:** klient publishable kalit
+bilan ishlaydi va u kalit hammaga ko'rinadi — APK'ni ochgan odam uni
+topadi. Ya'ni ma'lumotni kalit emas, **faqat RLS** himoya qiladi.
+Shuning uchun har bir jadvalda RLS yoqilgan, standart holat "hech
+kimga ruxsat yo'q", va bu **tekshiriladi** — "RLS yozdim" degan gap
+yetarli emas.
+
+**Ikki qoida klientda emas, BAZADA majburlanadi** (klient kodini
+chetlab o'tish mumkin, bazani esa yo'q):
+
+1. **To'rt ko'z** — javob kaliti o'zgarsa savol majburan ko'rib
+   chiqishga qaytadi, o'zgartirgan odam o'zi nashr eta olmaydi.
+2. **Jurnalga tushmaydigan o'zgarish bo'lmaydi** — audit yozuvini
+   trigger qo'yadi, klient emas; jurnal o'zgartirilmaydi (UPDATE/DELETE
+   siyosati yo'q).
+
+**Qanday tekshirildi:** bu muhitdan Supabase'ga ulanib bo'lmaydi
+(domen tarmoq siyosati bilan bloklangan), shuning uchun tekshiruv lokal
+PostgreSQL 16 da o'tkazildi — Supabase'ning `auth` sxemasi taqlid
+qilinib (`tests/_stub.sql`). O'tgan tekshiruvlar:
+
+- anon faqat nashr etilganini ko'radi; qoralama **ko'rinmaydi**
+- anon va oddiy foydalanuvchi savol qo'sha olmaydi
+- foydalanuvchi **o'ziga `owner` rolini bera olmaydi**
+- anon audit jurnalini va boshqalarning profilini ko'rmaydi
+- moderator qo'shadi, lekin **o'z o'zgarishini o'zi nashr eta olmaydi**;
+  boshqa moderator nashr etadi va `reviewed_by` unga yoziladi
+- javob kaliti o'zgarsa holat `review`ga qaytadi, tasdiq bekor bo'ladi
+- audit yozuvi trigger bilan tushadi va o'chirilmaydi
+- ma'lumot butunligi: 3 variantli savol, diapazondan tashqari kalit va
+  juda qisqa matn rad etiladi
+
+**Sizdan kerak:** `supabase/README.md` §1 bo'yicha ikki SQL faylni
+Supabase SQL Editor'da ishga tushirish va o'zingizga `owner` rolini
+berish. Shundan keyin CI jonli tekshiruvni ham o'tkazadi.
+
+#### Qolgan ish (Faza 1/2 ning ikkinchi yarmi)
+
+- [ ] Telegram `initData` ni HMAC bilan tekshiruvchi Edge Function
+      (Supabase JWT beradi) — **bot tokeni kerak**
+- [ ] Telefon + SMS OTP zaxira yo'li
+- [ ] Paket yig'uvchi: nashr etilgan savollardan versiyalangan JSON
+- [ ] Klient tomoni: `published_questions` dan o'qish, IndexedDB'da
+      saqlash, `QUESTIONS` massivini almashtirish
+
+### Faza 1 — Backend va hisob (eski reja, ma'lumot uchun)
 
 - [ ] Supabase loyihasi, `profiles` + `user_progress` jadvallari
 - [ ] RLS siyosatlari: foydalanuvchi faqat o'z qatorini ko'radi

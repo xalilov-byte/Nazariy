@@ -1,0 +1,136 @@
+# Baza (Supabase)
+
+Bu papkada savollar bazasining sxemasi, boshlang'ich ma'lumoti va
+xavfsizlik tekshiruvlari turadi.
+
+```
+supabase/
+├─ config.json              ← loyiha URL va publishable kalit (OMMAVIY)
+├─ migrations/
+│  └─ 0001_init.sql         ← sxema, RLS, triggerlar
+├─ seed/
+│  └─ 0002_questions.sql    ← 8 mavzu, 10 savol (GENERATOR yasaydi)
+└─ tests/
+   ├─ _stub.sql             ← Supabase auth sxemasining lokal taqlidi
+   └─ 0001_rls.sql          ← RLS va "to'rt ko'z" qoidasi tekshiruvi
+```
+
+---
+
+## 1. Qanday qo'llanadi (bir marta)
+
+1. [Supabase panel](https://supabase.com/dashboard) → loyihangiz → **SQL Editor**
+2. `migrations/0001_init.sql` ni butunlay nusxalab qo'yib **Run**
+3. `seed/0002_questions.sql` ni nusxalab qo'yib **Run**
+4. Tekshirish — shu so'rovni bajaring:
+
+   ```sql
+   select count(*) from public.topics;               -- 8
+   select count(*) from public.questions;            -- 10
+   select count(*) from public.question_translations; -- 10
+   select count(*) from public.published_questions;  -- 10
+   select count(*) from public.audit_log;            -- 10
+   ```
+
+Shundan keyin GitHub'dagi **Baza** workflow'i jonli tekshiruvni ham
+o'tkazadi: qoralama savollar va audit jurnali tashqaridan ko'rinmasligini
+haqiqiy loyihada tasdiqlaydi.
+
+### O'zingizga "owner" rolini berish
+
+Migratsiya barcha yangi foydalanuvchiga `user` rolini beradi. Admin
+panelda ishlash uchun o'zingizga `owner` kerak. Avval ilovaga kirib
+(hisob yaratib), keyin SQL Editor'da:
+
+```sql
+update public.profiles set role = 'owner' where id = auth.uid();
+-- yoki email bo'yicha:
+update public.profiles p set role = 'owner'
+from auth.users u where u.id = p.id and u.email = 'siz@example.com';
+```
+
+Buni **faqat SQL Editor'dan** qilish mumkin — ilova orqali hech kim
+o'ziga rol bera olmaydi (tekshirilgan: `tests/0001_rls.sql`).
+
+---
+
+## 2. Nima uchun RLS bu yerda eng muhim narsa
+
+Klient (APK, sayt, Telegram) **publishable** kalit bilan ishlaydi va u
+kalit hammaga ko'rinadi: mobil ilovadan kalitni yashirib bo'lmaydi —
+APK'ni ochgan odam uni topadi.
+
+Ya'ni ma'lumotni kalit emas, **faqat RLS himoya qiladi.**
+
+Shuning uchun migratsiyada:
+
+- har bir jadvalda RLS **yoqilgan**;
+- standart holat — **hech kimga ruxsat yo'q**, ruxsatlar aniq siyosat
+  bilan beriladi;
+- ommaga faqat **nashr etilgan** savollar ko'rinadi (qoralama va ko'rib
+  chiqishdagilar chiqmaydi);
+- audit jurnali faqat auditor va egasiga ko'rinadi, hech kim uni
+  o'zgartira olmaydi;
+- foydalanuvchi o'ziga rol bera olmaydi.
+
+Bularning har biri `tests/0001_rls.sql` da tekshiriladi va CI har
+push'da o'tkazadi. "RLS yozdim" degan gap yetarli emas — u haqiqatan
+to'sayotgani tasdiqlanishi kerak.
+
+**`service_role` kaliti hech qachon repoga yoki klientga tushmaydi.** U
+RLS'ni butunlay chetlab o'tadi va faqat serverda (Edge Function)
+ishlatiladi.
+
+---
+
+## 3. Ikki qoida bazada majburlanadi
+
+Dizaynda o'ylab qo'yilgan ikki qoida klientda emas, **bazada**
+bajariladi — klient kodini chetlab o'tish mumkin (API'ga qo'lda so'rov),
+bazani esa yo'q.
+
+### "To'rt ko'z"
+
+Javob kaliti o'zgarsa savol **majburan** ko'rib chiqishga qaytadi va
+o'zgartirgan odam **o'zi tasdiqlay olmaydi** — boshqa xodim nashr etishi
+shart. Sabab: noto'g'ri javob kaliti imtihonga tayyorlanayotgan odam
+uchun eng og'ir zarar.
+
+### "Jurnalga tushmaydigan o'zgarish bo'lmaydi"
+
+Audit yozuvini **trigger** qo'yadi, klient emas. Shuning uchun jurnalga
+tushmaydigan o'zgarish bo'lishi mumkin emas.
+
+---
+
+## 4. Seed generatori
+
+`seed/0002_questions.sql` **qo'lda tahrir qilinmaydi** — u generator
+bilan yasaladi:
+
+```bash
+node tools/mkseed.mjs
+```
+
+Manba: `src/Main.dc.html` (QUESTIONS massivi) va `src/i18n-ru.js` (rus
+tarjimalari). CI generator natijasi commit qilingan fayl bilan mos
+kelishini tekshiradi.
+
+Savollar DB'ga ko'chib, admin panel ishlagandan keyin bu generator
+kerak bo'lmaydi — manba DB bo'ladi.
+
+---
+
+## 5. Lokal tekshiruv (Supabase kerak emas)
+
+Migratsiyani o'zgartirgandan keyin lokal PostgreSQL'da sinash mumkin:
+
+```bash
+psql -f supabase/tests/_stub.sql          # auth sxemasi taqlidi
+psql -f supabase/migrations/0001_init.sql
+psql -f supabase/seed/0002_questions.sql
+psql -f supabase/tests/0001_rls.sql       # "HAMMA TEKSHIRUV O'TDI"
+```
+
+Xuddi shu ketma-ketlikni CI ham bajaradi (`.github/workflows/db.yml`),
+shuning uchun SQL'dagi xato Supabase'ga tegmasdan tutiladi.
