@@ -13,6 +13,11 @@
 
   const app = mount(Component, { defaultTheme: themeOf() }, root, tpl);
 
+  /* Ilova nusxasi tashqariga ochiladi: admin qatlami (admin-boot.js)
+     bazadan kelgan ma'lumotni shu orqali holatga yozadi. Bu yagona
+     tashqi nuqta — boshqa hech qanday global holat yo'q. */
+  window.nzApp = app;
+
   function syncChrome() {
     const dark = app.state.theme === 'dark';
     const bg = dark ? '#14121F' : '#F5F3FF';

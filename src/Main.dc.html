@@ -1145,13 +1145,15 @@
           <button onClick="{{ m.pick }}" style="{{ m.style }}">{{ m.label }}</button>
         </sc-for>
       </div>
+      <!-- Ilgari bu yerda rolni almashtirib ko'rish uchun tugmalar qatori
+           bor edi ("Rol (demo)"). Panel bazaga ulangandan keyin u yolg'on
+           affordansga aylandi: bosilsa interfeys boshqa rol huquqlarini
+           ko'rsatardi, baza esa baribir HAQIQIY rolni qo'llaydi (RLS).
+           Ya'ni tugma "men moderatorman" deb ko'rsatib, amalda hech
+           narsani o'zgartirmasdi. Endi shunchaki joriy rol yoziladi. -->
       <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:12px;font-weight:600;color:var(--muted-foreground)">Rol (demo):</span>
-        <div style="display:flex;gap:4px;background:var(--surface-alt);padding:4px;border-radius:999px">
-          <sc-for list="{{ roleChips }}" as="r" hint-placeholder-count="4">
-            <button onClick="{{ r.pick }}" style="{{ r.style }}">{{ r.label }}</button>
-          </sc-for>
-        </div>
+        <span style="font-size:12px;font-weight:600;color:var(--muted-foreground)">Rol:</span>
+        <span style="{{ roleBadgeStyle }}">{{ roleLabel }}</span>
       </div>
     </div>
 
@@ -2613,10 +2615,13 @@ class Component extends DCLogic {
         { id: "users", label: "Foydalanuvchilar" }, { id: "questions", label: "Savollar" },
         { id: "pricing", label: "Narxlar" }, { id: "log", label: "Jurnal" }
       ].map(t => ({ label: t.label, pick: () => this.setState({ manageTab: t.id, drawer: null, bulk: null }), style: this.pill(s.manageTab === t.id) })),
-      roleChips: Object.keys(ROLES).map(k => ({
-        label: ROLES[k].label, pick: () => this.setState({ adminRole: k, drawer: null, confirm: null }),
-        style: Object.assign(this.pill(s.adminRole === k), { fontSize: "12px", padding: "6px 11px" })
-      })),
+      // Joriy rol — bazadagi profildan keladi (admin-boot.js). Uni
+      // interfeysdan o'zgartirib bo'lmaydi: huquqni RLS beradi.
+      roleLabel: (ROLES[s.adminRole] && ROLES[s.adminRole].label) || s.adminRole,
+      roleBadgeStyle: {
+        padding: "6px 12px", borderRadius: "999px", background: "var(--surface-alt)",
+        fontSize: "12px", fontWeight: 800, color: "var(--foreground)"
+      },
       adminRangeLabel: "oxirgi " + s.adminRange + " kun",
       adminSubtitle: "Nazariy · oxirgi " + s.adminRange + " kun · barcha raqamlar namunaviy",
 

@@ -403,6 +403,13 @@ const ruDict = readFileSync(join(SRC, 'i18n-ru.js'), 'utf8');
 const shellCss = readFileSync(join(SRC, CFG.shell), 'utf8');
 const bootstrap = readFileSync(join(SRC, 'bootstrap.js'), 'utf8');
 
+/* Admin qatlami FAQAT admin build'iga kiradi. Foydalanuvchi ilovasi va
+   sayt uni umuman ko'rmaydi — Faza 0 dagi ajratishning davomi. */
+const adminScripts = CFG.admin
+  ? `<script>\n${readFileSync(join(SRC, 'admin-api.js'), 'utf8')}\n</script>\n` +
+    `<script>\n${readFileSync(join(SRC, 'admin-boot.js'), 'utf8')}\n</script>`
+  : '';
+
 /* Admin panel — klaviatura bilan ishlanadigan, matn nusxalanadigan ish
    quroli: telefon ilovasining "zoom yo'q" cheklovi unga to'g'ri kelmaydi. */
 const viewport = CFG.admin
@@ -456,6 +463,7 @@ ${data}
 <script>
 ${bootstrap}
 </script>
+${adminScripts}
 </body>
 </html>
 `;
@@ -478,7 +486,9 @@ if (!CFG.admin) {
   // faylning izohlarida bu nomlar sanab o'tilgan; izoh kod emas, lekin
   // ijro etiladigan bitta qator ham qolmasligi kerak.
   const FORBIDDEN_CODE = ['valsManage', 'valsAnalytics', 'logAction', 'parseBulk', 'toCsv',
-                          'ADMIN_USERS', 'ADMIN_QUESTIONS', 'AUDIT_SEED', 'ROLES', 'REASONS'];
+                          'ADMIN_USERS', 'ADMIN_QUESTIONS', 'AUDIT_SEED', 'ROLES', 'REASONS',
+                          // Admin API qatlami ham faqat admin build'ida
+                          'nzAdmin', 'audit_log'];
   for (const bad of FORBIDDEN_CODE) {
     if (new RegExp(`\\b${bad}\\b`).test(logicCode)) {
       throw new Error(`[build] XAVFSIZLIK: "${bad}" ${TARGET} build'ining KODIDA qoldi — ` +
