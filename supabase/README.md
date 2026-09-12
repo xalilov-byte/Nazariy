@@ -121,7 +121,43 @@ kerak bo'lmaydi — manba DB bo'ladi.
 
 ---
 
-## 5. Lokal tekshiruv (Supabase kerak emas)
+## 5. Supabase MCP serveri
+
+`.mcp.json` da Supabase'ning MCP serveri sozlangan. U Claude Code'ga
+bazani to'g'ridan-to'g'ri ko'rish imkonini beradi: jadvallarni o'qish,
+migratsiya qo'llash, loglarni tekshirish.
+
+```
+.mcp.json → supabase (http)
+  https://mcp.supabase.com/mcp?project_ref=nnjlshvfrgosnjqezblx&features=…
+```
+
+**Ishga tushirish uchun bir marta autentifikatsiya kerak** — buni faqat
+o'z kompyuteringizdagi oddiy terminalda qilish mumkin (IDE kengaytmasida
+emas):
+
+```bash
+claude /mcp          # supabase → Authenticate
+```
+
+### Bu sessiyada ishlamaydi — nima uchun
+
+Ikki mustaqil sabab:
+
+1. **Tarmoq.** `mcp.supabase.com` bu muhitning tashqi tarmoq siyosati
+   bilan bloklangan (HTTP 403), xuddi `supabase.com` va loyiha domeni
+   kabi. Shuning uchun server bu yerdan umuman ko'rinmaydi.
+2. **Autentifikatsiya.** OAuth oqimi brauzer va interaktiv terminal
+   talab qiladi; bu sessiya ularning ikkalasiga ham ega emas.
+
+Ya'ni MCP serveri **sizning mashinangizdagi** Claude Code sessiyalarida
+ishlaydi, bu bulutli sessiyada esa yo'q. Shu sababli bazadagi ishlar
+bu yerda boshqa yo'l bilan tekshiriladi: lokal PostgreSQL (§6) va
+CI'dagi jonli tekshiruv (`.github/workflows/db.yml`).
+
+---
+
+## 6. Lokal tekshiruv (Supabase kerak emas)
 
 Migratsiyani o'zgartirgandan keyin lokal PostgreSQL'da sinash mumkin:
 
