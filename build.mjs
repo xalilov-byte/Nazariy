@@ -389,6 +389,10 @@ for (const [family, slug, weights, subsets] of FONTS) {
 const runtime = readFileSync(join(SRC, 'runtime.js'), 'utf8');
 const feedback = readFileSync(join(SRC, 'feedback.js'), 'utf8');
 const notify = readFileSync(join(SRC, 'notify.js'), 'utf8');
+/* progress.js dizayn mantiqidan OLDIN qo'yilishi shart: sinf o'z
+   boshlang'ich holatini window.nzProgress'dan o'qiydi, ya'ni u shu
+   paytda allaqachon mavjud bo'lishi kerak. */
+const progress = readFileSync(join(SRC, 'progress.js'), 'utf8');
 const i18n = readFileSync(join(SRC, 'i18n.js'), 'utf8');
 const data = readFileSync(join(SRC, 'data.js'), 'utf8');
 
@@ -452,6 +456,9 @@ ${feedback}
 </script>
 <script>
 ${notify}
+</script>
+<script>
+${progress}
 </script>
 <script>
 ${logic}

@@ -64,11 +64,52 @@
     }
   }
 
+  /* ── Progressni saqlash ──────────────────────────────────────────────
+     Har setState'dan keyin holat qurilmaga yoziladi (progress.js o'zi
+     yozuvlarni birlashtiradi, shuning uchun bu qimmat emas). Shu yer
+     tanlangani uchun dizaynda "saqlash" degan tushuncha yo'q: ilova
+     shunchaki holatini o'zgartiradi, saqlash esa avtomatik. */
+  function saveProgress() {
+    if (!window.nzProgress) return;
+    if (typeof QUESTIONS === 'undefined') return;
+    window.nzProgress.save(app.state, QUESTIONS);
+  }
+
   // Tema o'zgarganda status bar ham ergashsin
   const origSetState = app.setState.bind(app);
-  app.setState = function (patch) { origSetState(patch); syncChrome(); syncSettings(); };
+  app.setState = function (patch) {
+    origSetState(patch);
+    syncChrome();
+    syncSettings();
+    saveProgress();
+  };
   syncChrome();
   syncSettings();
+
+  /* Boshlanish holatini darhol bir marta yozamiz. Sababi: "Kunlik
+     kirish" mukofoti componentDidMount'da beriladi, ya'ni yuqoridagi
+     o'ram o'rnatilishidan OLDIN — o'sha setState saqlanmasdan qolardi.
+     Natijada ilovani ochib javob bermasdan yopgan odam +30 ballini
+     yo'qotardi. */
+  saveProgress();
+
+  /* Ilova fonga ketganda yoki yopilganda kutib turish mumkin emas —
+     birlashtirilgan yozuv diskka tushmasdan qolib ketardi va oxirgi
+     javob yo'qolardi. Shuning uchun shu paytlarda darhol yoziladi.
+     Uchta hodisa, chunki ularning har biri boshqa holatda ishlaydi:
+     pagehide — brauzerda sahifa yopilishi, visibilitychange — fonga
+     o'tish, appStateChange — Android'da ilovadan chiqish. */
+  if (window.nzProgress) {
+    const flushNow = () => { saveProgress(); window.nzProgress.flush(); };
+    window.addEventListener('pagehide', flushNow);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') flushNow();
+    });
+    const CapAppEarly = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+    if (CapAppEarly && CapAppEarly.addListener) {
+      CapAppEarly.addListener('appStateChange', st => { if (!st.isActive) flushNow(); });
+    }
+  }
 
   /* Bildirishnoma sozlamasi faqat u HAQIQATAN mumkin bo'lgan joyda
      ko'rsatiladi: APK ichida plagin bor, brauzerda yo'q. Bosib
@@ -123,7 +164,24 @@
      saqlanadi va keyingi ochilishda qo'llanadi. */
   if (window.nzData) {
     const canSwap = () => !app.state.quiz;
-    const redraw = () => app.setState({});
+
+    /* Bank almashgandan keyin "Saqlangan" va "Xatolarim" ro'yxatlarini
+       QAYTA hisoblash SHART. Ular holatda massiv indeksi bilan yuradi,
+       diskda esa ref bilan — bank o'zgarsa indekslar siljiydi va qayta
+       hisoblanmasa odam o'zi saqlamagan savolni ko'radi. Shuning uchun
+       manba (ref) diskdan qayta o'qiladi va yangi bankka moslanadi. */
+    const redraw = () => {
+      if (window.nzProgress && typeof QUESTIONS !== 'undefined') {
+        const re = window.nzProgress.initial(QUESTIONS);
+        app.setState({
+          wrongIds: re.wrongIds,
+          savedIds: re.savedIds,
+          signsAnswered: re.signsAnswered,
+        });
+        return;
+      }
+      app.setState({});
+    };
     window.nzData.sync(app.state.lang, canSwap, redraw);
 
     /* Til almashganda savol matni ham o'sha tilga o'tishi kerak —

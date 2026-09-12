@@ -596,6 +596,77 @@ o'tkazib yuboriladi va soni aytiladi. Konsol xatosi 0.
       (hozircha to'g'ridan-to'g'ri `published_questions` dan o'qiladi —
       savollar soni o'sganda paket kerak bo'ladi)
 
+#### Faza 4 (birinchi yarmi) — Progress saqlanadi ✅
+
+Shu ishgacha ilova **hech narsani saqlamasdi**: ballar, streak,
+"Xatolarim", "Saqlangan", marafon rekordi — hammasi xotirada edi va ilova
+yopilishi bilan nolga qaytardi. Imtihonga tayyorlanish bir kunlik ish
+emas, shuning uchun bu eng katta kamchilik edi.
+
+| Fayl | Vazifasi |
+|---|---|
+| `src/progress.js` | Qurilma xotirasi, kun hisobi, streak, javoblar navbati |
+
+**Uch qaror:**
+
+1. **Saqlanadigani indeks emas, `ref`.** Ro'yxatlar dizaynda `QUESTIONS`
+   massivi indekslari bilan ishlaydi. Indeksni diskda saqlash jimgina
+   buzilardi: bazaga o'rtaga bitta savol qo'shilsa indeks 4 boshqa
+   savolga ko'rsata boshlaydi va odam o'zi saqlamagan savolni ko'radi.
+   Shu sababli har bir savolga barqaror `ref` berildi (`#001`…) va u
+   bazadagi `questions.ref` bilan **aynan bir xil** — seed generatori
+   endi refni dizayn faylidan oladi, o'zi hisoblamaydi, ya'ni ikkisi
+   ajralib keta olmaydi.
+2. **Birinchi ochilishda hammasi nol.** Dizayndagi 12 480 ball, 47
+   rekord, 5 kunlik streak va profildagi "1 248 / 87% / 36 / 9 kun" —
+   maket uchun chizilgan raqamlar edi. O'zi ishlamagan 12 480 ballni
+   ko'rgan odam undan keyingi hech qaysi raqamga ishonmaydi. Demo
+   qiymatlar faqat Design Canvas'da qoldi.
+3. **Kun 04:00 da almashadi, yarim kechada emas.** Kechqurun 23:50 da
+   boshlab 00:10 da tugatgan odam ikki xil kunga tushib qolardi va
+   streak'i buzilardi.
+
+**Yo'l-yo'lakay tuzatilgan ikki kamchilik:**
+
+- **Bankda yo'q `ref` yo'qolib ketardi.** Odam internetda bazadagi 500
+  savoldan birini saqlab, keyin internetsiz ochsa (bank APK ichidagi 10
+  savolga tushadi) — o'sha savol indeksga o'girilmaydi va keyingi
+  yozuvda ro'yxatdan **butunlay** o'chib ketardi. Endi moslanmagan
+  ref'lar chetga yig'iladi va yozishda qaytariladi: ko'rinmaydi, lekin
+  yo'qolmaydi.
+- **"Kunlik kirish" mukofoti saqlanmasdi.** U `componentDidMount`da
+  beriladi, ya'ni saqlash o'rami o'rnatilishidan oldin — ilovani ochib
+  javob bermasdan yopgan odam +30 ballini yo'qotardi.
+
+**Javoblar navbati.** Har javob `client_uuid` bilan navbatga yoziladi
+(`nz-attempts`, 2000 ta chegara — eng qadimgilari tashlanadi). Navbatni
+bo'shatuvchi server tomoni hali yo'q (foydalanuvchi hisobi Telegram yoki
+SMS orqali keladi), lekin javoblar **hozirdan** yig'ilishi kerak: aks
+holda sinxronizatsiya kelganda tarix bo'sh bo'lardi.
+
+**Nima saqlanmaydi:** javob berilayotgan test. Ilova o'rtada yopilsa test
+boshidan boshlanadi — ataylab: yarim tugagan imtihonni tiklash uning
+vaqt bosimini yo'qotadi.
+
+**Tekshirildi** (brauzerda, oltita holat): birinchi ochilishda hammasi
+nol; javob berib yopib qayta ochilganda ball, xatolar, saqlanganlar va
+rekord joyida (diskda ref bilan, indeks bilan emas); streak — birinchi
+javob 1, kecha yechilgan 4 ekranda 4 va javobdan keyin 5, uch kun
+tanaffus ekranda 0 va javobdan keyin 1 (eng uzuni 9 bo'lib qoladi), bir
+kunda uch javob streak'ni oshirmaydi; kun almashganda kunlik
+hisoblagichlar nolga, umrbodlari va ro'yxatlar joyida; bank almashganda
+`#007` to'g'ri indeksga tushadi va `#300` yo'qolmaydi; profil raqamlari
+haqiqiy (10 / 70% / 1 / 5 kun); localStorage bloklanganda ilova
+saqlamasdan ishlaydi. Konsol xatosi 0.
+
+#### Faza 4 da qolgan ish
+
+- [ ] `POST /sync/attempts` — to'plamli, idempotent (navbatni bo'shatadi)
+- [ ] Ballar/streak **serverda** qayta hisoblanadi (klientga ishonilmaydi)
+- [ ] Reyting: shaxsiy va guruh — hozir ro'yxat namunaviy
+- [ ] `attempts` jadvali migratsiyaga qo'shiladi (admin paneldagi
+      DIF/DIS ham shundan hisoblanadi)
+
 ### Faza 1 — Backend va hisob (eski reja, ma'lumot uchun)
 
 - [ ] Supabase loyihasi, `profiles` + `user_progress` jadvallari

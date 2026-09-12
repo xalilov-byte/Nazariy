@@ -113,6 +113,12 @@
   function toItem(row, ru, lang) {
     const t = (lang === 'ru' && ru[row.id]) ? ru[row.id] : null;
     return {
+      /* ref — barqaror belgi. Foydalanuvchining saqlangan va xato
+         savollari qurilmada SHU belgi bilan saqlanadi, massiv indeksi
+         bilan emas: bank yangilanganda indekslar siljiydi, ref esa
+         savolning oʻzi bilan qoladi. Bazada ref boʻsh boʻlishi mumkin
+         (ustun nullable), shuning uchun zaxira sifatida uuid olinadi. */
+      ref: row.ref || row.id,
       topic: row.topic_name,
       text: t ? t.text : row.text,
       options: (t && Array.isArray(t.options) && t.options.length === 4) ? t.options : row.options,

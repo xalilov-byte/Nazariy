@@ -111,7 +111,18 @@ on conflict (slug) do update set name = excluded.name, sort_order = excluded.sor
 `;
 
 questions.forEach((item, i) => {
-  const ref = '#' + String(i + 1).padStart(3, '0');
+  /* ref dizayn faylidan OLINADI, bu yerda hisoblanmaydi. Ilgari u
+     massivdagi o'rnidan yasalardi va shu jimgina xatoga yo'l qo'yardi:
+     savol o'rtaga qo'shilsa keyingilarining ref'i siljib ketardi, bazada
+     esa eski ref o'z o'rnida qolardi (on conflict do nothing) — natijada
+     foydalanuvchining saqlangan savoli boshqa savolga ko'rsata boshlardi.
+     Endi manba bitta. */
+  const ref = item.ref;
+  if (!ref) {
+    console.error(`Savol ${i + 1} da ref yo'q (src/Main.dc.html). ` +
+                  `Har bir savolda barqaror ref bo'lishi shart.`);
+    process.exit(1);
+  }
   const topic = topics.find(t => t.name === item.topic);
   sql += `
 insert into public.questions (ref, topic_id, text, options, correct, explain, sign, state)

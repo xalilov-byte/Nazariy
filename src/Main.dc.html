@@ -1877,35 +1877,43 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* ─── 1.1 TEST BANKI ─────────────────────────────────────────────────── */
+/* ref — savolning BARQAROR belgisi va u bazadagi questions.ref bilan
+   AYNAN bir xil (seed generatori shu yerdan oladi). Nima uchun kerak:
+   foydalanuvchining "Saqlangan" va "Xatolarim" roʻyxatlari qurilmada
+   saqlanadi, bank esa bazadan yangilanib turadi. Roʻyxatni massiv
+   INDEKSI bilan saqlash jimgina buzilardi — bazaga oʻrtaga bitta savol
+   qoʻshilsa, indeks 4 boshqa savolga koʻrsata boshlaydi va odam oʻzi
+   saqlamagan savolni koʻradi. Shuning uchun saqlanadigani indeks emas,
+   ref. */
 const QUESTIONS = [
-  { topic: "Umumiy qoidalar", text: "«Yoʻl harakati xavfsizligi» nuqtai nazaridan haydovchi harakatni boshlashdan oldin nima qilishi shart?",
+  { ref: "#001", topic: "Umumiy qoidalar", text: "«Yoʻl harakati xavfsizligi» nuqtai nazaridan haydovchi harakatni boshlashdan oldin nima qilishi shart?",
     options: ["Faqat ovoz signalini berish", "Manyovr niyatini yoʻnalish koʻrsatkichi bilan bildirish va boshqa harakat qatnashchilariga xalaqit bermaslik", "Faqat orqa koʻrinish koʻzgusiga qarash", "Hech qanday cheklov yoʻq"],
     correct: 1, explain: "YHQ 8-bandi: manyovr boshlashdan oldin yoʻnalish koʻrsatkichi bilan signal berilishi va manyovr xavfsiz boʻlishi shart." },
-  { topic: "Yoʻl belgilari", sign: "priority", text: "Rasmda koʻrsatilgan belgi nimani anglatadi?",
+  { ref: "#002", topic: "Yoʻl belgilari", sign: "priority", text: "Rasmda koʻrsatilgan belgi nimani anglatadi?",
     options: ["Yoʻl berish", "Bosh yoʻl", "Toʻxtamasdan harakatlanish taqiqlanadi", "Tor yoʻldan oʻtish"],
     correct: 1, explain: "«Bosh yoʻl» (2.1) — belgi qoʻyilgan yoʻl tartibga solinmagan chorrahalarda imtiyozli yoʻl hisoblanadi." },
-  { topic: "Tezlik rejimi", text: "Aholi punktlarida yengil avtomobil uchun ruxsat etilgan eng katta tezlik qancha?",
+  { ref: "#003", topic: "Tezlik rejimi", text: "Aholi punktlarida yengil avtomobil uchun ruxsat etilgan eng katta tezlik qancha?",
     options: ["60 km/soat", "70 km/soat", "80 km/soat", "90 km/soat"],
     correct: 0, explain: "Aholi punktlarida umumiy chegara — 70 km/soat emas, 60 km/soat (agar belgi bilan boshqacha koʻrsatilmagan boʻlsa)." },
-  { topic: "Yoʻl belgilari", sign: "noentry", text: "Bu belgi qoʻyilgan yoʻl uchastkasiga qaysi transport kirishi mumkin?",
+  { ref: "#004", topic: "Yoʻl belgilari", sign: "noentry", text: "Bu belgi qoʻyilgan yoʻl uchastkasiga qaysi transport kirishi mumkin?",
     options: ["Yoʻnalishli transport vositalari", "Barcha transport vositalari", "Faqat yengil avtomobillar", "Hech qaysi transport vositasi"],
     correct: 0, explain: "«Kirish taqiqlangan» (3.1) belgisi yoʻnalishli transport vositalariga taalluqli emas." },
-  { topic: "Chorrahalar", text: "Tartibga solinmagan teng ahamiyatli chorrahada haydovchi kimga yoʻl berishi shart?",
+  { ref: "#005", topic: "Chorrahalar", text: "Tartibga solinmagan teng ahamiyatli chorrahada haydovchi kimga yoʻl berishi shart?",
     options: ["Chapdan yaqinlashayotgan transportga", "Oʻngdan yaqinlashayotgan transportga", "Tezligi kattaroq transportga", "Yuk avtomobiliga"],
     correct: 1, explain: "Teng ahamiyatli chorrahada «oʻngdan halaqit» qoidasi ishlaydi — oʻngdan kelayotganga yoʻl beriladi." },
-  { topic: "Svetofor", text: "Svetoforning sariq miltillovchi signali nimani bildiradi?",
+  { ref: "#006", topic: "Svetofor", text: "Svetoforning sariq miltillovchi signali nimani bildiradi?",
     options: ["Harakat taqiqlangan", "Chorraha tartibga solinmagan, ehtiyot boʻlib oʻtish mumkin", "Toʻxtash majburiy", "Faqat oʻngga burilish mumkin"],
     correct: 1, explain: "Sariq miltillovchi signal chorrahaning tartibga solinmaganini bildiradi; oʻtishda belgilar va yoʻl berish qoidalariga amal qilinadi." },
-  { topic: "Yoʻl belgilari", sign: "warning", text: "Uchburchak shaklidagi qizil hoshiyali belgilar qaysi guruhga kiradi?",
+  { ref: "#007", topic: "Yoʻl belgilari", sign: "warning", text: "Uchburchak shaklidagi qizil hoshiyali belgilar qaysi guruhga kiradi?",
     options: ["Taqiqlovchi", "Buyuruvchi", "Ogohlantiruvchi", "Axborot-ishorat"],
     correct: 2, explain: "Qizil hoshiyali teng yonli uchburchak — ogohlantiruvchi belgilar guruhi (1-guruh)." },
-  { topic: "Quvib oʻtish", text: "Quvib oʻtish qaysi holatda taqiqlanadi?",
+  { ref: "#008", topic: "Quvib oʻtish", text: "Quvib oʻtish qaysi holatda taqiqlanadi?",
     options: ["Yoʻl kengligi 7 metrdan ortiq boʻlsa", "Tartibga solinmagan piyodalar oʻtish joyida", "Aholi punkti tashqarisida", "Ikki qatorli yoʻlda"],
     correct: 1, explain: "Piyodalar oʻtish joylarida quvib oʻtish taqiqlanadi — piyoda koʻrinmay qolishi xavfi bor." },
-  { topic: "Toʻxtab turish", text: "Temir yoʻl kesishmasidan qancha masofada toʻxtash taqiqlanadi?",
+  { ref: "#009", topic: "Toʻxtab turish", text: "Temir yoʻl kesishmasidan qancha masofada toʻxtash taqiqlanadi?",
     options: ["10 m", "30 m", "50 m", "100 m"],
     correct: 2, explain: "Temir yoʻl kesishmalarida va ularga 50 metrdan yaqin masofada toʻxtash taqiqlanadi." },
-  { topic: "Birinchi yordam", text: "Arterial qon ketishida birinchi navbatda nima qilinadi?",
+  { ref: "#010", topic: "Birinchi yordam", text: "Arterial qon ketishida birinchi navbatda nima qilinadi?",
     options: ["Jarohatga sovuq qoʻyiladi", "Jarohat ustidan bogʻlov qoʻyiladi", "Jarohatdan yuqoriga qon toʻxtatuvchi jgut qoʻyiladi", "Jabrlanuvchiga suv beriladi"],
     correct: 2, explain: "Arterial qon ketishida jgut jarohatdan yuqoriga qoʻyiladi va qoʻyilgan vaqti yozib qoldiriladi." }
 ];
@@ -1916,6 +1924,14 @@ const QUESTIONS = [
 // state.wrongIds'dan (foydalanuvchi shu sessiyada xato qilgan savollar) oladi.
 const ALL_INDICES = QUESTIONS.map((_, i) => i);
 const SIGN_INDICES = QUESTIONS.map((q, i) => (q.sign ? i : null)).filter(i => i !== null);
+
+/* Qurilmada saqlangan progress (src/progress.js). Design Canvas'da bu
+   qatlam yo'q — o'shanda SAVED null bo'ladi va props'dagi demo qiymatlar
+   ishlatiladi, ya'ni maketda ekran baribir to'la ko'rinadi. Haqiqiy
+   ilovada esa birinchi ochilishda hammasi nol: o'zi ishlamagan 12 480
+   ballni ko'rgan odam undan keyingi hech qaysi raqamga ishonmaydi. */
+const SAVED = window.nzProgress ? window.nzProgress.initial(QUESTIONS) : null;
+const fromDisk = (key, demo) => (SAVED ? SAVED[key] : demo);
 
 const PALETTE = ["--purple", "--teal", "--pink", "--gold", "--primary", "--green"];
 
@@ -2193,16 +2209,18 @@ class Component extends DCLogic {
     // birlashtirildi ("Shaxsiy" / "Guruh"). leagueTab shu segmentni ushlaydi.
     leagueTab: "personal",
     quiz: null,
-    points: this.props.points ?? 12480,
-    // "Xatolarim" rejimi shu sessiyada xato qilingan savollarning haqiqiy
-    // indekslarini kuzatadi (togʻri javob berilsa roʻyxatdan chiqariladi —
-    // xatoni "yengish" hissi uchun). Demo uchun 3 ta oldindan urugʻlangan.
-    wrongIds: [2, 6, 8],
+    points: fromDisk("points", this.props.points ?? 12480),
+    // "Xatolarim" — xato qilingan savollar (togʻri javob berilsa roʻyxatdan
+    // chiqariladi, xatoni "yengish" hissi uchun). Roʻyxat qurilmada
+    // saqlanadi va ilova qayta ochilganda tiklanadi. Quyidagi uchta indeks
+    // faqat Design Canvas maketi uchun — haqiqiy ilovada roʻyxat boʻsh
+    // boshlanadi.
+    wrongIds: fromDisk("wrongIds", [2, 6, 8]),
     // "Saqlangan" — foydalanuvchi test paytida xatcho'p tugmasi bilan ATAYLAB
     // belgilagan savollar. wrongIds'dan farqi: bu ro'yxat avtomatik emas va
     // to'g'ri javob berilganda ham o'chmaydi — faqat foydalanuvchi o'zi olib
     // tashlaydi (o'z kutubxonasi ustidan to'liq nazorat).
-    savedIds: [1, 4],
+    savedIds: fromDisk("savedIds", [1, 4]),
     // Pul qatlamining holati. proView — Pro ekrani ochiqmi; pay — pastdan
     // chiquvchi to'lov oynasi (null bo'lsa yopiq); plan — tanlangan tarif.
     proView: false,
@@ -2231,7 +2249,7 @@ class Component extends DCLogic {
     bulk: null,        // { mode:"import"|"export", sample, scope }
     // Marafon rejimidagi eng uzun ketma-ket toʻgʻri javoblar rekordi — Bosh
     // ekrandagi "Rekord" yorligʻi bilan bogʻlangan, sessiya davomida oshadi.
-    marathonBest: 47,
+    marathonBest: fromDisk("marathonBest", 47),
     // Sozlamalar qatori: ovoz va bildirishnoma — ikkalasi ham bitta bosishda
     // toʻliq oʻzgaradigan boolean, shuning uchun yangi ekran/sheet ochmasdan
     // shu yerning oʻzida "qiymat almashinadi" naqshi bilan ishlaydi (pastda
@@ -2244,14 +2262,16 @@ class Component extends DCLogic {
     // VAZIFALAR uchun haqiqiy hisoblagichlar. Ilgari vazifalar paneli
     // qo'lda yozilgan matn edi ("Bugun · 8/20") va hech qachon
     // o'zgarmasdi. Endi shu raqamlardan hisoblanadi.
-    // Diqqat: hisoblagichlar SESSIYA ichida yashaydi. Kunlik yangilanish
-    // (04:00) va kunlar bo'yicha streak serverni talab qiladi — REJA.md
-    // Faza 4. Shu sababli "Kunlik kirish" vazifasi hozir ilova ochilishi
-    // bilan bajarilgan hisoblanadi.
-    answeredCount: 0,
-    examsDone: 0,
-    signsAnswered: [],
-    tasksAwarded: [],
+    // Hisoblagichlar qurilmada saqlanadi va kun almashganda (mahalliy
+    // vaqt bilan 04:00) nolga qaytadi — progress.js. Kunlar bo'yicha
+    // streak ham shu yerda yuritiladi. Serverda qayta hisoblash keyin
+    // qo'shiladi (REJA.md Faza 4): ballga faqat klient qaraydigan
+    // tizimda ball qalbakilashtiriladi, shuning uchun reyting
+    // serverga o'tishi kerak.
+    answeredCount: fromDisk("answeredCount", 0),
+    examsDone: fromDisk("examsDone", 0),
+    signsAnswered: fromDisk("signsAnswered", []),
+    tasksAwarded: fromDisk("tasksAwarded", []),
     // Bildirishnoma qurilma plaginini talab qiladi. Brauzerda (sayt,
     // Telegram) u yo'q, shuning uchun sozlama qatori KO'RSATILMAYDI —
     // bootstrap.js plagin borligini aniqlab shu bayroqni yoqadi.
@@ -2475,6 +2495,14 @@ class Component extends DCLogic {
           ? s.wrongIds.filter(id => id !== realIdx)
           : (s.wrongIds.includes(realIdx) ? s.wrongIds : s.wrongIds.concat(realIdx))
       }));
+      // Javob fakti saqlash qatlamiga aytiladi: u streak'ni kunlar
+      // bo'yicha yuritadi va javobni serverga yuborish navbatiga qo'yadi.
+      // Dizayn qanday saqlanishini bilmaydi — faqat "javob berildi" deydi.
+      if (window.nzProgress) {
+        window.nzProgress.answered({
+          ref: QUESTIONS[realIdx].ref, chosen: i, correct: ok, mode: q.mode || "exam"
+        });
+      }
       // setState holatni darhol yangilaydi (render keyinga qoldiriladi),
       // shuning uchun mukofotni shu yerda tekshirish xavfsiz.
       this.awardTasks();
@@ -2557,7 +2585,9 @@ class Component extends DCLogic {
       segPersonalStyle: this.pill(s.leagueTab === "personal"),
       segGroupStyle: this.pill(s.leagueTab === "group"),
 
-      streak: this.props.streakDays ?? 5,
+      // Streak haqiqiy manbadan o'qiladi (progress.js): u kunlar
+      // bo'yicha yuritiladi va uch kun ochilmasa uzilgan deb ko'rsatiladi.
+      streak: window.nzProgress ? window.nzProgress.streak() : (this.props.streakDays ?? 5),
       pointsLabel: s.points.toLocaleString("ru-RU").replace(/\u00a0/g, " "),
 
       quizOn: !!q, quizOff: !q && !s.proView, proOn: !!s.proView && !q,
@@ -3454,12 +3484,27 @@ class Component extends DCLogic {
         }
       })),
 
-      profileStats: [
-        { value: "1 248", label: "Yechilgan savollar", color: "--foreground" },
-        { value: "87%", label: "Toʻgʻri javob", color: "--success" },
-        { value: "36", label: "Imtihonlar", color: "--purple" },
-        { value: "9 " + T("kun"), label: "Eng uzun streak", color: "--green" }
-      ].map(x => Object.assign({}, x, {
+      // Profil ekranidagi to'rtta raqam ilgari qo'lda yozilgan edi
+      // ("1 248", "87%", "36", "9 kun") va hech qachon o'zgarmasdi. Endi
+      // ular saqlash qatlamidagi umrbod hisoblagichlardan chiqadi.
+      // Hech narsa yechilmagan bo'lsa aniqlik o'rniga "—" turadi: 0 ta
+      // javobdan foiz chiqarib bo'lmaydi va "0%" yolg'on bo'lardi.
+      profileStats: (() => {
+        const st = window.nzProgress ? window.nzProgress.stats() : null;
+        const nf = n => n.toLocaleString("ru-RU").replace(/\u00a0/g, " ");
+        return st ? [
+          { value: nf(st.answered), label: "Yechilgan savollar", color: "--foreground" },
+          { value: st.accuracy === null ? "—" : st.accuracy + "%",
+            label: "Toʻgʻri javob", color: "--success" },
+          { value: nf(st.exams), label: "Imtihonlar", color: "--purple" },
+          { value: nf(st.longest) + " " + T("kun"), label: "Eng uzun streak", color: "--green" }
+        ] : [
+          { value: "1 248", label: "Yechilgan savollar", color: "--foreground" },
+          { value: "87%", label: "Toʻgʻri javob", color: "--success" },
+          { value: "36", label: "Imtihonlar", color: "--purple" },
+          { value: "9 " + T("kun"), label: "Eng uzun streak", color: "--green" }
+        ];
+      })().map(x => Object.assign({}, x, {
         valStyle: { fontSize: "24px", fontWeight: 800, fontVariantNumeric: "tabular-nums", color: "var(" + x.color + ")" }
       })),
 
@@ -3816,6 +3861,10 @@ class Component extends DCLogic {
           if (cur.index === cur.pool.length - 1) {
             if (window.nzFeedback) window.nzFeedback.finish();
             const wasExam = cur.mode === "exam" || !cur.mode;
+            // Oxirigacha yetgan imtihon saqlash qatlamiga ham aytiladi —
+            // profildagi "Imtihonlar" raqami shundan chiqadi. Yarim
+            // tashlangan imtihon sanalmaydi: shu chaqiruv faqat oxirida.
+            if (wasExam && window.nzProgress) window.nzProgress.examFinished();
             this.setState(st => ({
               quiz: Object.assign({}, st.quiz, { finished: true }),
               points: st.points + (st.quiz.wrong <= 2 ? 100 : 0),

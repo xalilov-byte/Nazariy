@@ -1,0 +1,397 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   PROGRESS — ILOVA YOPILGANDA HAM ESLAB QOLADI
+
+   Shu faylgacha ilova hech narsani saqlamasdi. Ballar, streak,
+   "Xatolarim", "Saqlangan", marafon rekordi — hammasi xotirada edi va
+   ilova yopilishi bilan nolga qaytardi. Imtihonga tayyorlanish esa bir
+   kunlik ish emas: odam bugun 20 savol yechadi, ertaga davom etadi.
+   Har ochilishda noldan boshlanadigan ilova mashq qilishning ma'nosini
+   yo'q qiladi.
+
+   UCH QAROR:
+
+   1. SAQLANADIGANI INDEKS EMAS, ref.
+      "Saqlangan" va "Xatolarim" ro'yxatlari dizaynda QUESTIONS massivi
+      indekslari bilan ishlaydi. Indeksni qurilmada saqlash jimgina
+      buzilardi: bank bazadan yangilanganda (src/data.js) o'rtaga bitta
+      savol qo'shilsa, indeks 4 boshqa savolga ko'rsata boshlaydi va odam
+      o'zi saqlamagan savolni ko'radi. Shuning uchun diskda ref turadi,
+      indeksga o'girish esa yuklash paytida bo'ladi.
+
+   2. BIRINCHI OCHILISHDA HAMMASI NOL.
+      Dizaynda 12 480 ball, 47 rekord va 5 kunlik streak yozilgan edi —
+      bular maket uchun chizilgan raqamlar. Ilovani birinchi ochgan odam
+      o'zi ishlamagan 12 480 ballni ko'rsa, undan keyingi hech qaysi
+      raqamga ishonmaydi. Demo qiymatlar faqat Design Canvas'da qoladi
+      (props orqali), haqiqiy ilovada boshlanish nol.
+
+   3. KUN 04:00 DA ALMASHADI, YARIM KECHADA EMAS.
+      Kunlik vazifalar va streak uchun kun chegarasi kerak. Yarim kecha
+      yaramaydi: kechqurun 23:50 da boshlab 00:10 da tugatgan odam ikki
+      xil kunga tushib qolardi va streak'i buzilardi. Talaba kech
+      o'qiydi, shuning uchun chegara — mahalliy vaqt bilan 04:00.
+
+   NIMA SAQLANMAYDI: javob berilayotgan test (quiz). Ilova o'rtada
+   yopilsa test boshidan boshlanadi. Ataylab: yarim tugagan imtihonni
+   tiklash uning vaqt bosimini yo'qotadi, ya'ni simulyatsiya haqiqatga
+   o'xshamay qoladi.
+   ───────────────────────────────────────────────────────────────────── */
+
+(function () {
+  const KEY = 'nz-progress';
+  const QUEUE_KEY = 'nz-attempts';
+  const VERSION = 1;
+
+  /* Navbat chegarasi. Javoblar serverga yuborish uchun yig'iladi
+     (REJA.md Faza 4), lekin server tomoni hali yo'q — foydalanuvchi
+     hisobi Telegram yoki SMS orqali keladi. Navbat cheksiz o'smasligi
+     kerak, shuning uchun eng qadimgilari tashlanadi: yangi javob eski
+     javobdan qimmatliroq. */
+  const QUEUE_MAX = 2000;
+
+  /* ── Qurilma xotirasi ──────────────────────────────────────────────
+     localStorage ishlamasligi mumkin: brauzerning maxfiy oynasi, sayt
+     ma'lumoti bloklangan, joy tugagan. Bunday holda ilova SAQLAMASDAN
+     ishlaydi — xato ko'rsatmaydi va yiqilmaydi. */
+  let works = true;
+
+  function read(key) {
+    try {
+      const v = localStorage.getItem(key);
+      return v ? JSON.parse(v) : null;
+    } catch (e) { works = false; return null; }
+  }
+
+  function write(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+    catch (e) { works = false; return false; }
+  }
+
+  /* ── Kun hisobi (04:00 chegarasi) ──────────────────────────────────── */
+  const DAY_START_HOUR = 4;
+
+  function dayKey(ts) {
+    const d = new Date((ts == null ? Date.now() : ts) - DAY_START_HOUR * 3600000);
+    return d.getFullYear() + '-' +
+           String(d.getMonth() + 1).padStart(2, '0') + '-' +
+           String(d.getDate()).padStart(2, '0');
+  }
+
+  /* Ketma-ket kunmi? Sanani qo'shib-ayirmasdan, ikki kun kalitining
+     farqini kun sonida o'lchaymiz — soat mintaqasi o'zgarsa ham to'g'ri
+     ishlaydi, chunki ikkalasi ham bir xil usulda yasalgan. */
+  function daysBetween(a, b) {
+    if (!a || !b) return null;
+    const p = a.split('-').map(Number), q = b.split('-').map(Number);
+    const ms = Date.UTC(q[0], q[1] - 1, q[2]) - Date.UTC(p[0], p[1] - 1, p[2]);
+    return Math.round(ms / 86400000);
+  }
+
+  /* ── Bo'sh holat ───────────────────────────────────────────────────── */
+  function blank() {
+    return {
+      v: VERSION,
+      points: 0,
+      marathonBest: 0,
+      /* Umrbod hisoblagichlar — profil ekranidagi raqamlar shulardan
+         chiqadi. Ular kunlik hisoblagichlardan farqli, hech qachon
+         nolga qaytmaydi. */
+      totalAnswered: 0,
+      totalCorrect: 0,
+      totalExams: 0,
+      streak: 0,
+      longest: 0,
+      lastActiveDay: null,     // oxirgi javob berilgan kun
+      wrong: [],               // ref'lar
+      saved: [],               // ref'lar
+      day: null,               // kunlik hisoblagichlar qaysi kunga tegishli
+      answered: 0,
+      exams: 0,
+      signs: [],               // ref'lar
+      tasks: [],               // mukofot berilgan vazifa id'lari
+    };
+  }
+
+  /* Saqlangan ma'lumot ishonchsiz manba: foydalanuvchi uni qo'lda
+     o'zgartirishi yoki eski versiya qoldirishi mumkin. Har bir maydon
+     shakli tekshiriladi, yaramasi bo'sh qiymatga tushadi — buzilgan
+     yozuv tufayli ilova ishlamay qolmasligi kerak. */
+  function sane(raw) {
+    const b = blank();
+    if (!raw || typeof raw !== 'object' || raw.v !== VERSION) return b;
+    const num = (v, d) => (typeof v === 'number' && isFinite(v) && v >= 0 ? v : d);
+    const refs = v => (Array.isArray(v) ? v.filter(x => typeof x === 'string') : []);
+    const str = v => (typeof v === 'string' ? v : null);
+    return {
+      v: VERSION,
+      points: num(raw.points, 0),
+      marathonBest: num(raw.marathonBest, 0),
+      totalAnswered: num(raw.totalAnswered, 0),
+      totalCorrect: num(raw.totalCorrect, 0),
+      totalExams: num(raw.totalExams, 0),
+      streak: num(raw.streak, 0),
+      longest: num(raw.longest, 0),
+      lastActiveDay: str(raw.lastActiveDay),
+      wrong: refs(raw.wrong),
+      saved: refs(raw.saved),
+      day: str(raw.day),
+      answered: num(raw.answered, 0),
+      exams: num(raw.exams, 0),
+      signs: refs(raw.signs),
+      tasks: Array.isArray(raw.tasks) ? raw.tasks.filter(x => typeof x === 'string') : [],
+    };
+  }
+
+  let store = sane(read(KEY));
+
+  /* Kunlik hisoblagichlar boshqa kunga tegishli bo'lsa — nolga.
+     Yuklashda va har javobda tekshiriladi: ilova kechqurun ochiq
+     qoldirilib ertalab davom etilsa, kunlik vazifalar yangi kunga
+     o'tishi kerak. */
+  function rollDay() {
+    const today = dayKey();
+    if (store.day === today) return false;
+    store.day = today;
+    store.answered = 0;
+    store.exams = 0;
+    store.signs = [];
+    store.tasks = [];
+    return true;
+  }
+  rollDay();
+
+  /* Ko'rsatiladigan streak. Saqlangan raqamning o'zi yetmaydi: odam uch
+     kun ilovani ochmasa streak uzilgan, lekin diskda eski raqam turadi.
+     Qoida: bugun yoki kechagi kunda javob berilgan bo'lsa streak amal
+     qiladi (bugun hali tugamagan — uni yo'qotish uchun erta), undan
+     eskisi esa uzilgan. */
+  function liveStreak() {
+    const d = daysBetween(store.lastActiveDay, dayKey());
+    if (d === null || d > 1) return 0;
+    return store.streak;
+  }
+
+  /* ── ref ↔ indeks ──────────────────────────────────────────────────
+     QUESTIONS bank almashganda o'zgaradi, shuning uchun har o'girishda
+     u parametr sifatida uzatiladi — modul global holatga tayanmaydi. */
+  function indexMap(questions) {
+    const m = {};
+    (questions || []).forEach((q, i) => { if (q && q.ref) m[q.ref] = i; });
+    return m;
+  }
+
+  /* ── Bankda yo'q ref'lar ("yetimlar") ───────────────────────────────
+     Bu yerda oson yo'qotib qo'yiladigan ma'lumot bor. Tasavvur qiling:
+     odam internetda bazadagi 500 savoldan #300 ni saqlab qo'ydi. Keyin
+     internetsiz ochdi — bank APK ichidagi 10 savolga tushdi, #300 esa
+     indeksga o'girilmaydi. Agar shundan keyin holat diskka yozilsa,
+     #300 ro'yxatdan BUTUNLAY o'chib ketardi va odam uni qaytarib
+     olmasdi.
+
+     Shuning uchun o'girishda moslanmagan ref'lar chetga yig'iladi va
+     yozishda qaytariladi. Ular ko'rinmaydi (bankda yo'q), lekin
+     yo'qolmaydi ham — bank qaytganda o'z joyiga tushadi. */
+  let orphans = { wrong: [], saved: [], signs: [] };
+
+  function toIndices(refs, questions) {
+    const m = indexMap(questions);
+    const out = [];
+    (refs || []).forEach(r => { if (m[r] !== undefined) out.push(m[r]); });
+    return out;
+  }
+
+  function orphansOf(refs, questions) {
+    const m = indexMap(questions);
+    return (refs || []).filter(r => m[r] === undefined);
+  }
+
+  function uniq(a) {
+    const seen = {}, out = [];
+    a.forEach(x => { if (!seen[x]) { seen[x] = 1; out.push(x); } });
+    return out;
+  }
+
+  function toRefs(indices, questions) {
+    const out = [];
+    (indices || []).forEach(i => {
+      const q = questions && questions[i];
+      if (q && q.ref) out.push(q.ref);
+    });
+    return out;
+  }
+
+  /* ── Yozish: darhol emas, birlashtirib ─────────────────────────────
+     setState har bosishda chaqiriladi (test davomida sekundda bir necha
+     marta). Har birida diskka yozish — keraksiz ish, shuning uchun
+     yozuvlar birlashtiriladi. Lekin ilova YOPILAYOTGANDA kutish mumkin
+     emas: oxirgi javob yo'qolib qolardi. Shuning uchun flush() ham bor
+     va u ilova fonga ketganda chaqiriladi. */
+  let timer = null;
+  let pending = null;
+
+  function commit() {
+    timer = null;
+    if (!pending) return;
+    write(KEY, pending);
+    pending = null;
+  }
+
+  function flush() {
+    if (timer) { clearTimeout(timer); timer = null; }
+    commit();
+  }
+
+  window.nzProgress = {
+    /* Saqlash ishlayaptimi. Ilova bunga qarab xulqini o'zgartirmaydi —
+       bu faqat tekshirish va jurnal uchun. */
+    works: function () { return works; },
+    dayKey: dayKey,
+
+    /* Ilova ochilganda holatga qo'yiladigan qiymatlar. QUESTIONS
+       uzatiladi, chunki ref'larni indeksga o'girish kerak. */
+    initial: function (questions) {
+      orphans = {
+        wrong: orphansOf(store.wrong, questions),
+        saved: orphansOf(store.saved, questions),
+        signs: orphansOf(store.signs, questions),
+      };
+      return {
+        points: store.points,
+        marathonBest: store.marathonBest,
+        streak: liveStreak(),
+        longestStreak: store.longest,
+        wrongIds: toIndices(store.wrong, questions),
+        savedIds: toIndices(store.saved, questions),
+        answeredCount: store.answered,
+        examsDone: store.exams,
+        signsAnswered: toIndices(store.signs, questions),
+        tasksAwarded: store.tasks.slice(),
+      };
+    },
+
+    /* Holatni diskka. Chaqiruvchi butun state'ni beradi, bu yerda faqat
+       kerakli maydonlar olinadi — ilova holatining qolgani (ochiq oyna,
+       tanlangan tab, test) saqlanmaydi va saqlanmasligi kerak. */
+    save: function (state, questions) {
+      if (!state) return;
+      store.points = state.points || 0;
+      store.marathonBest = state.marathonBest || 0;
+      store.wrong = uniq(toRefs(state.wrongIds, questions).concat(orphans.wrong));
+      store.saved = uniq(toRefs(state.savedIds, questions).concat(orphans.saved));
+      store.day = dayKey();
+      store.answered = state.answeredCount || 0;
+      store.exams = state.examsDone || 0;
+      store.signs = uniq(toRefs(state.signsAnswered, questions).concat(orphans.signs));
+      store.tasks = Array.isArray(state.tasksAwarded) ? state.tasksAwarded.slice() : [];
+
+      pending = Object.assign({}, store);
+      if (!timer) timer = setTimeout(commit, 400);
+    },
+
+    flush: flush,
+
+    /* Javob berildi. Ikki ish qiladi:
+         1. streak'ni yuritadi (kuniga bir marta)
+         2. javobni navbatga qo'yadi (serverga yuborish uchun)
+       Qaytaradi: streak yoki kun o'zgargan bo'lsa 0 dan farqli qiymat,
+       aks holda null. Chaqiruvchi shunda ekranni yangilaydi. */
+    answered: function (a) {
+      // Ilova 04:00 dan o'tib ochiq qolgan bo'lsa — yangi kun.
+      const rolled = rollDay();
+      const today = dayKey();
+      let changed = rolled ? -1 : null;
+
+      store.totalAnswered += 1;
+      if (a && a.correct) store.totalCorrect += 1;
+
+      if (store.lastActiveDay !== today) {
+        const gap = daysBetween(store.lastActiveDay, today);
+        // gap === 1 → kecha ham yechgan, ketma-ketlik davom etadi.
+        // Boshqa har qanday holatda (birinchi kun yoki uzilgan) — 1 dan.
+        store.streak = (gap === 1) ? store.streak + 1 : 1;
+        store.lastActiveDay = today;
+        if (store.streak > store.longest) store.longest = store.streak;
+        changed = store.streak;
+      }
+
+      if (a && a.ref) {
+        const q = read(QUEUE_KEY);
+        const queue = Array.isArray(q) ? q : [];
+        queue.push({
+          u: uuid(),
+          r: a.ref,
+          c: a.chosen,
+          k: a.correct ? 1 : 0,
+          m: a.mode || 'exam',
+          t: new Date().toISOString(),
+        });
+        // Eng qadimgilari tashlanadi (yangi javob qimmatliroq).
+        write(QUEUE_KEY, queue.length > QUEUE_MAX ? queue.slice(-QUEUE_MAX) : queue);
+      }
+
+      pending = Object.assign({}, store);
+      if (!timer) timer = setTimeout(commit, 400);
+      return changed;
+    },
+
+    /* Imtihon oxirigacha yetdi. Alohida chaqiruv kerak, chunki
+       "imtihon topshirildi" javob berishdan boshqa fakt: yarim
+       tashlangan imtihon sanalmasligi kerak. */
+    examFinished: function () {
+      store.totalExams += 1;
+      pending = Object.assign({}, store);
+      if (!timer) timer = setTimeout(commit, 400);
+    },
+
+    /* Profil ekranidagi umrbod raqamlar. Hech qanday hisob yo'q
+       bo'lsa nol qaytadi — o'ylab topilgan raqam emas. */
+    stats: function () {
+      return {
+        answered: store.totalAnswered,
+        correct: store.totalCorrect,
+        exams: store.totalExams,
+        accuracy: store.totalAnswered
+          ? Math.round(store.totalCorrect / store.totalAnswered * 100)
+          : null,
+        longest: store.longest,
+      };
+    },
+
+    longest: function () { return store.longest; },
+    streak: liveStreak,
+
+    /* Serverga yuborilmagan javoblar soni. Sinxronizatsiya kelganda
+       (Faza 4) shu navbat bo'shatiladi. */
+    queued: function () {
+      const q = read(QUEUE_KEY);
+      return Array.isArray(q) ? q.length : 0;
+    },
+
+    /* Hammasini tozalash. Hozir interfeysda tugmasi yo'q — u
+       sozlamalarga qo'shilganda shu funksiya chaqiriladi. */
+    reset: function () {
+      store = blank();
+      store.day = dayKey();
+      orphans = { wrong: [], saved: [], signs: [] };
+      pending = null;
+      if (timer) { clearTimeout(timer); timer = null; }
+      try { localStorage.removeItem(KEY); localStorage.removeItem(QUEUE_KEY); }
+      catch (e) {}
+    },
+  };
+
+  /* client_uuid — idempotentlik kaliti (REJA.md §3). Navbat ikki marta
+     yuborilsa server ikkinchisini e'tiborsiz qoldiradi. crypto.randomUUID
+     eski WebView'da bo'lmasligi mumkin, shuning uchun zaxira yo'l bor. */
+  function uuid() {
+    if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+    const b = new Uint8Array(16);
+    if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(b);
+    else for (let i = 0; i < 16; i++) b[i] = Math.floor(Math.random() * 256);
+    b[6] = (b[6] & 0x0f) | 0x40;
+    b[8] = (b[8] & 0x3f) | 0x80;
+    const h = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+    return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' +
+           h.slice(16, 20) + '-' + h.slice(20);
+  }
+})();
