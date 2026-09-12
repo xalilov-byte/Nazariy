@@ -33,10 +33,26 @@ const SRC = 'src';
 /* mobile — foydalanuvchi ilovasi (APK). Admin va landing kesiladi.
    web    — sayt: foydalanuvchi ilovasi + landing. Admin kesiladi.
    admin  — faqat admin panel. Foydalanuvchi ilovasi va landing kesiladi. */
+/* money — Pro obunasi va to'lov oqimi.
+
+   NIMA UCHUN MOBIL BUILD'DA O'CHIRILGAN: dizayndagi to'lov oqimi
+   TAQLID. "Tasdiqlash" bosilganda hech qanday to'lov bo'lmaydi, ilova
+   shunchaki pro.active = true qilib qo'yadi. Bu Google Play uchun ikki
+   sababdan yaramaydi:
+
+     1. Play'da raqamli mahsulot sotiladigan bo'lsa, to'lov Play
+        Billing orqali o'tishi SHART (Payments policy).
+     2. Tugma bosiladi, lekin hech narsa qilmaydi — bu "broken
+        functionality" va tekshiruvdan o'tmaydi. Tekshiruvchi "Payme"
+        ni tanlab, tasdiqlab, Pro'ni bepul olgan bo'lardi.
+
+   Shuning uchun v1 da pul qatlami MOBIL BUILD'GA KIRMAYDI. Dizayn
+   manbasida va sayt build'ida u o'z o'rnida qoladi — ish davom etadi
+   (REJA.md Faza 7), lekin do'konga tugallanmagan to'lov chiqmaydi. */
 const TARGETS = {
-  mobile: { out: 'www',        app: true,  admin: false, landing: false, shell: 'shell.css' },
-  web:    { out: 'dist/web',   app: true,  admin: false, landing: true,  shell: 'shell.css' },
-  admin:  { out: 'dist/admin', app: false, admin: true,  landing: false, shell: 'shell-admin.css' },
+  mobile: { out: 'www',        app: true,  admin: false, landing: false, money: false, shell: 'shell.css' },
+  web:    { out: 'dist/web',   app: true,  admin: false, landing: true,  money: true,  shell: 'shell.css' },
+  admin:  { out: 'dist/admin', app: false, admin: true,  landing: false, money: true,  shell: 'shell-admin.css' },
 };
 
 const targetArg = process.argv.slice(2).find(a => a.startsWith('--target='));
@@ -224,6 +240,24 @@ function cutLine(code, needle, what) {
 /* Markup: uchta mustaqil ko'rinish bo'limi bor. */
 if (!CFG.admin)   markup = cutSection(markup, 'isAdmin');
 if (!CFG.landing) markup = cutSection(markup, 'isLanding');
+
+/* Pul qatlami: Pro ekrani, to'lov oynasi va profildagi kirish qatori.
+   Markup kesiladi — mantiq (valsMoney) qoladi, chunki uning ichida
+   liga va reyting qiymatlari ham bor. Kesilgandan keyin pastdagi
+   tekshiruv kirish nuqtasi qolmaganini tasdiqlaydi, ya'ni mantiq
+   ishlatilmaydigan holga tushadi. */
+if (!CFG.money) {
+  markup = cutSection(markup, 'proOn');
+  markup = cutSection(markup, 'payOn');
+
+  // Profildagi "Pro" qatori — Pro ekraniga yagona kirish nuqtasi.
+  const proRow = markup.match(
+    /\n\s*<button onClick="\{\{ openPro \}\}"[^]*?<\/button>/);
+  if (!proRow) {
+    throw new Error('[build] profildagi Pro qatori topilmadi — manba o\'zgargan');
+  }
+  markup = markup.replace(proRow[0], '');
+}
 if (!CFG.app)     markup = cutSection(markup, 'isApp');
 
 /* Maket chromi'dagi ko'rinish almashtirgichi: mavjud bo'lmagan bo'limga
@@ -299,14 +333,21 @@ const T = [
    '<sc-if value="{{ quizOn }}" hint-placeholder-val="{{ false }}">\n      <div style="flex:1;display:flex;flex-direction:column;background:var(--background)">',
    '<sc-if value="{{ quizOn }}" hint-placeholder-val="{{ false }}">\n      <div class="nz-screens-quiz" style="flex:1;display:flex;flex-direction:column;background:var(--background)">'],
 
-  ['Pro ekrani maydoni',
-   '<sc-if value="{{ proOn }}" hint-placeholder-val="{{ false }}">\n      <div style="flex:1;display:flex;flex-direction:column;background:var(--background)">',
-   '<sc-if value="{{ proOn }}" hint-placeholder-val="{{ false }}">\n      <div class="nz-screens-quiz" style="flex:1;display:flex;flex-direction:column;background:var(--background)">'],
 
   ['pastki tab paneli',
    '<div style="position:absolute;left:0;right:0;bottom:0;height:68px;background:var(--surface);border-top:1px solid var(--hairline);display:grid;grid-template-columns:repeat(4,1fr);align-items:center">',
    '<div class="nz-nav" style="position:absolute;left:0;right:0;bottom:0;height:68px;background:var(--surface);border-top:1px solid var(--hairline);display:grid;grid-template-columns:repeat(4,1fr);align-items:center">'],
 ];
+
+/* Pro ekranidagi almashtirish faqat pul qatlami BOR build'da kerak —
+   aks holda u kesilgan bo'limni qidirib, build'ni yiqitadi. */
+if (CFG.money) {
+  T.push(
+  ['Pro ekrani maydoni',
+   '<sc-if value="{{ proOn }}" hint-placeholder-val="{{ false }}">\n      <div style="flex:1;display:flex;flex-direction:column;background:var(--background)">',
+   '<sc-if value="{{ proOn }}" hint-placeholder-val="{{ false }}">\n      <div class="nz-screens-quiz" style="flex:1;display:flex;flex-direction:column;background:var(--background)">']
+  );
+}
 
 if (CFG.app) {
   for (const [what, from, to] of T) {
@@ -502,6 +543,18 @@ if (CFG.app) NEED.push('nz-nav', 'nz-frame');
 if (CFG.admin) NEED.push('valsManage', 'Admin panel');
 if (CFG.landing) NEED.push('Avtotestdan birinchi urinishda');
 
+/* Pul qatlami kesilgan build'da unga kirish YO'LI qolmasligi kerak.
+   Markup'da bitta ham chaqiruv qolsa, tugma chizilib, bosilganda
+   hech narsa bo'lmaydi — aynan Play rad etadigan holat. */
+if (!CFG.money) {
+  for (const bad of ['openPro', 'openPay', 'openRedeem', 'payStepMethod', 'proFinePrint']) {
+    if (markup.indexOf(bad) !== -1) {
+      throw new Error(`[build] "${bad}" ${TARGET} build'ining markup'ida qoldi — ` +
+                      `pul qatlami to'liq kesilmagan`);
+    }
+  }
+}
+
 for (const need of NEED) {
   if (html.indexOf(need) === -1) throw new Error(`[build] yig'ilgan faylda "${need}" yo'q — kesish noto'g'ri`);
 }
@@ -545,3 +598,4 @@ console.log(`${OUT}/index.html — ${kb(html.length)}`);
 console.log(`${OUT}/fonts     — ${fontCount} ta woff2`);
 console.log(`${OUT}/*.jpg     — 2 ta fon surati`);
 if (removed.length) console.log(`kesildi        — admin qatlami (${removed.length} ta nom)`);
+if (!CFG.money) console.log(`kesildi        — pul qatlami (Pro va to'lov oqimi)`);

@@ -320,19 +320,19 @@
               <div style="width:26px;height:26px;background:var(--gold);border-radius:6px;transform:rotate(45deg)"></div>
               <span class="display" style="font-size:56px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums">{{ pointsLabel }}</span>
             </div>
-            <div style="margin-top:8px;font-size:13px;font-weight:600;color:var(--muted-foreground)">Kumush liga · #142</div>
+            <div style="margin-top:8px;font-size:13px;font-weight:600;color:var(--muted-foreground)">{{ leagueLabel }}</div>
           </div>
 
           <button onClick="{{ goProfile }}" style="display:block;width:100%;text-align:left;background:var(--surface);border-radius:20px;padding:16px;box-shadow:var(--shadow);color:var(--foreground)">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
               <span style="font-size:16px;font-weight:600">Imtihon tayyorligi</span>
               <span style="display:flex;align-items:center;gap:6px">
-                <span style="font-size:16px;font-weight:800;color:var(--primary-ink);font-variant-numeric:tabular-nums">72%</span>
+                <span style="font-size:16px;font-weight:800;color:var(--primary-ink);font-variant-numeric:tabular-nums">{{ readyLabel }}</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)"><path d="M9 6l6 6-6 6"></path></svg>
               </span>
             </div>
             <div style="height:10px;border-radius:999px;background:var(--surface-alt);overflow:hidden">
-              <div style="width:72%;height:100%;border-radius:999px;background:var(--primary)"></div>
+              <div style="{{ readyBarStyle }}"></div>
             </div>
           </button>
 
@@ -347,7 +347,11 @@
                  text-shadow ham qo'shildi — qo'shimcha o'qilishlilik sug'urtasi. */ -->
             <button onClick="{{ goLeague }}" class="nz-card-reyting" style="display:block;width:100%;text-align:left;background-color:var(--purple);border-radius:20px;padding:16px;box-shadow:var(--shadow);color:#fff">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 3.8h10v4.6a5 5 0 0 1-10 0z"></path><path d="M7 5.2H5.1a2.3 2.3 0 0 0 0 4.6H6M17 5.2h1.9a2.3 2.3 0 0 1 0 4.6H18"></path><path d="M12 13.4v3.6M8.2 19.6h7.6"></path></svg>
-              <div style="margin-top:10px;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px rgba(0,0,0,.45)">#142</div>
+              <!-- Ilgari bu yerda "#142" — o'ylab topilgan o'rin turardi.
+                   O'rin boshqa odamlar bilan solishtirishni, ya'ni serverni
+                   talab qiladi (REJA.md Faza 4). Uning o'rniga JORIY DARAJA
+                   ko'rsatiladi: u balldan hisoblanadi va haqiqat. -->
+              <div style="margin-top:10px;font-size:22px;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.45)">{{ leagueName }}</div>
               <div style="font-size:13px;font-weight:600;opacity:.95;text-shadow:0 1px 3px rgba(0,0,0,.45)">Reyting</div>
             </button>
             <!-- Matn rangi #0B2C1E (to'q yashil) dan oqqa o'zgardi — fon endi
@@ -502,6 +506,19 @@
         <sc-if value="{{ isLeague }}" hint-placeholder-val="{{ false }}">
         <div style="flex:1;padding:20px 16px 84px;display:flex;flex-direction:column;gap:12px;animation:nzRise .22s ease-out">
           <h1 class="display" style="margin:0;font-size:28px;font-weight:800;letter-spacing:-.02em">Reyting</h1>
+          <!-- HALOL OGOHLANTIRISH. Pastdagi ro'yxatdagi ismlar va ballar
+               namunaviy: haqiqiy reyting foydalanuvchilarni bir-biri bilan
+               solishtirishni, ya'ni serverni talab qiladi (REJA.md Faza 4).
+               Ilgari bu ro'yxat hech qanday izohsiz turardi va odam uni
+               haqiqiy deb o'ylardi — o'zini 142-o'rinda deb hisoblardi.
+               Ro'yxatni butunlay olib tashlash ham mumkin edi, lekin
+               shunda bo'lim bo'sh qolardi va nima bo'lishini ko'rsatmasdi.
+               Shuning uchun ro'yxat qoladi, lekin ustida nima ekani
+               yozilgan. Server ulangach bu qator olib tashlanadi. -->
+          <div style="display:flex;gap:10px;align-items:flex-start;background:var(--surface);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-ink)" style="flex:none;margin-top:1px"><path d="M12 9v4M12 17h.01"></path><path d="M10.3 3.1 2.9 16.9a2 2 0 0 0 1.7 3h14.8a2 2 0 0 0 1.7-3L13.7 3.1a2 2 0 0 0-3.4 0z"></path></svg>
+            <span style="font-size:13px;font-weight:600;line-height:1.45;color:var(--muted-foreground)">Reyting hali ishga tushmagan — quyidagi roʻyxat namunaviy. Ballaringiz telefonda saqlanmoqda va reyting yoqilganda hisobga olinadi.</span>
+          </div>
           <div style="display:flex;gap:4px;background:var(--surface-alt);padding:4px;border-radius:999px">
             <button onClick="{{ showPersonalRank }}" style="{{ segPersonalStyle }}">Shaxsiy</button>
             <button onClick="{{ showGroupRank }}" style="{{ segGroupStyle }}">Guruh</button>
@@ -515,13 +532,13 @@
           </div>
           <div style="background:var(--surface);border-radius:20px;padding:16px;box-shadow:var(--shadow)">
             <div style="display:flex;align-items:baseline;justify-content:space-between">
-              <span style="font-size:16px;font-weight:600">Kumush → Oltin</span>
-              <span style="font-size:13px;font-weight:600;color:var(--muted-foreground);font-variant-numeric:tabular-nums">12 480 / 15 000</span>
+              <span style="font-size:16px;font-weight:600">{{ leagueStep }}</span>
+              <span style="font-size:13px;font-weight:600;color:var(--muted-foreground);font-variant-numeric:tabular-nums">{{ leagueProgressLabel }}</span>
             </div>
             <div style="margin-top:12px;height:10px;border-radius:999px;background:var(--surface-alt);overflow:hidden">
-              <div style="width:83%;height:100%;background:var(--purple);border-radius:999px"></div>
+              <div style="{{ leagueBarStyle }}"></div>
             </div>
-            <div style="margin-top:10px;font-size:13px;font-weight:500;color:var(--muted-foreground)">Oltin ligagacha 2 520 ball</div>
+            <div style="margin-top:10px;font-size:13px;font-weight:500;color:var(--muted-foreground)">{{ leagueToNext }}</div>
           </div>
           <h2 style="margin:12px 0 0;font-size:20px;font-weight:700">Kumush liga · top</h2>
           <sc-for list="{{ leaderboard }}" as="p" hint-placeholder-count="7">
@@ -614,7 +631,7 @@
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.9 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.7 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.03z"></path></svg>
             </button>
           </div>
-          <span style="display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:7px 12px;border-radius:999px;background:var(--surface-alt);font-size:12px;font-weight:700">Kumush liga · #142</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:7px 12px;border-radius:999px;background:var(--surface-alt);font-size:12px;font-weight:700">{{ leagueLabel }}</span>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <sc-for list="{{ profileStats }}" as="s" hint-placeholder-count="4">
               <div style="background:var(--surface);border-radius:20px;padding:16px;box-shadow:var(--shadow)">
@@ -1954,6 +1971,33 @@ const site = (() => {
   };
 })();
 
+/* Liga darajalari va ularning chegaralari. Ilgari joriy daraja
+   ("Kumush") va o'rin ("#142") markup'da qo'lda yozilgan edi, ya'ni
+   hech narsa yechmagan odam ham "Kumush liga · #142" deb ko'rardi.
+   Daraja endi balldan hisoblanadi. O'RIN esa hisoblanmaydi va
+   KO'RSATILMAYDI: o'rin boshqa odamlar bilan solishtirishni talab
+   qiladi, ya'ni serverni (REJA.md Faza 4). O'ylab topilgan o'rin
+   ko'rsatishdan ko'ra hech narsa ko'rsatmagan halolroq. */
+const LEAGUES = [
+  { name: "Boshlovchi", min: 0 },
+  { name: "Bronza", min: 1000 },
+  { name: "Kumush", min: 5000 },
+  { name: "Oltin", min: 15000 },
+  { name: "Platina", min: 40000 },
+  { name: "Olmos", min: 100000 },
+];
+
+function leagueOf(points) {
+  let i = 0;
+  for (let k = 0; k < LEAGUES.length; k++) if (points >= LEAGUES[k].min) i = k;
+  return {
+    index: i,
+    name: LEAGUES[i].name,
+    next: LEAGUES[i + 1] || null,
+    floor: LEAGUES[i].min,
+  };
+}
+
 function bankTopics() {
   const seen = {};
   QUESTIONS.forEach(q => { if (q.topic) seen[q.topic] = 1; });
@@ -2562,6 +2606,27 @@ class Component extends DCLogic {
   //  Tartib muhim: keyingi modul oldingisining kalitini bekor qila oladi
   //  (masalan valsQuiz shell'dagi holatni test davomida ustidan yozadi).
   // ═══════════════════════════════════════════════════════════════════
+  /* ── Umumiy yordamchilar ────────────────────────────────────────────
+     Bu uchtasi bir necha vals* modulida kerak (liga yorlig'i shell'da,
+     liga progressi valsMoney'da), shuning uchun modul ichida emas,
+     metod sifatida turadi — nusxalanmasligi uchun. */
+  nfmt(n) { return Number(n).toLocaleString("ru-RU").replace(/\u00a0/g, " "); }
+
+  leagueNow() { return leagueOf(this.state.points); }
+
+  /* Imtihon tayyorligi = to'g'ri javoblar ulushi. Lekin uch javobdan
+     foiz chiqarish shovqin: 3/3 "100% tayyor" degani emas. Shuning
+     uchun bitta imtihonlik javob (20 ta) yig'ilmaguncha foiz
+     ko'rsatilmaydi. */
+  readiness() {
+    const st = window.nzProgress ? window.nzProgress.stats() : null;
+    const MIN = 20;
+    if (!st || st.answered < MIN) {
+      return { enough: false, pct: 0, left: st ? MIN - st.answered : MIN };
+    }
+    return { enough: true, pct: st.accuracy, left: 0 };
+  }
+
   renderVals() {
     const s = this.state;
     /* Barcha satr qiymatlari joriy tilga oʻgiriladi (i18n.js). Nima uchun
@@ -2595,6 +2660,9 @@ class Component extends DCLogic {
 
   // ─── MODUL 1: qobiq + ilova ekranlari ───────────────────────────────
   valsShell(s) {
+    const nf = n => this.nfmt(n);
+    const lg = this.leagueNow();
+    const ready = this.readiness();
     const q = s.quiz;
     const theme = s.theme;
     return {
@@ -2636,6 +2704,38 @@ class Component extends DCLogic {
 
       // Bosh ekrandagi "Mavzular" va "Yoʻl belgilari" kartalari ilgari
       // "18 mavzu" va "240 belgi" deb yozardi — ikkalasi ham yolgʻon edi.
+      // ── Liga va imtihon tayyorligi ────────────────────────────────
+      // Ikkalasi ham ilgari markup'da qo'lda yozilgan edi: "Kumush liga
+      // · #142", "Imtihon tayyorligi 72%", "12 480 / 15 000". Ya'ni
+      // ilovani birinchi ochgan odam ham o'zini Kumush ligada va 72%
+      // tayyor deb ko'rardi. Endi ikkalasi ham haqiqiy raqamdan.
+      leagueName: T(lg.name),
+      leagueLabel: T(lg.name) + " " + T("liga"),
+      leagueStep: lg.next ? T(lg.name) + " → " + T(lg.next.name) : T(lg.name),
+      leagueProgressLabel: lg.next
+        ? nf(s.points) + " / " + nf(lg.next.min)
+        : nf(s.points),
+      leagueBarStyle: {
+        width: (lg.next
+          ? Math.max(0, Math.min(100, Math.round(
+              (s.points - lg.floor) / (lg.next.min - lg.floor) * 100)))
+          : 100) + "%",
+        height: "100%", background: "var(--purple)", borderRadius: "999px"
+      },
+      leagueToNext: lg.next
+        ? T(lg.next.name) + " " + T("ligagacha") + " " + nf(lg.next.min - s.points) + " " + T("ball")
+        : T("Eng yuqori liga"),
+
+      // Tayyorlik = to'g'ri javoblar ulushi. Lekin uch javobdan foiz
+      // chiqarish shovqin: 3/3 "100% tayyor" degani emas. Shuning uchun
+      // bitta imtihonlik javob (20 ta) yig'ilmaguncha foiz emas, nima
+      // qilish kerakligi ko'rsatiladi.
+      readyLabel: ready.enough ? ready.pct + "%" : "—",
+      readyBarStyle: {
+        width: (ready.enough ? ready.pct : 0) + "%",
+        height: "100%", borderRadius: "999px", background: "var(--primary)"
+      },
+
       hasBot: !!site.bot,
       noBot: !site.bot,
       botUrl: site.botUrl,
@@ -3519,15 +3619,16 @@ class Component extends DCLogic {
         }
       })),
 
-      leagues: ["Boshlovchi", "Bronza", "Kumush", "Oltin", "Platina", "Olmos"].map(name => ({
+      // Joriy daraja balldan hisoblanadi (yuqoridagi leagueOf izohi).
+      leagues: ((lg) => LEAGUES.map(x => x.name).map(name => ({
         name,
         chipStyle: {
           padding: "9px 16px", borderRadius: "999px", fontSize: "14px", fontWeight: 700, whiteSpace: "nowrap",
-          background: name === "Kumush" ? "var(--purple)" : "var(--surface)",
-          color: name === "Kumush" ? "#fff" : "var(--muted-foreground)",
+          background: name === lg.name ? "var(--purple)" : "var(--surface)",
+          color: name === lg.name ? "#fff" : "var(--muted-foreground)",
           boxShadow: "var(--shadow)"
         }
-      })),
+      })))(this.leagueNow()),
 
       leaderboard: [
         { rank: 1, name: "Dilshod A.", points: "24 810" },

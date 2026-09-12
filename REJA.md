@@ -887,6 +887,77 @@ tugagach avtomatik o'chadi, hammasi jurnalda.
 
 ---
 
+### Faza 8 — Play Market tayyorgarligi ✅ (kod tomoni)
+
+Hammasi bitta hujjatda: **`PLAY.md`** — do'kon matnlari (uz + ru),
+Data safety anketasi javoblari, kontent reytingi, imzo kaliti tartibi
+va chiqarishdan oldingi ro'yxat.
+
+| Nima | Holati |
+|---|---|
+| Do'kon matnlari uz + ru | ✅ chegaralarga sig'gani tekshirilgan (30/80/4000) |
+| Data safety javoblari | ✅ maxfiylik siyosati bilan bir xil |
+| Kontent reytingi (IARC) | ✅ kutilayotgan 3+ |
+| Ikonka 512×512, sarlavha 1024×500 | ✅ `npm run play:assets` |
+| 5 ta ekran surati 1170×2532 | ✅ haqiqiy ilovadan |
+| Versiya boshqaruvi | ✅ `version.json` — yagona manba |
+| Ortiqcha ruxsat | ✅ faqat `INTERNET` + bildirishnoma |
+
+#### Ishlamaydigan to'lov oqimi mobil build'dan kesildi
+
+Bu **chiqarishga to'sqinlik qiladigan** masala edi. Dizayndagi to'lov
+oqimi taqlid: "Tasdiqlash" bosilganda hech qanday to'lov bo'lmaydi,
+ilova shunchaki `pro.active = true` qilib qo'yadi. Play uchun ikki
+sababdan yaramaydi — raqamli mahsulot Play Billing orqali sotilishi
+shart (Payments policy) va bosiladigan-lekin-ishlamaydigan tugma
+"broken functionality" hisoblanadi. Tekshiruvchi "Payme" ni tanlab,
+tasdiqlab, Pro'ni bepul olgan bo'lardi.
+
+Endi `build.mjs` da `money` bayrog'i bor: mobil build'da Pro ekrani,
+to'lov oynasi va profildagi kirish qatori **kesiladi** (admin qatlami
+bilan bir xil naqsh). Dizayn manbasida va sayt build'ida u o'z o'rnida
+qoladi — ish davom etadi (Faza 7). Kesilgandan keyin build markup'da
+kirish nuqtasi qolmaganini tekshiradi.
+
+#### Yo'l-yo'lakay tuzatilgan uchta yolg'on raqam
+
+Bularning hammasi **har bir foydalanuvchiga**, jumladan ilovani
+birinchi ochgan odamga ko'rsatilardi:
+
+1. **"Imtihon tayyorligi 72%"** — qo'lda yozilgan. Hech narsa
+   yechmagan odam ham o'zini 72% tayyor deb ko'rardi. Endi to'g'ri
+   javoblar ulushidan hisoblanadi, lekin **20 ta javob yig'ilmaguncha
+   foiz ko'rsatilmaydi** ("—"): uch javobdan foiz chiqarish shovqin,
+   3/3 "100% tayyor" degani emas.
+2. **"Kumush liga · #142"** — daraja ham, o'rin ham qo'lda yozilgan.
+   Daraja endi balldan hisoblanadi (`LEAGUES` chegaralari bilan).
+   O'rin esa **umuman ko'rsatilmaydi** — u boshqa odamlar bilan
+   solishtirishni, ya'ni serverni talab qiladi. O'ylab topilgan o'rin
+   ko'rsatishdan ko'ra hech narsa ko'rsatmagan halolroq.
+3. **"12 480 / 15 000" va "Oltin ligagacha 2 520 ball"** — endi
+   haqiqiy balldan.
+
+Va **reyting ro'yxati ustida ochiq ogohlantirish** paydo bo'ldi:
+"Reyting hali ishga tushmagan — quyidagi ro'yxat namunaviy". Ilgari
+ro'yxat hech qanday izohsiz turardi va odam uni haqiqiy deb o'ylardi.
+Ro'yxatni butunlay olib tashlash ham mumkin edi, lekin shunda bo'lim
+bo'sh qolardi va nima bo'lishini ko'rsatmasdi.
+
+Shu sababli **reyting ekrani Play suratlariga kirmadi**: do'kon surati
+mahsulotning reklamasi, hali ishlamaydigan funksiyani ko'rsatish
+odamni yolg'on va'da bilan yuklab olishga majburlaydi.
+
+#### Faza 8 da qolgani — sizdan
+
+- [ ] `site.config.json` → `contactEmail` (Play majburiy talabi)
+- [ ] Domen + saytni hostingga qo'yish (maxfiylik siyosati **ochiq
+      URL** bo'lishi shart)
+- [ ] Imzo kalitini yaratish va GitHub Secrets'ga qo'yish
+      (`PLAY.md` §6)
+- [ ] Play Console dasturchi hisobi
+- [ ] **Savollar bazasini to'ldirish** — hozir 10 ta. Admin panel
+      tayyor, kiritish mumkin. Bu eng katta to'siq (§6)
+
 ## 5. Ikki muhim ogohlantirish
 
 Bularni oldindan bilish kerak — keyin bilib qolish qimmat turadi.

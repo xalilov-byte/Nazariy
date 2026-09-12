@@ -153,10 +153,16 @@ window.nzRu = {
   /* ── Reyting va guruhlar ──────────────────────────────────────────── */
   "Shaxsiy": "Личный",
   "Guruh": "Группа",
-  "Kumush liga · #142": "Серебряная лига · #142",
+  /* Liga yorliqlari endi bo'laklardan yasaladi (daraja nomi + so'z),
+     chunki daraja balldan hisoblanadi. Ilgari butun satr qo'lda
+     yozilgan edi: "Kumush liga · #142", "Kumush → Oltin",
+     "Oltin ligagacha 2 520 ball". */
+  "Reyting hali ishga tushmagan — quyidagi roʻyxat namunaviy. Ballaringiz telefonda saqlanmoqda va reyting yoqilganda hisobga olinadi.":
+    "Рейтинг ещё не запущен — список ниже демонстрационный. Ваши баллы сохраняются на телефоне и будут учтены, когда рейтинг включат.",
+  "liga": "лига",
+  "ligagacha": "до лиги —",
+  "Eng yuqori liga": "Высшая лига",
   "Kumush liga · top": "Серебряная лига · топ",
-  "Kumush → Oltin": "Серебро → Золото",
-  "Oltin ligagacha 2 520 ball": "До золотой лиги 2 520 баллов",
   "Mening guruhim": "Моя группа",
   "Top guruhlar": "Топ групп",
   "Guruh yaratish": "Создать группу",

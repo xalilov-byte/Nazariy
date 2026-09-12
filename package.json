@@ -14,7 +14,8 @@
     "apk": "npm run sync && cd android && ./gradlew assembleRelease",
     "aab": "npm run sync && cd android && ./gradlew bundleRelease",
     "icons": "node tools/mkicons.mjs && npx capacitor-assets generate --android",
-    "og": "node tools/mkog.mjs"
+    "og": "node tools/mkog.mjs",
+    "play:assets": "node tools/mkplay.mjs"
   },
   "keywords": [],
   "author": "",

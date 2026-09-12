@@ -1,5 +1,15 @@
 apply plugin: 'com.android.application'
 
+import groovy.json.JsonSlurper
+
+/* Versiya loyiha ildizidagi version.json dan o'qiladi — bitta manba.
+   Nima uchun: Play Market bir xil yoki kichik versionCode bilan
+   yuklashni rad etadi, ya'ni har release'da u oshishi SHART. Raqam
+   ikki joyda (bu yerda va hujjatda) yozilsa, biri unutiladi va
+   yuklash oxirgi qadamda to'xtaydi. */
+def nzVersionFile = rootProject.file("../version.json")
+def nzVersion = new JsonSlurper().parseText(nzVersionFile.getText("UTF-8"))
+
 /* Yig'ilgan fayllar nomi: Nazariy-release.apk / Nazariy-debug.apk /
    Nazariy-release.aab (standart "app-..." o'rniga). */
 base {
@@ -13,8 +23,8 @@ android {
         applicationId "uz.nazariy.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+        versionCode nzVersion.versionCode
+        versionName nzVersion.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
