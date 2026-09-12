@@ -3105,6 +3105,18 @@ class Component extends DCLogic {
               runImport: () => {
                 if (!good || !self.may("content")) return;
                 const st = self.state;
+                /* Baza ulangan bo'lsa savollar SERVERGA qo'shiladi —
+                   qoralama sifatida (yangi savol darhol foydalanuvchiga
+                   chiqmasligi kerak). */
+                if (window.nzAdminActions && window.nzAdminActions.connected()) {
+                  const items = rows.filter(r => r.ok).map(r => ({
+                    ref: r.id || null, topic: r.topic, text: r.text,
+                    options: r.options, correct: r.correct,
+                  }));
+                  self.setState({ bulk: null, qFilter: "draft" });
+                  window.nzAdminActions.bulkInsert(items);
+                  return;
+                }
                 let next = 500;
                 const added = rows.filter(r => r.ok).map(r => {
                   next += 1;
@@ -3225,6 +3237,16 @@ class Component extends DCLogic {
                   self.logAction(mm.t, "#" + tu.id + " " + tu.name, mm.before, mm.after, why);
                 } else {
                   const tq = st.questions.filter(x => x.id === cc.id)[0];
+                  /* Baza ulangan bo'lsa o'zgarish SERVERDA bajariladi va
+                     ro'yxat qayta o'qiladi. Mahalliy o'zgartirish yolg'on
+                     bo'lardi: baza amalni rad etishi mumkin (huquq yo'q
+                     yoki to'rt ko'z qoidasi), interfeys esa "o'zgardi"
+                     deb ko'rsatib turardi. */
+                  if (window.nzAdminActions && window.nzAdminActions.connected() && tq && tq.uuid) {
+                    self.setState({ confirm: null, drawer: null });
+                    window.nzAdminActions.question(cc.act, tq, cc.opt);
+                    return;
+                  }
                   self.setState({
                     questions: st.questions.map(x => {
                       if (x.id !== cc.id) return x;

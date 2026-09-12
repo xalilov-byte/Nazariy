@@ -532,6 +532,59 @@ belgi soni qayta hisoblandi; tarmoq uzildi → saqlangan nusxa ishladi;
 test davomida yangilanish keldi → bank almashmadi, keyingi safarga
 saqlandi.
 
+#### Faza 3 — Admin panel bazaga ulandi ✅
+
+Panel endi haqiqiy bazada ishlaydi: kirish, savollar ro'yxati, holat
+o'zgartirish, javob kalitini tuzatish, ommaviy qo'shish va audit jurnali.
+
+| Fayl | Vazifasi |
+|---|---|
+| `src/admin-api.js` | Supabase Auth va REST (SDK'siz, oddiy `fetch`) |
+| `src/admin-boot.js` | Kirish oynasi, holat tasmasi, yozuv amallari |
+
+Ikkalasi ham **faqat admin build'iga** kiradi — mobil build'da
+`nzAdmin` 0 marta uchraydi (tekshirilgan).
+
+**Ikki qat'iy qoida:**
+
+1. **Namunaviy ma'lumot ko'rsatilmaydi.** Dizayndagi 8 soxta savol va 8
+   soxta foydalanuvchi panel ochilishi bilan tozalanadi. Xodim soxta
+   savolni haqiqiy deb o'ylab, mavjud bo'lmagan narsani tahrirlashga
+   urinmasligi kerak. Baza ulanmagan bo'lsa — bo'sh ro'yxat va sabab.
+2. **Holat har doim ko'rinib turadi.** Yuqoridagi tasma: kim kirgan,
+   nechta savol yuklandi, xato bo'lsa nima.
+
+**Yozuv amallari serverda bajariladi, mahalliy emas.** Sabab: baza
+amalni rad etishi mumkin (huquq yo'q yoki to'rt ko'z qoidasi), interfeys
+esa "o'zgardi" deb ko'rsatib turardi. Endi: server → keyin qayta o'qish.
+
+Baza rad etganda uning **o'z xabari** ko'rsatiladi. Masalan to'rt ko'z
+qoidasi ishlaganda tasmada shunday yoziladi:
+
+> Bajarilmadi: to'rt ko'z qoidasi: o'zingiz kiritgan o'zgarishni
+> o'zingiz nashr eta olmaysiz
+
+Yo'l-yo'lakay tuzatilgan yolg'on affordans: **"Rol (demo)"
+almashtirgichi**. Panel bazaga ulangandan keyin u interfeysda boshqa rol
+huquqlarini ko'rsatardi, baza esa baribir haqiqiy rolni qo'llaydi (RLS).
+Endi joriy rol shunchaki yoziladi.
+
+**Tekshirildi** (Supabase javoblari taqlid qilinib): kirilmagan → kirish
+oynasi va tozalangan ro'yxat; noto'g'ri parol → tushunarli xato; rol
+`user` → rad etiladi; rol `owner` → bazadagi savollar (qoralama ham);
+nashr etish → `PATCH questions?id=eq.…` `{state:'published'}` va qayta
+o'qish; baza rad etsa → xabar tasmada; ommaviy qo'shish → `POST` bilan
+`state:'draft'`, mavzu nomi id'ga o'giriladi, topilmagan mavzular
+o'tkazib yuboriladi va soni aytiladi. Konsol xatosi 0.
+
+#### Admin panelda hali ulanmagan qismlar
+
+- **Foydalanuvchilar bo'limi** — obuna va ball jadvallari hali yo'q.
+  Soxta ro'yxat ko'rsatmaslik uchun bo'sh turadi.
+- **Tahlil (DIF/DIS, DAU, voronka)** — `attempts` jadvali kerak
+  (Faza 4). Sarlavhada "barcha raqamlar namunaviy" deb yozilgan.
+- **Narxlar** — `pricing` jadvali bor, lekin ulanmagan (Faza 7).
+
 #### Qolgan ish (Faza 1/2 ning ikkinchi yarmi)
 
 - [ ] Migratsiyani Supabase'ga qo'llash — **`SUPABASE_DB_URL` secret'i

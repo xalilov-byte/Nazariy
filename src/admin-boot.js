@@ -152,6 +152,11 @@
     if (/relation .* does not exist|schema cache/i.test(m)) {
       return 'Baza sxemasi hali qoʻllanmagan (supabase/README.md §1)';
     }
+    if (/row-level security|permission denied/i.test(m)) {
+      return 'Bu amal uchun huquq yoʻq (rol tekshiring)';
+    }
+    // Baza o'zi bergan tushunarli xabar (masalan to'rt ko'z qoidasi)
+    // o'zgartirilmaydi — u aynan foydalanuvchi uchun yozilgan.
     return m || 'Nomaʼlum xato';
   }
 
@@ -178,6 +183,57 @@
       status('Maʼlumot yuklanmadi: ' + friendly(e), 'Qayta urinish', () => loadInto(me));
     }
   }
+
+  /* ── Yozuv amallari ────────────────────────────────────────────────
+     Dizayndagi tasdiq oynasi shu funksiyalarni chaqiradi. Har biri:
+     serverga yozadi → ro'yxatni qayta o'qiydi → holatni aytadi.
+
+     Xato bo'lsa u YASHIRILMAYDI. Ayniqsa to'rt ko'z qoidasi: baza
+     "o'zingiz kiritgan o'zgarishni o'zingiz nashr eta olmaysiz" deb
+     javob beradi va shu matn tasmada ko'rinadi — bu qoidaning butun
+     ma'nosi shunda. */
+  const STATE_BY_ACT = {
+    qReview: 'review', qPublish: 'published',
+    qDraft: 'draft', qArchive: 'archived', qRestore: 'draft',
+  };
+
+  window.nzAdminActions = {
+    connected: function () { return api.signedIn(); },
+
+    question: async function (act, q, opt) {
+      const me = api.profile();
+      status('Saqlanmoqda…');
+      try {
+        if (act === 'qKey') {
+          // Faqat kalit yuboriladi: holatni ko'rib chiqishga qaytarishni
+          // baza o'zi qiladi (trigger), klient uni takrorlamaydi.
+          await api.updateQuestion(q.uuid, { correct: opt });
+        } else if (STATE_BY_ACT[act]) {
+          await api.updateQuestion(q.uuid, { state: STATE_BY_ACT[act] });
+        } else {
+          throw new Error('Nomaʼlum amal: ' + act);
+        }
+        await loadInto(me);
+      } catch (e) {
+        status('Bajarilmadi: ' + friendly(e), 'Yopish', () => loadInto(me));
+      }
+    },
+
+    bulkInsert: async function (items) {
+      const me = api.profile();
+      status('Qoʻshilmoqda…');
+      try {
+        const r = await api.insertQuestions(items);
+        await loadInto(me);
+        if (r.skipped.length) {
+          status(r.added + ' ta savol qoʻshildi · ' + r.skipped.length +
+                 ' tasi oʻtkazib yuborildi (mavzu topilmadi)', 'Yopish', () => loadInto(me));
+        }
+      } catch (e) {
+        status('Qoʻshilmadi: ' + friendly(e), 'Yopish', () => loadInto(me));
+      }
+    },
+  };
 
   /* ── Ishga tushirish ───────────────────────────────────────────────── */
   async function start() {

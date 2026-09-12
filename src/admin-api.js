@@ -207,6 +207,57 @@
       } catch (e) { return null; }
     },
 
+    /* ── Yozish ──────────────────────────────────────────────────────── */
+    /* Savol holati va javob kaliti FAQAT shu yerdan o'zgaradi. Mahalliy
+       o'zgartirish (state ichida) qilinmaydi: baza amalni rad etishi
+       mumkin — RLS huquq bermasa yoki to'rt ko'z qoidasi ishlasa. Bunday
+       holda interfeys "o'zgardi" deb ko'rsatib, aslida hech narsa
+       o'zgarmagan bo'lardi. Shuning uchun: server → keyin qayta o'qish. */
+    updateQuestion: async function (uuid, patch) {
+      const rows = await rest('questions?id=eq.' + encodeURIComponent(uuid), {
+        method: 'PATCH',
+        headers: { Prefer: 'return=representation' },
+        body: patch,
+      });
+      return (rows && rows[0]) || null;
+    },
+
+    /* Ommaviy qo'shish. Savollar QORALAMA sifatida qo'shiladi — yangi
+       savol darhol foydalanuvchiga chiqmasligi kerak, u avval ko'rib
+       chiqishdan o'tadi. */
+    insertQuestions: async function (items) {
+      // topics.slug → id: import faylida mavzu NOMI keladi.
+      const topics = await rest('topics?select=id,name,slug');
+      const byName = {};
+      (topics || []).forEach(t => { byName[t.name.toLowerCase()] = t.id; });
+
+      const unknown = [];
+      const rows = [];
+      items.forEach(it => {
+        const tid = byName[String(it.topic || '').toLowerCase()];
+        if (!tid) { unknown.push(it.topic); return; }
+        rows.push({
+          ref: it.ref || null,
+          topic_id: tid,
+          text: it.text,
+          options: it.options,
+          correct: it.correct,
+          state: 'draft',
+        });
+      });
+      if (!rows.length) {
+        const e = new Error(unknown.length
+          ? 'Mavzu bazada topilmadi: ' + [...new Set(unknown)].join(', ')
+          : 'Qo\'shiladigan savol yo\'q');
+        e.soft = true;
+        throw e;
+      }
+      const saved = await rest('questions', {
+        method: 'POST', headers: { Prefer: 'return=representation' }, body: rows,
+      });
+      return { added: (saved || []).length, skipped: unknown };
+    },
+
     /* ── O'qish ──────────────────────────────────────────────────────── */
     loadAll: async function () {
       const [topics, questions, audit] = await Promise.all([
