@@ -887,6 +887,79 @@ tugagach avtomatik o'chadi, hammasi jurnalda.
 
 ---
 
+### Kontent quvuri tuzatildi ✅ — 700 savol shu yo'ldan o'tadi
+
+Loyihaning eng katta to'siqi kontent (§6), kontent esa ommaviy import
+orqali kiradi. O'sha yo'lni tekshirganda **to'rtta kamchilik** topildi
+va hammasi tuzatildi. Yo'riqnoma: **`SAVOLLAR.md`**, shablon:
+**`savollar-shablon.csv`**.
+
+#### 1. Izoh ustuni umuman yo'q edi
+
+CSV formati `id;mavzu;savol;A;B;C;D;togri` edi — **izoh yo'q**. Ya'ni
+700 savolni import qilgan odam 700 ta **izohsiz** savol olardi, keyin
+ularni bittalab ochib izoh yozishga majbur bo'lardi. Bu importning
+butun ma'nosini yo'q qiladi, izoh esa savolning eng qimmatli qismi:
+javobni yodlab olgan odam imtihonda savol boshqacha yozilgan bo'lsa
+yana xato qiladi, qoidani tushungan odam esa yo'q.
+
+Endi `izoh` va `belgi` ustunlari bor va ikkalasi bazaga yetib boradi
+(`explain`, `sign`). Ilgari `runImport` ularni yubormasdi ham.
+
+#### 2. Ilova o'zi yozgan faylni qaytib o'qiy olmasdi
+
+Eksport `csvCell()` bilan yozardi — nuqtali vergul yoki qo'shtirnoq
+bo'lgan katakni qo'shtirnoq ichiga olardi. Import esa oddiy
+`split(";")` ishlatardi. Natijada izohda bitta `;` bo'lsa,
+**eksport → tahrir → import** aylanishida ustunlar siljib ketardi.
+Endi ikkalasi bir xil qoidaga bo'ysunadi (`parseCsvLine`) va aylanish
+matnni, variantlarni, izohni, belgini va kalitni buzmasligi
+tekshirildi.
+
+#### 3. Ustunlar o'rni bo'yicha o'qilardi
+
+Ustun qo'shish mumkin emasdi (izoh aynan shu sababdan qo'shilmagan
+edi) va ustunlarni boshqa tartibda yozgan fayl **jimgina** noto'g'ri
+o'qilardi — mavzu ustuniga savol matni tushib ketardi. Endi ustunlar
+**nomi** bo'yicha o'qiladi, tartib muhim emas, sarlavha tanilmasa
+bitta tushunarli xato beriladi.
+
+#### 4. Matn maydoni yo'q edi — panelni ishlatib bo'lmasdi
+
+Eng qiziq kamchilik: import paneli faqat uchta **namunani**
+ko'rsatardi, o'z faylini qo'yish joyi yo'q edi. Ya'ni butun import
+yo'li demo holida qolgan edi.
+
+Sababi texnik: ilova runtime'i faqat `onclick`ni qo'llaydi va DOM'ni
+morph qiladi — har qayta chizishda `textarea` ichidagi matn
+almashtirilardi va odam yozayotganini yo'qotardi. Shuning uchun
+maydon **ilova daraxtidan tashqarida** turadi (admin qatlamida,
+xuddi kirish oynasi kabi): «Fayldan qo'yish…» tugmasi oyna ochadi,
+matn tekshiriladi va holatga yoziladi, jadval esa dizaynda
+chiziladi.
+
+#### Yana: noma'lum belgi kaliti endi xato
+
+`belgi` ustuniga ro'yxatdan tashqari kalit yozilsa (masalan
+`tezlik`), savol "belgi savoli" bo'lib qolardi, lekin rasm
+chizilmasdi — foydalanuvchi *"Rasmda ko'rsatilgan belgi nimani
+anglatadi?"* degan savolni **rasmsiz** ko'rardi. Endi faqat to'rtta
+chizilgan kalit qabul qilinadi: `priority`, `noentry`, `warning`,
+`stop`.
+
+Izohsiz qatorlar esa **xato emas, ogohlantirish**: panel sariq
+"N ta izohsiz" chipini ko'rsatadi va har qator ostida "izoh yo'q"
+deb yozadi — shunda ular jimgina qo'shilib ketmaydi.
+
+**Tekshirildi** (brauzerda, baza javoblari taqlid qilinib): to'rtta
+namuna; noma'lum belgi kaliti → xato; qochirishli izoh (`;` va `""`)
+→ to'g'ri o'qildi; ustunlar aralash tartibda → to'g'ri; yaramas
+sarlavha → bitta tushunarli xato; eksport → import aylanishi →
+hech narsa yo'qolmadi; o'z CSV'ini qo'yish → jadvalda ko'rindi va
+bazaga izoh bilan qoralama sifatida ketdi. `savollar-shablon.csv`
+haqiqiy o'quvchidan toza o'tdi va undagi mavzu nomlari seed'dagilar
+bilan aynan bir xil.
+
 ### Faza 8 — Play Market tayyorgarligi ✅ (kod tomoni)
 
 Hammasi bitta hujjatda: **`PLAY.md`** — do'kon matnlari (uz + ru),

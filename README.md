@@ -33,6 +33,9 @@ nazariy-app/
 ├─ resources/           ← ilova ikonkasi va splash manbalari
 ├─ tools/               ← sayt yig'uvchi, ikonka va OG rasm generatori
 ├─ REJA.md              ← ishlab chiqish rejasi (bosqichlar, qarorlar)
+├─ SAVOLLAR.md          ← savollar bazasini to'ldirish yo'riqnomasi
+├─ savollar-shablon.csv ← import uchun shablon
+├─ PLAY.md              ← Play Console paketi (matnlar, Data safety)
 └─ .github/workflows/   ← GitHub'da avtomatik APK/AAB yig'ish
 ```
 

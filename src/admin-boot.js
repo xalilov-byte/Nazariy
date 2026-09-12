@@ -235,6 +235,88 @@
     },
   };
 
+  /* ── CSV qo'yish oynasi ────────────────────────────────────────────
+     Nima uchun dizaynda emas: ilova runtime'i faqat onclick'ni qo'llaydi
+     va DOM'ni MORPH qiladi — ya'ni har qayta chizishda textarea ichidagi
+     matn xotiradagi holat bilan almashtirilardi va odam yozayotganini
+     yo'qotardi. Shuning uchun maydon ilova daraxtidan tashqarida
+     turadi, xuddi kirish oynasi kabi, va natijani holatga yozadi.
+
+     Bu funksiya kontent kiritishning asosiy yo'li: 700 ta savol
+     jadvalda (Excel/Sheets) tayyorlanadi, CSV sifatida saqlanadi va
+     shu yerga qo'yiladi. */
+  window.nzAdminPaste = function () {
+    const app = window.nzApp;
+    if (!app) return;
+
+    const back = el('div',
+      'position:fixed;inset:0;z-index:9999;display:grid;place-items:center;' +
+      'background:rgba(10,8,22,.55);padding:20px');
+    const card = el('div',
+      'width:100%;max-width:780px;background:var(--surface);border-radius:20px;' +
+      'padding:24px;box-shadow:var(--shadow);font:500 14px Manrope,system-ui,sans-serif;' +
+      'color:var(--foreground);display:flex;flex-direction:column;gap:12px');
+
+    card.appendChild(el('div',
+      'font:800 20px Manrope,system-ui,sans-serif;letter-spacing:-.02em',
+      'CSV matnini qoʻying'));
+    card.appendChild(el('div',
+      'color:var(--muted-foreground);font-size:13px;line-height:1.55',
+      'Birinchi qator — sarlavha. Kerakli ustunlar: mavzu, savol, A, B, C, D, ' +
+      'togri. Ixtiyoriy: id, izoh, belgi. Ustunlar nomi boʻyicha oʻqiladi, ' +
+      'tartibi muhim emas. Ajratgich — nuqtali vergul (;).'));
+
+    const ta = el('textarea',
+      'width:100%;min-height:260px;box-sizing:border-box;padding:12px 14px;' +
+      'border-radius:12px;border:1px solid var(--hairline);background:var(--surface-alt);' +
+      'color:var(--foreground);resize:vertical;' +
+      'font:500 12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace');
+    ta.placeholder = 'mavzu;savol;A;B;C;D;togri;izoh;belgi';
+    // Allaqachon qo'yilgan matn bo'lsa tahrirlash uchun qaytariladi.
+    const cur = app.state.bulk && app.state.bulk.text;
+    if (cur) ta.value = cur;
+    card.appendChild(ta);
+
+    const note = el('div', 'font-size:13px;font-weight:600;min-height:18px');
+    card.appendChild(note);
+
+    const row = el('div', 'display:flex;gap:10px;justify-content:flex-end');
+    const cancel = el('button',
+      'padding:12px 18px;border-radius:12px;background:var(--surface-alt);' +
+      'color:var(--foreground);font:700 14px Manrope,system-ui,sans-serif;cursor:pointer',
+      'Bekor qilish');
+    const ok = el('button',
+      'padding:12px 18px;border-radius:12px;background:var(--primary);color:#fff;' +
+      'font:800 14px Manrope,system-ui,sans-serif;cursor:pointer', 'Tekshirish');
+    row.appendChild(cancel);
+    row.appendChild(ok);
+    card.appendChild(row);
+
+    back.appendChild(card);
+    document.body.appendChild(back);
+    ta.focus();
+
+    const close = () => { if (back.parentNode) back.parentNode.removeChild(back); };
+    cancel.onclick = close;
+    back.onclick = e => { if (e.target === back) close(); };
+    document.addEventListener('keydown', function esc(e) {
+      if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+    });
+
+    ok.onclick = () => {
+      const text = ta.value.trim();
+      if (!text) { note.style.color = 'var(--destructive)'; note.textContent = 'Matn boʻsh'; return; }
+      if (text.split('\n').filter(l => l.trim()).length < 2) {
+        note.style.color = 'var(--destructive)';
+        note.textContent = 'Sarlavhadan keyin bitta ham qator yoʻq';
+        return;
+      }
+      // Tekshiruv va jadval dizaynda — biz faqat matnni holatga yozamiz.
+      app.setState({ bulk: Object.assign({}, app.state.bulk || { mode: 'import' }, { text: text }) });
+      close();
+    };
+  };
+
   /* ── Ishga tushirish ───────────────────────────────────────────────── */
   async function start() {
     const app = window.nzApp;

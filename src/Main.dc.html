@@ -1590,6 +1590,9 @@
                 <span style="{{ r.textStyle }}">{{ r.text }}</span>
                 <span style="{{ r.topicStyle }}">{{ r.topic }}</span>
                 <span style="{{ r.stateWrap }}"><span style="{{ r.stateStyle }}">{{ r.state }}</span></span>
+                <sc-if value="{{ r.hasWarn }}" hint-placeholder-val="{{ false }}">
+                  <span style="{{ r.warnStyle }}">{{ r.warn }}</span>
+                </sc-if>
                 <sc-if value="{{ r.hasErr }}" hint-placeholder-val="{{ false }}">
                   <span style="{{ r.errStyle }}">{{ r.err }}</span>
                 </sc-if>
@@ -2130,17 +2133,53 @@ const METHOD_SHARE = [
 /* ─── 1.4 BOSHQARUV ──────────────────────────────────────────────────── */
 // Ommaviy import/eksport ustunlari — bitta ro'yxat ikkala yo'nalishga xizmat
 // qiladi, shuning uchun eksport qilingan fayl qaytadan import qilinadi.
-const CSV_COLUMNS = ["id", "mavzu", "savol", "A", "B", "C", "D", "togri", "holat"];
-// Prototipda matn maydoni yo'q, shuning uchun "buferga qo'yilgan" uchta real
-// stsenariy taklif qilinadi — validatsiya xulqini ko'rsatish uchun ataylab
-// biri toza, biri xatoli, biri takroriy.
+/* CSV ustunlari. izoh va belgi QO'SHILDI — ular yo'q edi va bu jimgina
+   ma'lumot yo'qotardi: ommaviy import orqali kirgan savolning IZOHI
+   tushib qolardi. Izoh esa imtihonga tayyorlanayotgan odam uchun
+   savolning eng qimmatli qismi — u nima uchun shunday ekanini
+   tushuntiradi. 700 ta savolni izohsiz import qilib, keyin ularni
+   bittalab ochib izoh yozish importning butun ma'nosini yo'q qiladi.
+
+   Eksport ham shu ustunlar bilan yoziladi, ya'ni eksport → tahrir →
+   import aylanishi ma'lumot yo'qotmaydi. Ilgari yo'qotardi. */
+const CSV_COLUMNS = ["id", "mavzu", "savol", "A", "B", "C", "D", "togri",
+                     "izoh", "belgi", "holat"];
+
+/* Chizilgan yo'l belgilari. Import shu ro'yxatga qarab tekshiradi:
+   noma'lum kalit (masalan "tezlik") savolni "belgi savoli" qilib
+   qo'yadi, lekin rasm chizilmaydi — natijada foydalanuvchi "Rasmda
+   ko'rsatilgan belgi nimani anglatadi?" degan savolni RASMSIZ ko'radi.
+   Shuning uchun noma'lum kalit xato sifatida qaytariladi. */
+const SIGN_KEYS = ["priority", "noentry", "warning", "stop"];
+/* Prototipda matn maydoni yo'q, shuning uchun "buferga qo'yilgan" real
+   stsenariylar taklif qilinadi — validatsiya xulqini ko'rsatish uchun
+   ataylab biri toza, biri xatoli, biri izohsiz, biri qochirishli. */
 const BULK_SAMPLES = [
-  { id: "clean", label: "5 ta toza savol", text:
-"mavzu;savol;A;B;C;D;togri\nChorrahalar;Doiraviy harakatga kirayotgan haydovchi kimga yoʻl beradi?;Doira ichidagilarga;Oʻngdagilarga;Hech kimga;Yuk mashinasiga;A\nSvetofor;Qizil va sariq birga yonsa nima qilinadi?;Harakatlanish mumkin;Harakat taqiqlanadi;Sekin oʻtiladi;Signal beriladi;B\nTezlik rejimi;Turar joy zonasida eng katta tezlik qancha?;20 km/soat;30 km/soat;40 km/soat;60 km/soat;A\nYoʻl belgilari;Koʻk doira ichidagi oq strelka nimani bildiradi?;Taqiq;Buyruq;Ogohlantirish;Axborot;B\nToʻxtab turish;Piyodalar oʻtish joyi oldida necha metrda toʻxtash mumkin emas?;3 m;5 m;10 m;15 m;B" },
-  { id: "dirty", label: "6 ta savol — 2 tasi xato", text:
-"mavzu;savol;A;B;C;D;togri\nChorrahalar;Temir yoʻl kesishmasida qaysi belgi ustunlik beradi?;Yoʻl bering;Bosh yoʻl;Toʻxtash;Kirish taqiqlangan;A\nSvetofor;Qisqa savol;A;B;C;D;A\nTezlik rejimi;Avtomagistralda yengil avtomobil uchun eng katta tezlik qancha?;90 km/soat;100 km/soat;110 km/soat;130 km/soat;C\nBirinchi yordam;Kuyish holatida birinchi navbatda nima qilinadi?;Sovuq suv bilan sovutiladi;Yogʻ surtiladi;Bogʻlanadi;Teginilmaydi;A\nQuvib oʻtish;Koʻprikda quvib oʻtish mumkinmi?;Ha;Yoʻq;Faqat kunduzi;Belgiga qarab;E\nUmumiy qoidalar;Haydovchi qanday hujjatlarni olib yurishi shart?;Guvohnoma va texpasport;Faqat guvohnoma;Faqat texpasport;Hech qanday;A" },
-  { id: "dupes", label: "3 ta savol — ID takrorlangan", text:
-"id;mavzu;savol;A;B;C;D;togri\n#142;Chorrahalar;Takroriy ID bilan kelgan savol;A varianti;B varianti;C varianti;D varianti;A\n#087;Yoʻl belgilari;Bu ham bazada bor;A varianti;B varianti;C varianti;D varianti;B\n#900;Svetofor;Bu esa yangi va toza savol hisoblanadi;Toʻxtash;Yurish;Sekinlash;Signal;A" }
+  { id: "clean", label: "4 ta toza savol (izoh bilan)", text:
+"mavzu;savol;A;B;C;D;togri;izoh;belgi\n\
+Chorrahalar;Doiraviy harakatga kirayotgan haydovchi kimga yoʻl beradi?;Doira ichidagilarga;Oʻngdagilarga;Hech kimga;Yuk mashinasiga;A;YHQ boʻyicha doiraviy harakat ichidagi transport imtiyozli — kirayotgan haydovchi yoʻl beradi.;\n\
+Svetofor;Qizil va sariq signal birga yonsa nima qilinadi?;Harakatlanish mumkin;Harakat taqiqlanadi;Sekin oʻtiladi;Signal beriladi;B;Qizil+sariq — keyingi signal yashil boʻlishini bildiradi, lekin harakat hali taqiqlangan.;\n\
+Tezlik rejimi;Turar joy zonasida eng katta tezlik qancha?;20 km/soat;30 km/soat;40 km/soat;60 km/soat;A;Turar joy zonasida chegara 20 km/soat — piyodalar ustunligi bor.;\n\
+Yoʻl belgilari;Uchburchak shaklidagi qizil hoshiyali belgi qaysi guruhga kiradi?;Taqiqlovchi;Buyuruvchi;Ogohlantiruvchi;Axborot-ishorat;C;Qizil hoshiyali teng yonli uchburchak — ogohlantiruvchi belgilar guruhi.;warning" },
+
+  { id: "dirty", label: "5 ta savol — 3 tasi xato", text:
+"mavzu;savol;A;B;C;D;togri;izoh;belgi\n\
+Chorrahalar;Temir yoʻl kesishmasida qaysi belgi ustunlik beradi?;Yoʻl bering;Bosh yoʻl;Toʻxtash;Kirish taqiqlangan;A;Kesishma oldidagi belgi ustunlikni belgilaydi.;\n\
+Svetofor;Qisqa savol;A;B;C;D;A;;\n\
+Tezlik rejimi;Avtomagistralda yengil avtomobil uchun eng katta tezlik qancha?;90 km/soat;100 km/soat;110 km/soat;130 km/soat;C;Avtomagistralda yengil avtomobil uchun chegara 110 km/soat.;\n\
+Quvib oʻtish;Koʻprikda quvib oʻtish mumkinmi yoki taqiqlanadimi?;Ha;Yoʻq;Faqat kunduzi;Belgiga qarab;E;;\n\
+Yoʻl belgilari;Rasmda koʻrsatilgan belgi nimani anglatadi va qanday amal qilinadi?;Yoʻl berish;Bosh yoʻl;Toʻxtash;Kirish taqiqlangan;B;Bosh yoʻl belgisi imtiyozli yoʻlni koʻrsatadi.;tezlik" },
+
+  { id: "noexplain", label: "3 ta savol — izohsiz", text:
+"mavzu;savol;A;B;C;D;togri\n\
+Birinchi yordam;Kuyish holatida birinchi navbatda nima qilinadi?;Sovuq suv bilan sovutiladi;Yogʻ surtiladi;Bogʻlanadi;Teginilmaydi;A\n\
+Umumiy qoidalar;Haydovchi qanday hujjatlarni olib yurishi shart?;Guvohnoma va texpasport;Faqat guvohnoma;Faqat texpasport;Hech qanday;A\n\
+Toʻxtab turish;Piyodalar oʻtish joyi oldida necha metrda toʻxtash mumkin emas?;3 m;5 m;10 m;15 m;B" },
+
+  { id: "quoted", label: "Qochirishli (izohda ;) va takroriy ID", text:
+"id;mavzu;savol;A;B;C;D;togri;izoh;belgi\n\
+#142;Chorrahalar;Takroriy ID bilan kelgan savol matni bu yerda;A varianti;B varianti;C varianti;D varianti;A;Bu izoh bazada mavjud ID bilan keldi;\n\
+#900;Svetofor;Bu savol yangi va toza hisoblanadi, ID bazada yoʻq;Toʻxtash;Yurish;Sekinlash;Signal;A;\"YHQ 6-bandi; signal tartibi\" — izohda nuqtali vergul va qoʻshtirnoq bor;" }
 ];
 const ROLES = {
   owner:     { label: "Egasi", can: ["pro", "points", "block", "anonymize", "content", "publish", "log", "pii"] },
@@ -2231,20 +2270,80 @@ function T(s) { return window.nzT ? window.nzT(s) : s; }
 // Ommaviy importning yuragi: matnni qatorlarga ajratadi va HAR BIR qatorni
 // alohida tekshiradi. Muhim qaror — bitta xato butun importni to'xtatmaydi:
 // yaroqli qatorlar o'tadi, xatolari sabab bilan ko'rsatiladi.
+/* Bitta CSV qatorini ustunlarga ajratish.
+
+   Nima uchun split(";") yetmaydi: eksport csvCell() bilan yoziladi va
+   u nuqtali vergul yoki qo'shtirnoq bo'lgan matnni qo'shtirnoq ichiga
+   oladi ("...;..."). Import esa oddiy split ishlatardi, ya'ni ilova
+   O'ZI yozgan faylni qaytib o'qiy olmasdi: izohda nuqtali vergul
+   bo'lsa qator siljib ketardi. Endi ikkalasi bir xil qoidaga
+   bo'ysunadi. */
+function parseCsvLine(line) {
+  const out = [];
+  let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (q) {
+      if (ch === '"') {
+        if (line[i + 1] === '"') { cur += '"'; i++; }   // "" → literal "
+        else q = false;
+      } else cur += ch;
+    } else if (ch === '"') {
+      q = true;
+    } else if (ch === ';') {
+      out.push(cur.trim()); cur = '';
+    } else cur += ch;
+  }
+  out.push(cur.trim());
+  return out;
+}
+
+/* Ommaviy import: CSV → savollar ro'yxati.
+
+   USTUNLAR NOMI BO'YICHA O'QILADI, o'rni bo'yicha emas. Ilgari o'rni
+   bo'yicha o'qilardi ("id" bo'lsa birinchi ustun, keyin qat'iy tartib)
+   va bu ikki muammoni berardi: ustun qo'shish mumkin emasdi (izoh
+   aynan shu sababdan qo'shilmagan edi) va ustunlarni boshqa tartibda
+   yozgan fayl jimgina noto'g'ri o'qilardi — mavzu ustuniga savol
+   matni tushib ketardi.
+
+   Kerakli ustunlar: mavzu, savol, A, B, C, D, togri.
+   Ixtiyoriy: id, izoh, belgi, holat. */
 function parseBulk(text, existingIds) {
   const lines = text.split("\n").map(l => l.trim()).filter(l => l.length);
   if (!lines.length) return [];
-  const header = lines[0].toLowerCase().split(";").map(h => h.trim());
-  const hasId = header[0] === "id";
+
+  const header = parseCsvLine(lines[0]).map(h => h.toLowerCase());
+  const at = name => header.indexOf(name);
+  const need = ["mavzu", "savol", "a", "b", "c", "d", "togri"];
+  const missing = need.filter(n => at(n) === -1);
+
+  /* Sarlavha qatori tanilmasa butun faylni qator-qator xato deb
+     ko'rsatishdan ma'no yo'q — bitta tushunarli xabar beriladi. */
+  if (missing.length) {
+    return [{
+      row: 1, id: "", topic: "", text: "", options: ["", "", "", ""],
+      correct: -1, explain: "", sign: null, warnings: [],
+      errors: ["sarlavha qatorida ustun yo'q: " + missing.join(", ") +
+               ". Kutilgan: " + CSV_COLUMNS.join(";")],
+      ok: false,
+    }];
+  }
+
+  const col = (c, name) => { const i = at(name); return i === -1 ? "" : (c[i] || ""); };
   const seen = {};
+
   return lines.slice(1).map((line, i) => {
-    const c = line.split(";").map(x => x.trim());
-    const id = hasId ? c[0] : "";
-    const f = hasId ? c.slice(1) : c;
-    const errs = [];
-    if (f.length < 6) errs.push("ustunlar yetishmaydi");
-    const topic = f[0] || "", q = f[1] || "", opts = [f[2], f[3], f[4], f[5]];
-    const key = (f[6] || "").toUpperCase();
+    const c = parseCsvLine(line);
+    const id = col(c, "id");
+    const topic = col(c, "mavzu");
+    const q = col(c, "savol");
+    const opts = [col(c, "a"), col(c, "b"), col(c, "c"), col(c, "d")];
+    const key = col(c, "togri").toUpperCase();
+    const explain = col(c, "izoh");
+    const signRaw = col(c, "belgi").toLowerCase();
+
+    const errs = [], warns = [];
     if (id && existingIds.indexOf(id) !== -1) errs.push("ID bazada mavjud: " + id);
     if (id && seen[id]) errs.push("faylda takrorlangan ID");
     if (id) seen[id] = 1;
@@ -2253,8 +2352,24 @@ function parseBulk(text, existingIds) {
     if (opts.some(o => !o)) errs.push("variant bo'sh");
     if (["A", "B", "C", "D"].indexOf(key) === -1) errs.push("to'g'ri javob A–D emas: " + (key || "bo'sh"));
     if (opts.filter(Boolean).length !== new Set(opts.filter(Boolean)).size) errs.push("variantlar takrorlangan");
-    return { row: i + 1, id: id, topic: topic, text: q, options: opts,
-             correct: ["A", "B", "C", "D"].indexOf(key), errors: errs, ok: errs.length === 0 };
+
+    /* Noma'lum belgi kaliti — XATO, ogohlantirish emas: savol "belgi
+       savoli" bo'lib qoladi, lekin rasm chizilmaydi va foydalanuvchi
+       "Rasmda ko'rsatilgan belgi..." degan savolni rasmsiz ko'radi. */
+    if (signRaw && SIGN_KEYS.indexOf(signRaw) === -1) {
+      errs.push("noma'lum belgi kaliti: " + signRaw + " (mumkin: " + SIGN_KEYS.join(", ") + ")");
+    }
+
+    /* Izoh yo'qligi savolni yaroqsiz qilmaydi — lekin ko'rinib turishi
+       kerak, aks holda 700 ta izohsiz savol jimgina qo'shiladi. */
+    if (!explain) warns.push("izoh yo'q");
+
+    return {
+      row: i + 1, id: id, topic: topic, text: q, options: opts,
+      correct: ["A", "B", "C", "D"].indexOf(key),
+      explain: explain, sign: signRaw || null,
+      errors: errs, warnings: warns, ok: errs.length === 0,
+    };
   });
 }
 // Eksport: RFC-uslubidagi qochirish — nuqtali vergul va qo'shtirnoq bo'lgan
@@ -2266,8 +2381,13 @@ function csvCell(v) {
 }
 function toCsv(questions) {
   const head = CSV_COLUMNS.join(";");
-  const body = questions.map(q => [q.id, q.topic, q.text, q.options[0], q.options[1],
-    q.options[2], q.options[3], "ABCD"[q.correct], q.state].map(csvCell).join(";"));
+  /* Tartib CSV_COLUMNS bilan bir xil bo'lishi SHART — aks holda
+     eksport qilingan fayl import qilinganda ustunlar siljib ketadi.
+     Import ustun NOMI bo'yicha o'qiganidan keyin bu xato jimgina
+     bo'lmaydi, lekin baribir noto'g'ri bo'lardi. */
+  const body = questions.map(q => [q.id, q.topic, q.text,
+    q.options[0], q.options[1], q.options[2], q.options[3],
+    "ABCD"[q.correct], q.explain || "", q.sign || "", q.state].map(csvCell).join(";"));
   return [head].concat(body).join("\n");
 }
 
@@ -2331,7 +2451,7 @@ class Component extends DCLogic {
     // o'zgarish hech qachon mahsulotga chiqmaydi.
     pricing: Object.assign({}, DEFAULT_PRICING),
     priceDraft: Object.assign({}, DEFAULT_PRICING),
-    bulk: null,        // { mode:"import"|"export", sample, scope }
+    bulk: null,        // { mode:"import"|"export", sample, scope, text }
     // Marafon rejimidagi eng uzun ketma-ket toʻgʻri javoblar rekordi — Bosh
     // ekrandagi "Rekord" yorligʻi bilan bogʻlangan, sessiya davomida oshadi.
     marathonBest: fromDisk("marathonBest", 47),
@@ -3255,26 +3375,44 @@ class Component extends DCLogic {
           bulkTitle: s.bulk && s.bulk.mode === "export" ? "Savollarni yuklab olish" : "Ommaviy savol qoʻshish",
           bulkHint: s.bulk && s.bulk.mode === "export"
             ? "Ustunlar import formati bilan bir xil, shuning uchun yuklab olingan fayl tahrirlanib qaytadan yuklanadi."
-            : "Nuqtali vergul bilan ajratilgan matn (mavzu;savol;A;B;C;D;togri). Har bir qator alohida tekshiriladi — bitta xato butun importni toʻxtatmaydi, faqat oʻsha qator oʻtmaydi. Qabul qilingan savollar QORALAMA holatida qoʻshiladi va koʻrib chiqishdan oʻtishi shart.",
+            : "Nuqtali vergul bilan ajratilgan matn. Kerakli ustunlar: mavzu, savol, A, B, C, D, togri. Ixtiyoriy: id, izoh, belgi. Ustunlar NOMI boʻyicha oʻqiladi, tartibi muhim emas. Har bir qator alohida tekshiriladi — bitta xato butun importni toʻxtatmaydi. Qabul qilingan savollar QORALAMA holatida qoʻshiladi va koʻrib chiqishdan oʻtishi shart.",
           bulkRawStyle: { fontFamily: "ui-monospace,SFMono-Regular,Menlo,monospace", fontSize: "11px", fontWeight: 500, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "var(--muted-foreground)" },
+          /* Namunalar + "Fayldan qoʻyish". Oxirgisi dizaynda emas, admin
+             qatlamida ochiladi (src/admin-boot.js): runtime faqat onclick'ni
+             qoʻllaydi va DOM morphing yozilayotgan matnni oʻchirib
+             tashlaydi, shuning uchun matn maydoni ilova daraxtidan
+             TASHQARIDA turishi kerak — xuddi kirish oynasi kabi. */
           bulkSamples: BULK_SAMPLES.map(b => ({
-            label: b.label, pick: () => self.setState({ bulk: Object.assign({}, s.bulk, { sample: b.id }) }),
-            style: Object.assign(self.pill(s.bulk && s.bulk.sample === b.id), { fontSize: "12px" })
-          })),
+            label: b.label,
+            pick: () => self.setState({ bulk: Object.assign({}, s.bulk, { sample: b.id, text: "" }) }),
+            style: Object.assign(self.pill(s.bulk && s.bulk.sample === b.id && !(s.bulk && s.bulk.text)), { fontSize: "12px" })
+          })).concat([{
+            label: "Fayldan qoʻyish…",
+            pick: () => { if (window.nzAdminPaste) window.nzAdminPaste(); },
+            style: Object.assign(self.pill(!!(s.bulk && s.bulk.text)), { fontSize: "12px" })
+          }]),
           ...(function () {
             const sample = BULK_SAMPLES.filter(b => b.id === (s.bulk && s.bulk.sample))[0] || BULK_SAMPLES[0];
-            const rows = parseBulk(sample.text, s.questions.map(q => q.id));
+            // Foydalanuvchi oʻz faylini qoʻygan boʻlsa u ustun turadi.
+            const source = (s.bulk && s.bulk.text) ? s.bulk.text : sample.text;
+            const rows = parseBulk(source, s.questions.map(q => q.id));
             const good = rows.filter(r => r.ok).length;
+            const noExplain = rows.filter(r => r.ok && !r.explain).length;
             const chip2 = (t, bg, fg) => ({ label: t, style: { padding: "6px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: 800, background: bg, color: fg } });
             const scope = (s.bulk && s.bulk.scope) || "filtered";
             const exportRows = scope === "all" ? s.questions : fq;
             const csv = toCsv(exportRows);
             return {
-              bulkRaw: sample.text,
+              bulkRaw: source,
               bulkStats: [
                 chip2(rows.length + " qator oʻqildi", "var(--surface-alt)", "var(--foreground)"),
                 chip2(good + " ta yaroqli", "var(--success)", "#fff"),
-                chip2((rows.length - good) + " ta xato", (rows.length - good) ? "var(--destructive)" : "var(--surface-alt)", (rows.length - good) ? "#fff" : "var(--muted-foreground)")
+                chip2((rows.length - good) + " ta xato", (rows.length - good) ? "var(--destructive)" : "var(--surface-alt)", (rows.length - good) ? "#fff" : "var(--muted-foreground)"),
+                /* Izohsiz savollar ALOHIDA ko'rsatiladi. Ular yaroqli
+                   va qo'shiladi, lekin soni ko'rinib turishi kerak:
+                   izoh savolning eng qimmatli qismi va 700 ta izohsiz
+                   savol jimgina qo'shilib ketmasligi kerak. */
+                chip2(noExplain + " ta izohsiz", noExplain ? "var(--gold)" : "var(--surface-alt)", noExplain ? "#3A2600" : "var(--muted-foreground)")
               ],
               bulkHead: ["#", "Savol", "Mavzu", "Holat"].map((l, i) => ({
                 label: l, style: { fontSize: "11px", fontWeight: 700, color: "var(--muted-foreground)", padding: "9px 10px", textAlign: i === 0 ? "center" : "left" }
@@ -3283,13 +3421,18 @@ class Component extends DCLogic {
                 row: String(r.row), text: r.text.length > 58 ? r.text.slice(0, 58) + "…" : (r.text || "—"),
                 topic: r.topic || "—", state: r.ok ? "Yaroqli" : "Xato",
                 hasErr: !r.ok, err: r.errors.join(" · "),
+                // Ogohlantirish xatodan boshqa: qator yaroqli, lekin
+                // e'tibor talab qiladi (masalan izoh yo'q).
+                hasWarn: r.ok && !!(r.warnings && r.warnings.length),
+                warn: (r.warnings || []).join(" · "),
                 rowStyle: { display: "grid", gridTemplateColumns: "44px 1.6fr 1fr 90px", borderTop: "1px solid var(--hairline)", background: r.ok ? "transparent" : "var(--bg-error, rgba(222,42,37,.06))" },
                 numStyle: { padding: "10px", fontSize: "11px", fontWeight: 700, textAlign: "center", color: "var(--muted-foreground)", fontVariantNumeric: "tabular-nums" },
                 textStyle: { padding: "10px", fontSize: "12px", fontWeight: 600, lineHeight: 1.4 },
                 topicStyle: { padding: "10px", fontSize: "12px", fontWeight: 500, color: "var(--muted-foreground)" },
                 stateWrap: { padding: "10px" },
                 stateStyle: { padding: "3px 9px", borderRadius: "999px", fontSize: "11px", fontWeight: 800, background: r.ok ? "var(--success)" : "var(--destructive)", color: "#fff" },
-                errStyle: { gridColumn: "2 / -1", padding: "0 10px 10px", fontSize: "11px", fontWeight: 700, color: "var(--destructive)", lineHeight: 1.45 }
+                errStyle: { gridColumn: "2 / -1", padding: "0 10px 10px", fontSize: "11px", fontWeight: 700, color: "var(--destructive)", lineHeight: 1.45 },
+                warnStyle: { gridColumn: "2 / -1", padding: "0 10px 10px", fontSize: "11px", fontWeight: 700, color: "var(--gold-ink)", lineHeight: 1.45 }
               })),
               importBtnLabel: good ? good + " ta yaroqli savolni qoralama sifatida qoʻshish" : "Yaroqli qator yoʻq",
               importBtnStyle: {
@@ -3307,6 +3450,10 @@ class Component extends DCLogic {
                   const items = rows.filter(r => r.ok).map(r => ({
                     ref: r.id || null, topic: r.topic, text: r.text,
                     options: r.options, correct: r.correct,
+                    // izoh va belgi ham yuboriladi. Ilgari yuborilmasdi
+                    // va bu jimgina yo'qotish edi: CSV'da izoh bo'lsa
+                    // ham bazaga tushmasdi.
+                    explain: r.explain || null, sign: r.sign || null,
                   }));
                   self.setState({ bulk: null, qFilter: "draft" });
                   window.nzAdminActions.bulkInsert(items);

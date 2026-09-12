@@ -242,6 +242,11 @@
           text: it.text,
           options: it.options,
           correct: it.correct,
+          /* Izoh va belgi ham yuboriladi. Ilgari yuborilmasdi: CSV'da
+             izoh bo'lsa ham bazaga tushmasdi va ommaviy import orqali
+             kirgan savol izohsiz qolardi. */
+          explain: it.explain || null,
+          sign: it.sign || null,
           state: 'draft',
         });
       });
