@@ -109,6 +109,13 @@
       exams: 0,
       signs: [],               // ref'lar
       tasks: [],               // mukofot berilgan vazifa id'lari
+      /* Sozlamalar. Ilgari ular saqlanmasdi: ovozni o'chirgan odam
+         ilovani qayta ochganda ovoz yana yonib turardi. Sozlama —
+         foydalanuvchining aytgan gapi; uni har safar unutish uni
+         e'tiborsiz qoldirish. null = hali tanlanmagan (dizayndagi
+         standart qiymat ishlatiladi). */
+      soundOn: null,
+      notifOn: null,
     };
   }
 
@@ -139,6 +146,8 @@
       exams: num(raw.exams, 0),
       signs: refs(raw.signs),
       tasks: Array.isArray(raw.tasks) ? raw.tasks.filter(x => typeof x === 'string') : [],
+      soundOn: typeof raw.soundOn === 'boolean' ? raw.soundOn : null,
+      notifOn: typeof raw.notifOn === 'boolean' ? raw.notifOn : null,
     };
   }
 
@@ -266,6 +275,8 @@
         examsDone: store.exams,
         signsAnswered: toIndices(store.signs, questions),
         tasksAwarded: store.tasks.slice(),
+        soundOn: store.soundOn,
+        notifOn: store.notifOn,
       };
     },
 
@@ -283,6 +294,8 @@
       store.exams = state.examsDone || 0;
       store.signs = uniq(toRefs(state.signsAnswered, questions).concat(orphans.signs));
       store.tasks = Array.isArray(state.tasksAwarded) ? state.tasksAwarded.slice() : [];
+      store.soundOn = !!state.soundOn;
+      store.notifOn = !!state.notifOn;
 
       pending = Object.assign({}, store);
       if (!timer) timer = setTimeout(commit, 400);

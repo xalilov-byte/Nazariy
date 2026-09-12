@@ -779,6 +779,85 @@ o'zi bilan ishlaydi.
 **Tayyor mezoni:** domen ishlaydi, siyosat sahifasi ochiq URL bilan
 mavjud (Play Console'ga shu havola kiritiladi).
 
+#### Faza 6 (birinchi yarmi) — Sayt boshlandi ✅
+
+`node tools/mksite.mjs` (yoki `npm run site`) → `dist/site/` — hostingga
+shu papkani qo'yish kifoya, build mashinasi kerak emas. CI har push'da
+yig'adi va `nazariy-sayt` nomi bilan yuklab olish uchun saqlaydi.
+
+```
+dist/site/
+  index.html                landing + brauzerdagi ilova
+  maxfiylik/                maxfiylik siyosati      ← Play MAJBURIY
+  shartlar/                 foydalanish shartlari
+  aloqa/                    aloqa                   ← Play MAJBURIY
+  malumot-ochirish/         ma'lumotni o'chirish    ← Play MAJBURIY
+  manifest.webmanifest      telefonga o'rnatish (PWA)
+  og.jpg                    havola ko'rinishi (Telegram, ijtimoiy tarmoq)
+  robots.txt, sitemap.xml
+```
+
+**Matn sahifalarida JS yo'q** (8–12 KB). Ilova bundle'i 259 KB —
+maxfiylik siyosatini o'qish uchun odam (yoki Play Console tekshiruvchisi)
+butun ilovani yuklab olmasligi kerak.
+
+**Maxfiylik siyosati kodni tekshirib yozilgan**, umumiy shablondan
+ko'chirilmagan: `localStorage` kalitlari, `fetch` chaqiruvlari va uchinchi
+tomon kutubxonalari sanab chiqilgan. Hozirgi haqiqat — hisob yo'q,
+analitika yo'q, reklama yo'q, xatolik hisoboti yo'q, shriftlar ichkarida
+(Google Fonts'ga chiqilmaydi), internetga faqat savollarni olish uchun
+chiqiladi va bu so'rovda foydalanuvchiga tegishli hech narsa
+yuborilmaydi. Play "Data safety" anketasi uchun ham shu javoblar.
+
+#### Yo'l-yo'lakay tuzatilgan uchta yolg'on
+
+1. **"700+ savol · 18 mavzu · 240 belgi"** — aslida 10 / 8 / 3. Bu
+   raqamlar landing'da (ommaviy sahifa) va ilovaning bosh ekranida
+   qo'lda yozilgan edi. Endi ular **bankdan hisoblanadi**, ya'ni har
+   doim to'g'ri va kontent qo'shilganda o'zi o'sadi — bazadan bank
+   yangilanganda ham.
+2. **`t.me/NazariyBot`** — bot hali yaratilmagan, ya'ni landing'ning
+   ASOSIY tugmasi o'lik havola edi. Endi Telegram tugmalari
+   `site.config.json` dagi `telegramBot` bo'sh bo'lsa **umuman
+   ko'rsatilmaydi**, asosiy amal "Brauzerda ochish" bo'ladi va badge
+   "Telegram Mini App" o'rniga "Avtotest" deydi. Bot nomi qo'yilsa
+   hammasi qaytadi (ikkala holat ham tekshirilgan).
+3. **Saytning bosh sahifasi ilova edi.** `dist/web` ilovadan
+   boshlanardi, landing'ga esa faqat ilova ichidagi tugma orqali
+   kirilardi — ya'ni saytga kirgan odam va qidiruv tizimi landing'ni
+   umuman ko'rmasdi. Endi boshlang'ich ko'rinish build sozlamasidan
+   keladi (`nzSite.startView`): sayt → landing, APK → ilova,
+   admin → admin panel.
+
+Yana: **ovoz va bildirishnoma sozlamasi endi saqlanadi.** Ovozni
+o'chirgan odam ilovani qayta ochganda ovoz yana yonib turardi —
+sozlama foydalanuvchining aytgan gapi, uni har safar unutish uni
+e'tiborsiz qoldirish. (Bu maxfiylik siyosatidagi "sozlamalar saqlanadi"
+jumlasini ham haqiqatga aylantirdi.)
+
+#### Sizdan kerak — `site.config.json`
+
+Build bularsiz ham ishlaydi, lekin har safar ogohlantiradi:
+
+- [ ] **`contactEmail`** — hozir `PLACEHOLDER@…`. Play Console maxfiylik
+      siyosatida **haqiqiy** aloqa manzilini talab qiladi.
+- [ ] **`domain` + `domainConfirmed: true`** — tasdiqlanmaguncha
+      `sitemap.xml`, `canonical` va `og:image` **yozilmaydi** va
+      `robots.txt` indekslashni **taqiqlaydi**. Sababi: mavjud bo'lmagan
+      domen bilan sitemap berish qidiruv tizimiga yolg'on manzillarni
+      indekslatadi.
+- [ ] **`telegramBot`** — bot yaratilgach (Faza 5).
+
+#### Faza 6 da qolgan ish
+
+- [ ] Hosting: Cloudflare Pages yoki Vercel (`_headers` tayyor)
+- [ ] `/app` alohida manzil bo'lishi (hozir landing va ilova bitta
+      faylda, ilova ichida almashadi)
+- [ ] Landing'ni oldindan chizib qo'yish: hozir u ilova bundle'ini
+      (259 KB) talab qiladi, holbuki mazmuni statik matn
+- [ ] Ekran suratlari bo'limi (`skrinshotlar/` da 14 ta tayyor)
+- [ ] Play'ga chiqqach yuklab olish tugmalari (`playUrl`)
+
 ### Faza 7 — To'lovlar
 
 ⚠️ **Bu bosqichda muhim siyosat masalasi bor — 5-bo'limni o'qing.**

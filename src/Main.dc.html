@@ -404,7 +404,7 @@
               </span>
               <span>
                 <span style="display:block;font-size:15px;font-weight:700">Mavzular</span>
-                <span style="display:block;font-size:12px;font-weight:500;color:var(--muted-foreground)">18 mavzu</span>
+                <span style="display:block;font-size:12px;font-weight:500;color:var(--muted-foreground)">{{ topicCountLabel }}</span>
               </span>
             </button>
             <button onClick="{{ startSigns }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;background:var(--surface);border-radius:20px;padding:14px;box-shadow:var(--shadow);color:var(--foreground)">
@@ -413,7 +413,7 @@
               </span>
               <span>
                 <span style="display:block;font-size:15px;font-weight:700">Yoʻl belgilari</span>
-                <span style="display:block;font-size:12px;font-weight:500;color:var(--muted-foreground)">240 belgi</span>
+                <span style="display:block;font-size:12px;font-weight:500;color:var(--muted-foreground)">{{ signCountLabel }}</span>
               </span>
             </button>
             <button onClick="{{ startMistakes }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;text-align:left;background:var(--surface);border-radius:20px;padding:14px;box-shadow:var(--shadow);color:var(--foreground)">
@@ -1754,12 +1754,14 @@
   <div>
     <div class="nz-landing-hero" style="max-width:1100px;margin:0 auto;padding:72px 24px 40px">
       <div>
-        <span style="display:inline-block;padding:8px 14px;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);font-size:13px;font-weight:700;color:var(--primary-ink)">Telegram Mini App · Oʻzbekiston</span>
+        <span style="display:inline-block;padding:8px 14px;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);font-size:13px;font-weight:700;color:var(--primary-ink)">{{ landingBadge }}</span>
         <h1 class="display nz-landing-h1" style="margin:20px 0 0;line-height:1.05;font-weight:800;letter-spacing:-.03em;text-wrap:pretty">Avtotestdan birinchi urinishda oʻting</h1>
-        <p style="margin:18px 0 0;font-size:18px;font-weight:500;line-height:1.55;color:var(--muted-foreground);max-width:480px;text-wrap:pretty">700+ savol, 18 mavzu va haqiqiy imtihon simulyatsiyasi. Har kuni 10 daqiqa — streak, liga va guruhlar bilan.</p>
+        <p style="margin:18px 0 0;font-size:18px;font-weight:500;line-height:1.55;color:var(--muted-foreground);max-width:480px;text-wrap:pretty">Haqiqiy imtihon simulyatsiyasi, mavzular boʻyicha mashq va yoʻl belgilari lugʻati. Har kuni 10 daqiqa — streak, liga va guruhlar bilan.</p>
         <div style="display:flex;gap:12px;margin-top:28px;flex-wrap:wrap">
-          <a href="https://t.me/NazariyBot" style="padding:16px 26px;border-radius:14px;background:var(--primary);color:#fff;font-size:16px;font-weight:700">Telegramda ochish</a>
-          <button onClick="{{ showApp }}" style="padding:16px 26px;border-radius:14px;background:var(--surface);color:var(--foreground);font-size:16px;font-weight:700;box-shadow:var(--shadow)">Brauzerda sinash</button>
+          <sc-if value="{{ hasBot }}" hint-placeholder-val="{{ true }}">
+          <a href="{{ botUrl }}" style="padding:16px 26px;border-radius:14px;background:var(--primary);color:#fff;font-size:16px;font-weight:700">Telegramda ochish</a>
+          </sc-if>
+          <button onClick="{{ showApp }}" style="{{ heroTryStyle }}">{{ heroTryLabel }}</button>
         </div>
       </div>
       <div style="background:var(--surface);border-radius:28px;padding:24px;box-shadow:var(--shadow)">
@@ -1827,9 +1829,14 @@
       <div style="background:var(--primary);border-radius:28px;padding:48px 40px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap">
         <div>
           <div style="font-size:34px;font-weight:800;letter-spacing:-.02em">Bugundan boshlang</div>
-          <div style="margin-top:8px;font-size:17px;font-weight:500;opacity:.9">Botni ochish 10 soniya — birinchi test bepul.</div>
+          <div style="margin-top:8px;font-size:17px;font-weight:500;opacity:.9">{{ ctaSub }}</div>
         </div>
-        <a href="https://t.me/NazariyBot" style="padding:16px 28px;border-radius:14px;background:#fff;color:var(--primary);font-size:16px;font-weight:800">t.me/NazariyBot</a>
+        <sc-if value="{{ hasBot }}" hint-placeholder-val="{{ true }}">
+        <a href="{{ botUrl }}" style="padding:16px 28px;border-radius:14px;background:#fff;color:var(--primary);font-size:16px;font-weight:800">{{ botHandle }}</a>
+        </sc-if>
+        <sc-if value="{{ noBot }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ showApp }}" style="padding:16px 28px;border-radius:14px;background:#fff;color:var(--primary);font-size:16px;font-weight:800">Brauzerda ochish</button>
+        </sc-if>
       </div>
     </div>
 
@@ -1922,6 +1929,37 @@ const QUESTIONS = [
 // haqiqiy indekslar roʻyxati bilan ishga tushadi (ALL_INDICES — toʻliq bank,
 // SIGN_INDICES — faqat item.sign belgilangan savollar). "mistakes" rejimi esa
 // state.wrongIds'dan (foydalanuvchi shu sessiyada xato qilgan savollar) oladi.
+/* Bankning HAQIQIY o'lchami. Ilgari ilovada va landing'da bu raqamlar
+   qo'lda yozilgan edi — "700+ savol", "18 mavzu", "240 belgi" — va
+   uchalasi ham yolg'on edi (aslida 10 / 8 / 3). Landing ommaviy sahifa,
+   ya'ni u yerdagi raqam marketing da'vosi: uni qo'lda yozish "keyin
+   to'g'rilaymiz" degan qarz. Endi raqam bankdan hisoblanadi, shuning
+   uchun har doim to'g'ri va kontent qo'shilganda o'zi o'sadi (bank
+   bazadan yangilanganda ham — src/data.js). */
+/* Saytga tegishli sozlama (site.config.json → build.mjs joylashtiradi).
+   Nima uchun kerak: landing'da "Telegramda ochish" tugmasi bor, lekin bot
+   hali yaratilmagan. Mavjud bo'lmagan botga havola berish — ommaviy
+   sahifadagi o'lik tugma, ya'ni birinchi taassurot buziladi. Shuning
+   uchun bot nomi bo'lmasa Telegram tugmalari umuman ko'rsatilmaydi va
+   asosiy amal "Brauzerda ochish" bo'ladi. Design Canvas'da nzSite yo'q —
+   o'shanda maket to'la ko'rinishi uchun bot bor deb hisoblanadi. */
+const site = (() => {
+  const c = window.nzSite || null;
+  const bot = c ? (c.telegramBot || "") : "NazariyBot";
+  return {
+    bot: bot,
+    botHandle: bot ? "t.me/" + bot : "",
+    botUrl: bot ? "https://t.me/" + bot : "",
+    startView: (c && c.startView) || "app",
+  };
+})();
+
+function bankTopics() {
+  const seen = {};
+  QUESTIONS.forEach(q => { if (q.topic) seen[q.topic] = 1; });
+  return Object.keys(seen).length;
+}
+
 const ALL_INDICES = QUESTIONS.map((_, i) => i);
 const SIGN_INDICES = QUESTIONS.map((q, i) => (q.sign ? i : null)).filter(i => i !== null);
 
@@ -2201,7 +2239,10 @@ const PRO_BENEFITS = [
 class Component extends DCLogic {
   state = {
     theme: this.props.defaultTheme || "light",
-    view: "app",
+    // Sayt build'ida bosh sahifa landing, ilovada esa ilovaning o'zi
+    // (build.mjs → nzSite.startView). Design Canvas'da nzSite yo'q —
+    // maketda ilova ko'rinadi, chunki ish shu yerda qilinadi.
+    view: site.startView,
     tab: "home",
     // Reyting va Guruhlar ilgari alohida tab edi — ikkalasi ham mazmunan
     // "kim oldinda?" reytingi bo'lgani va pastki navigatsiyani 5 tadan 4
@@ -2254,8 +2295,12 @@ class Component extends DCLogic {
     // toʻliq oʻzgaradigan boolean, shuning uchun yangi ekran/sheet ochmasdan
     // shu yerning oʻzida "qiymat almashinadi" naqshi bilan ishlaydi (pastda
     // ONLAR UCHUN onClick qoʻshilgan sabab bilan izohlangan).
-    soundOn: true,
-    notifOn: true,
+    // Saqlangan tanlov bo'lsa o'sha ishlatiladi. fromDisk() ishlamaydi:
+    // u faqat SAVED bor-yo'qligiga qaraydi, bu yerda esa "hali hech
+    // narsa tanlanmagan" holati ham bor (null) — birinchi ochilishda
+    // ikkalasi ham yoniq bo'lishi kerak.
+    soundOn: (SAVED && SAVED.soundOn !== null) ? SAVED.soundOn : true,
+    notifOn: (SAVED && SAVED.notifOn !== null) ? SAVED.notifOn : true,
     // Joriy til. Haqiqiy manba — nzI18n (u qurilmada saqlaydi); state'da
     // nusxasi turadi, chunki til oʻzgarganda ekran qayta chizilishi kerak.
     lang: (window.nzI18n && window.nzI18n.get()) || "uz",
@@ -2588,6 +2633,26 @@ class Component extends DCLogic {
       // Streak haqiqiy manbadan o'qiladi (progress.js): u kunlar
       // bo'yicha yuritiladi va uch kun ochilmasa uzilgan deb ko'rsatiladi.
       streak: window.nzProgress ? window.nzProgress.streak() : (this.props.streakDays ?? 5),
+
+      // Bosh ekrandagi "Mavzular" va "Yoʻl belgilari" kartalari ilgari
+      // "18 mavzu" va "240 belgi" deb yozardi — ikkalasi ham yolgʻon edi.
+      hasBot: !!site.bot,
+      noBot: !site.bot,
+      botUrl: site.botUrl,
+      botHandle: site.botHandle,
+      landingBadge: site.bot ? "Telegram Mini App · Oʻzbekiston" : "Avtotest · Oʻzbekiston",
+      ctaSub: site.bot
+        ? "Botni ochish 10 soniya — birinchi test bepul."
+        : "Roʻyxatdan oʻtish shart emas — birinchi test bepul.",
+      heroTryLabel: site.bot ? "Brauzerda sinash" : "Brauzerda ochish",
+      heroTryStyle: site.bot
+        ? { padding: "16px 26px", borderRadius: "14px", background: "var(--surface)",
+            color: "var(--foreground)", fontSize: "16px", fontWeight: 700, boxShadow: "var(--shadow)" }
+        : { padding: "16px 26px", borderRadius: "14px", background: "var(--primary)",
+            color: "#fff", fontSize: "16px", fontWeight: 700 },
+
+      topicCountLabel: bankTopics() + " " + T("mavzu"),
+      signCountLabel: SIGN_INDICES.length + " " + T("belgi"),
       pointsLabel: s.points.toLocaleString("ru-RU").replace(/\u00a0/g, " "),
 
       quizOn: !!q, quizOff: !q && !s.proView, proOn: !!s.proView && !q,
@@ -3612,13 +3677,19 @@ class Component extends DCLogic {
         }
       })),
 
+      // Uchta raqam bankdan hisoblanadi (yuqoridagi bankTopics izohiga
+      // qarang). To'rtinchisi — imtihon formati, u bankka bog'liq emas.
       landingStats: [
-        { value: "700+", label: "savol bazasi" },
-        { value: "18", label: "mavzu" },
-        { value: "240", label: "yoʻl belgisi" },
+        { value: String(QUESTIONS.length), label: "savol bazasi" },
+        { value: String(bankTopics()), label: "mavzu" },
+        { value: String(SIGN_INDICES.length), label: "yoʻl belgisi" },
         { value: "20/25", label: "savol / daqiqa" }
       ],
-      steps: ["Botni oching", "Kunlik test yechng", "Imtihonni topshiring"].map((title, i) => ({
+      // Birinchi qadam bot bor-yo'qligiga qarab o'zgaradi: bot yo'q
+      // bo'lsa "Botni oching" deb yozish odamni mavjud bo'lmagan
+      // narsaga yuborish bo'lardi.
+      steps: [site.bot ? "Botni oching" : "Saytni oching",
+              "Kunlik test yeching", "Imtihonni topshiring"].map((title, i) => ({
         num: String(i + 1),
         numStyle: {
           width: "44px", height: "44px", borderRadius: "12px", display: "grid", placeItems: "center",
@@ -3627,14 +3698,16 @@ class Component extends DCLogic {
           color: ["#fff", "#4A1029", "#0B2C1E"][i]
         },
         title,
-        sub: ["t.me/NazariyBot — roʻyxatdan oʻtish shart emas, Telegram akkaunt yetarli.",
+        sub: [site.bot
+                ? site.botHandle + " — roʻyxatdan oʻtish shart emas, Telegram akkaunt yetarli."
+                : "Roʻyxatdan oʻtish shart emas — darhol yechishni boshlaysiz.",
               "Kuniga 10 daqiqa: 20 savol, kunlik vazifa va streak.",
               "20 savol · 25 daqiqa · 2 xato — haqiqiy format bilan mashq."][i]
       })),
       landingModes: [
         { title: "Imtihon", sub: "20 savol, 25 daqiqa, 2 xato limiti — haqiqiy simulyatsiya." },
-        { title: "Mavzular", sub: "18 boʻlim, har biri alohida progress bilan." },
-        { title: "Yoʻl belgilari", sub: "240 belgi lugʻati va «rasm → nom» testi." },
+        { title: "Mavzular", sub: bankTopics() + " boʻlim, har biri alohida progress bilan." },
+        { title: "Yoʻl belgilari", sub: "Belgilar lugʻati va «rasm → nom» testi." },
         { title: "Xatolarim", sub: "Faqat notoʻgʻri yechilgan savollar takrori." },
         { title: "Marafon", sub: "Cheksiz savollar — xatoga qadar davom etadi." },
         { title: "Tezkor test", sub: "10 savol, 5 daqiqa — kunlik vazifa uchun." }

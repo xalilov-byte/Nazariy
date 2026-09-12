@@ -65,8 +65,18 @@ jobs:
       # tasdiqlash ham shunda) har push'da ishlashi kerak.
       - name: Sayt va admin build'larini tekshirish
         run: |
-          node build.mjs --target=web
           node build.mjs --target=admin
+          node tools/mksite.mjs
+
+      # Sayt tayyor holda yuklab olinadi: hosting'ga (Cloudflare Pages,
+      # Vercel va h.k.) shu papkani qo'yish kifoya. Build mashinasi
+      # kerak emas.
+      - name: Saytni yuklab olish uchun saqlash
+        uses: actions/upload-artifact@v4
+        with:
+          name: nazariy-sayt
+          path: dist/site
+          if-no-files-found: error
 
       - name: Capacitor sync
         run: npx cap sync android

@@ -275,13 +275,6 @@ for (const name of removed) {
   }
 }
 
-/* Admin build'da dastlabki ko'rinish "admin" bo'lishi kerak — foydalanuvchi
-   ilovasi kesilgani uchun "app" ko'rinishi bo'sh ekran beradi. */
-if (CFG.admin) {
-  must(logic, 'view: "app",', 'state.view boshlang\'ich qiymati');
-  logic = logic.replace('view: "app",', 'view: "admin",');
-}
-
 /* ── 4. Maketni qurilma ekraniga moslash (klass qo'shish) ────────────── */
 /* Bu almashtirishlar faqat foydalanuvchi ilovasi markup'iga tegishli —
    admin build'da u kesilgan, shuning uchun o'tkazib yuboriladi. */
@@ -403,6 +396,30 @@ const data = readFileSync(join(SRC, 'data.js'), 'utf8');
 const supaCfg = JSON.parse(readFileSync(join('supabase', 'config.json'), 'utf8'));
 const supaSnippet = `window.nzSupabase = ${JSON.stringify({
   url: supaCfg.url, publishableKey: supaCfg.publishableKey })};`;
+
+/* Saytga tegishli sozlama. Faqat OMMAVIY qiymatlar (bot nomi, domen) —
+   ular baribir sahifa manbasida ko'rinadi. Aloqa manzili bu yerga
+   qo'yilmaydi: u faqat matn sahifalarida kerak va spam yig'uvchilarga
+   ilova bundle'ida taqdim etishning hojati yo'q. */
+const siteCfg = JSON.parse(readFileSync('site.config.json', 'utf8'));
+/* startView — ilova qaysi ekrandan boshlanadi.
+
+   Bu sayt uchun MUHIM: saytning bosh sahifasi (/) landing bo'lishi
+   kerak, ilova emas. Ilgari sayt build'i ham ilovadan boshlanardi va
+   landing'ga faqat ilova ichidagi "Web sayt" tugmasi orqali kirilardi —
+   ya'ni saytga kirgan odam marketing sahifasini umuman ko'rmasdi va
+   qidiruv tizimi ham uni ko'rmasdi.
+
+   Admin build'da esa "admin" — foydalanuvchi ilovasi kesilgani uchun
+   "app" ko'rinishi bo'sh ekran berardi.
+
+   Ilgari buni logic'dagi `view: "app",` satrini qidirib almashtirish
+   qilardi. Bu mo'rt edi: dizayndagi bitta satr o'zgarishi build'ni
+   yiqitardi (aynan shunday bo'ldi ham). Endi boshlang'ich ko'rinish
+   sozlama orqali uzatiladi va matn almashtirish kerak emas. */
+const siteSnippet = `window.nzSite = ${JSON.stringify({
+  telegramBot: siteCfg.telegramBot || '',
+  startView: CFG.admin ? 'admin' : CFG.landing ? 'landing' : 'app' })};`;
 const ruDict = readFileSync(join(SRC, 'i18n-ru.js'), 'utf8');
 const shellCss = readFileSync(join(SRC, CFG.shell), 'utf8');
 const bootstrap = readFileSync(join(SRC, 'bootstrap.js'), 'utf8');
@@ -456,6 +473,9 @@ ${feedback}
 </script>
 <script>
 ${notify}
+</script>
+<script>
+${siteSnippet}
 </script>
 <script>
 ${progress}

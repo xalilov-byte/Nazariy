@@ -25,11 +25,13 @@ nazariy-app/
 │  └─ bootstrap.js      ← tema, Android "orqaga" tugmasi, status bar
 ├─ build.mjs            ← src/ → www/ | dist/web/ | dist/admin/
 ├─ www/                 ← mobil build (Capacitor shuni oladi)
-├─ dist/web/            ← sayt build'i
+├─ dist/web/            ← sayt ilovasi (landing + ilova)
 ├─ dist/admin/          ← admin panel build'i
+├─ dist/site/           ← TAYYOR SAYT (hostingga shuni qo'yiladi)
+├─ site.config.json     ← domen, aloqa, bot nomi — bitta joyda
 ├─ android/             ← Android Studio loyihasi
 ├─ resources/           ← ilova ikonkasi va splash manbalari
-├─ tools/               ← ikonka generatori
+├─ tools/               ← sayt yig'uvchi, ikonka va OG rasm generatori
 ├─ REJA.md              ← ishlab chiqish rejasi (bosqichlar, qarorlar)
 └─ .github/workflows/   ← GitHub'da avtomatik APK/AAB yig'ish
 ```
@@ -46,6 +48,7 @@ maqsad uchun **keraksiz qatlamni kesib tashlaydi**:
 | `npm run build` | `www/` | Foydalanuvchi ilovasi. Admin va landing **kesiladi** |
 | `npm run build:web` | `dist/web/` | Foydalanuvchi ilovasi + landing. Admin **kesiladi** |
 | `npm run build:admin` | `dist/admin/` | Faqat admin panel |
+| `npm run site` | `dist/site/` | **Tayyor sayt**: landing + huquqiy sahifalar + PWA |
 
 **Nima uchun kesiladi, yashirilmaydi:** admin panel APK ichida qolsa,
 ilovani ochgan har qanday odam admin ekranlarini ko'radi va API'ga qo'lda
@@ -58,6 +61,34 @@ build'ning barcha ekranlari piksel darajasida bir xil (tekshirilgan).
 Mobil build hajmi 254 KB dan 147 KB ga tushdi.
 
 ---
+
+### Sayt
+
+`npm run site` → `dist/site/`. Hostingga (Cloudflare Pages, Vercel va
+h.k.) shu papkani qo'yish kifoya — build mashinasi kerak emas. CI ham
+har push'da yig'ib, `nazariy-sayt` nomi bilan saqlaydi.
+
+| Manzil | Nima | Hajm |
+|---|---|---|
+| `/` | Landing + brauzerdagi ilova | 259 KB |
+| `/maxfiylik/` | Maxfiylik siyosati | 12 KB |
+| `/shartlar/` | Foydalanish shartlari | 10 KB |
+| `/aloqa/` | Aloqa | 8 KB |
+| `/malumot-ochirish/` | Ma'lumotni o'chirish | 9 KB |
+
+Matn sahifalarida **JS yo'q**: maxfiylik siyosatini o'qish uchun 259 KB
+lik ilovani yuklab olish kerak emas. Uchtasi (maxfiylik, aloqa,
+ma'lumotni o'chirish) — Google Play'ning majburiy talabi.
+
+Domen, aloqa manzili va bot nomi **faqat `site.config.json` da**.
+Domen tasdiqlanmaguncha (`domainConfirmed: false`) `sitemap.xml`,
+`canonical` va `og:image` yozilmaydi va `robots.txt` indekslashni
+taqiqlaydi — tugallanmagan sayt qidiruvga tushmasligi kerak.
+
+`npm run og` — havola ko'rinishidagi rasmni (`resources/og.jpg`) qayta
+yasaydi. U bir marta yasalib repoda saqlanadi, chunki yasash uchun
+brauzer kerak va uni har build'da ishga tushirish CI'ni sekinlashtiradi.
+
 
 ## 2. Yig'ish
 
