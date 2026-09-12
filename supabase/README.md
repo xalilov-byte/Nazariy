@@ -6,6 +6,7 @@ xavfsizlik tekshiruvlari turadi.
 ```
 supabase/
 ├─ config.json              ← loyiha URL va publishable kalit (OMMAVIY)
+├─ apply.sh                 ← migratsiya+seed'ni qo'llash (CI va lokal)
 ├─ migrations/
 │  └─ 0001_init.sql         ← sxema, RLS, triggerlar
 ├─ seed/
@@ -17,7 +18,37 @@ supabase/
 
 ---
 
-## 1. Qanday qo'llanadi (bir marta)
+## 1. Qanday qo'llanadi
+
+Ikki yo'l bor. **Birinchisi tavsiya etiladi** — SQL'ni qo'lda nusxalab
+qo'yish kerak emas.
+
+### A) CI orqali (avtomatik)
+
+Bir martalik sozlash, keyin bitta tugma:
+
+1. Supabase → **Project Settings → Database → Connection string** →
+   **URI** ni nusxalang (Session pooler tavsiya etiladi). Satrda
+   `[YOUR-PASSWORD]` bo'lsa, haqiqiy parol bilan almashtiring.
+2. GitHub → repo → **Settings → Secrets and variables → Actions** →
+   **New repository secret**:
+   - Nom: `SUPABASE_DB_URL`
+   - Qiymat: o'sha URI
+3. **Actions → "Bazaga qo'llash" → Run workflow** → `tasdiq` maydoniga
+   `ha` deb yozib ishga tushiring.
+
+Workflow migratsiya va seed'ni qo'llaydi, keyin **tashqaridan** RLS
+tekshiruvini o'tkazadi: nashr etilgan savollar ko'rinishini, qoralama
+va audit jurnali esa ko'rinmasligini tasdiqlaydi.
+
+Parol GitHub Secrets'da qoladi — logda ko'rinmaydi, repoga tushmaydi.
+
+Nima uchun shunday: Claude Code ishlayotgan bulutli muhitdan Supabase
+domeni tashqi tarmoq siyosati bilan bloklangan (HTTP 403 — brauzer
+bilan ham, `curl` bilan ham tekshirilgan), GitHub runner'ida esa
+tarmoq ochiq.
+
+### B) Qo'lda (SQL Editor)
 
 1. [Supabase panel](https://supabase.com/dashboard) → loyihangiz → **SQL Editor**
 2. `migrations/0001_init.sql` ni butunlay nusxalab qo'yib **Run**
