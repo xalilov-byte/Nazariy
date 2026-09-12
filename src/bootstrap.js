@@ -107,6 +107,33 @@
   if (window.Capacitor) wireBack();
   else document.addEventListener('deviceready', wireBack, { once: true });
 
+  /* ── Savollar bazasi ────────────────────────────────────────────────
+     Ilova APK ichidagi savollar bilan DARHOL ishlay boshlaydi; baza esa
+     orqa fonda so'raladi va muvaffaq bo'lsa bankni almashtiradi.
+     Shuning uchun sekin yoki yo'q internet ilovani kutdirmaydi.
+
+     canSwap: test davom etayotganda bankni almashtirish MUMKIN EMAS —
+     savol indekslari pool'ga bog'langan, bank o'zgarsa foydalanuvchi
+     boshqa savolga javob bergan bo'lib qoladi. Bunday holda yangilanish
+     saqlanadi va keyingi ochilishda qo'llanadi. */
+  if (window.nzData) {
+    const canSwap = () => !app.state.quiz;
+    const redraw = () => app.setState({});
+    window.nzData.sync(app.state.lang, canSwap, redraw);
+
+    /* Til almashganda savol matni ham o'sha tilga o'tishi kerak —
+       tarjima bazada saqlanadi (question_translations). */
+    const origSetLangSync = syncSettings;
+    let lastLang = app.state.lang;
+    syncSettings = function () {
+      origSetLangSync();
+      if (app.state.lang !== lastLang) {
+        lastLang = app.state.lang;
+        if (!app.state.quiz && window.nzData.applyLang(app.state.lang)) app.setState({});
+      }
+    };
+  }
+
   /* Splash — ilova chizilgandan keyin yopiladi (oq ekran ko'rinmasin) */
   requestAnimationFrame(() => {
     const sp = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen;

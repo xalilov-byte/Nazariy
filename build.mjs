@@ -390,6 +390,15 @@ const runtime = readFileSync(join(SRC, 'runtime.js'), 'utf8');
 const feedback = readFileSync(join(SRC, 'feedback.js'), 'utf8');
 const notify = readFileSync(join(SRC, 'notify.js'), 'utf8');
 const i18n = readFileSync(join(SRC, 'i18n.js'), 'utf8');
+const data = readFileSync(join(SRC, 'data.js'), 'utf8');
+
+/* Supabase sozlamalari (URL va publishable kalit) bundle'ga joylanadi.
+   Ular ommaviy: publishable kalit ataylab klient uchun va uni mobil
+   ilovadan yashirib boʻlmaydi. Maʼlumotni RLS himoya qiladi —
+   supabase/README.md §2. */
+const supaCfg = JSON.parse(readFileSync(join('supabase', 'config.json'), 'utf8'));
+const supaSnippet = `window.nzSupabase = ${JSON.stringify({
+  url: supaCfg.url, publishableKey: supaCfg.publishableKey })};`;
 const ruDict = readFileSync(join(SRC, 'i18n-ru.js'), 'utf8');
 const shellCss = readFileSync(join(SRC, CFG.shell), 'utf8');
 const bootstrap = readFileSync(join(SRC, 'bootstrap.js'), 'utf8');
@@ -441,6 +450,10 @@ ${notify}
 ${logic}
 </script>
 <script>
+${supaSnippet}
+${data}
+</script>
+<script>
 ${bootstrap}
 </script>
 </body>
@@ -472,12 +485,16 @@ if (!CFG.admin) {
                       `admin qatlami kesilmagan`);
     }
   }
-  // Admin ekranlarining matni — yig'ilgan faylda hech qayerda bo'lmasligi kerak.
+  /* Admin ekranlarining matni MARKUP'da bo'lmasligi kerak.
+     Nima uchun butun faylda emas, aynan markup'da: JS izohlarida bu
+     iboralar uchrashi mumkin va bu zararsiz ("admin panel o'zbekcha
+     qoladi" degan izoh kabi). Xavf esa markup'da — chizilib qoladigan
+     joyda. Ijro etiladigan kod yuqorida alohida tekshirilgan. */
   const FORBIDDEN_TEXT = ['Admin panel', 'adminSubtitle', 'Ommaviy import', 'Javob kaliti'];
   for (const bad of FORBIDDEN_TEXT) {
-    if (html.indexOf(bad) !== -1) {
-      throw new Error(`[build] XAVFSIZLIK: "${bad}" matni ${TARGET} build'ida qoldi — ` +
-                      `admin markup'i kesilmagan`);
+    if (markup.indexOf(bad) !== -1) {
+      throw new Error(`[build] XAVFSIZLIK: "${bad}" matni ${TARGET} build'ining ` +
+                      `MARKUP'ida qoldi — admin markup'i kesilmagan`);
     }
   }
 }

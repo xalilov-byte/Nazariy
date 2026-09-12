@@ -500,14 +500,48 @@ qilinib (`tests/_stub.sql`). O'tgan tekshiruvlar:
 Supabase SQL Editor'da ishga tushirish va o'zingizga `owner` rolini
 berish. Shundan keyin CI jonli tekshiruvni ham o'tkazadi.
 
+#### Klient bazaga ulandi ✅
+
+`src/data.js` — savollar manbasi. **Asosiy qaror: ilova bazaga bog'liq
+emas.** APK ichidagi to'plam o'z o'rnida qoladi va faqat almashtirishga
+haqiqatan muvaffaq bo'lsa almashtiriladi:
+
+| Holat | Nima bo'ladi |
+|---|---|
+| Internet yo'q | APK ichidagi to'plam |
+| Baza hali sozlanmagan | APK ichidagi to'plam |
+| Baza javob bermadi | Oxirgi saqlangan nusxa, bo'lmasa APK'dagi |
+| Hammasi yaxshi | Bazadagi eng yangi savollar |
+
+Shuning uchun **bazani sozlash ilovani ishga tushirish uchun shart
+emas** — u faqat savollarni markazdan boshqarish imkonini beradi.
+
+Ikki muhim tafsilot:
+
+- **Test davomida bank almashtirilmaydi.** Savol indekslari pool'ga
+  bog'langan; bank o'rtada o'zgarsa foydalanuvchi boshqa savolga javob
+  bergan bo'lib qoladi. Bunday holda yangilanish saqlanadi va keyingi
+  ochilishda qo'llanadi.
+- **Saqlangan nusxa 6 soatdan yosh bo'lsa tarmoqqa umuman chiqilmaydi.**
+  Savollar bazasi kuniga bir necha marta o'zgarmaydi, ilova esa kuniga
+  bir necha marta ochiladi.
+
+Tekshirildi (brauzerda, tarmoq taqlid qilinib): baza yo'q → 10 ta
+o'rnatilgan savol, xatosiz; baza javob berdi → 3 ta bazadagi savol,
+belgi soni qayta hisoblandi; tarmoq uzildi → saqlangan nusxa ishladi;
+test davomida yangilanish keldi → bank almashmadi, keyingi safarga
+saqlandi.
+
 #### Qolgan ish (Faza 1/2 ning ikkinchi yarmi)
 
+- [ ] Migratsiyani Supabase'ga qo'llash — **`SUPABASE_DB_URL` secret'i
+      kerak** (`.github/workflows/db-apply.yml`)
 - [ ] Telegram `initData` ni HMAC bilan tekshiruvchi Edge Function
       (Supabase JWT beradi) — **bot tokeni kerak**
 - [ ] Telefon + SMS OTP zaxira yo'li
 - [ ] Paket yig'uvchi: nashr etilgan savollardan versiyalangan JSON
-- [ ] Klient tomoni: `published_questions` dan o'qish, IndexedDB'da
-      saqlash, `QUESTIONS` massivini almashtirish
+      (hozircha to'g'ridan-to'g'ri `published_questions` dan o'qiladi —
+      savollar soni o'sganda paket kerak bo'ladi)
 
 ### Faza 1 — Backend va hisob (eski reja, ma'lumot uchun)
 
