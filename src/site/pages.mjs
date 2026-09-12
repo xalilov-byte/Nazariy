@@ -76,7 +76,7 @@ saqlanadi va hech qayerga yuborilmaydi. Saqlanadigan narsalar:</p>
   </tbody>
 </table>
 <p>Bularni istalgan vaqtda o‘chirishingiz mumkin &mdash;
-<a href="/malumot-ochirish/">Ma’lumotni o‘chirish</a>
+<a href="../malumot-ochirish/">Ma’lumotni o‘chirish</a>
 sahifasiga qarang.</p>
 
 <h2>3. Internetga nima uchun chiqadi</h2>
@@ -120,7 +120,7 @@ yig‘maymiz &mdash; umuman hech kimdan yig‘maymiz.</p>
 &laquo;ma’lumotimni bering&raquo; yoki &laquo;o‘chiring&raquo;
 so‘rovini yuborishning hojati yo‘q: barcha ma’lumot
 sizning qurilmangizda va uni o‘zingiz o‘chirasiz. Tartibi
-<a href="/malumot-ochirish/">shu sahifada</a>.</p>
+<a href="../malumot-ochirish/">shu sahifada</a>.</p>
 
 <h2>8. O‘zgarishlar</h2>
 <p>Ilovaga hisob yoki natijalarni sinxronlash qo‘shilsa, bu siyosat
@@ -229,7 +229,7 @@ muammoni tezroq topamiz.</p>
 
 <h2>Ma’lumotni o‘chirish</h2>
 <p>Buning uchun bizga yozish shart emas &mdash;
-<a href="/malumot-ochirish/">tartibi shu yerda</a>.</p>`,
+<a href="../malumot-ochirish/">tartibi shu yerda</a>.</p>`,
     },
 
     /* ══════════════════════════════════════════════════════════════════ */

@@ -848,6 +848,25 @@ Build bularsiz ham ishlaydi, lekin har safar ogohlantiradi:
       indekslatadi.
 - [ ] **`telegramBot`** — bot yaratilgach (Faza 5).
 
+#### Tuzatilgan xato: matn sahifalarida shrift yuklanmasdi
+
+Sayt yig'ilgandan keyin uni artifact sifatida ko'rsatish uchun
+tekshirganda chiqdi: matn sahifalari ichki papkada turadi
+(`maxfiylik/index.html`), ularning `@font-face` havolasi esa
+`./fonts/…` edi — ya'ni brauzer `/maxfiylik/fonts/…` ni so'rardi,
+bunday fayl esa yo'q. Natijada **maxfiylik siyosati va qolgan uchta
+sahifa tizim shriftida** ko'rinardi. Buni sezish qiyin: sahifa
+baribir o'qiladi, faqat boshqa shriftda.
+
+Shu bilan birga barcha havolalar ildizga nisbatandan (`/maxfiylik/`)
+**nisbiy**ga (`../maxfiylik/`) o'girildi. Ikkinchi foyda: sayt endi
+ildizga bog'liq emas — uni pastki papkada
+(`example.com/nazariy/`) yoki oflayn papka sifatida ham ochish
+mumkin. Manifestdagi `start_url` va ikonka yo'llari ham nisbiy.
+
+Sayt testi shu ikkisini endi tekshiradi: ildizga nisbatan havola
+qolmagani va Manrope haqiqatan yuklangani (`document.fonts.check`).
+
 #### Faza 6 da qolgan ish
 
 - [ ] Hosting: Cloudflare Pages yoki Vercel (`_headers` tayyor)

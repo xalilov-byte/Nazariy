@@ -93,9 +93,9 @@ const head = [
   `<title>${TITLE}</title>`,
   `<meta name="description" content="${DESC}">`,
   `<meta name="apple-mobile-web-app-title" content="Nazariy">`,
-  `<link rel="manifest" href="/manifest.webmanifest">`,
-  `<link rel="icon" href="/favicon.png" sizes="32x32">`,
-  `<link rel="apple-touch-icon" href="/apple-touch-icon.png">`,
+  `<link rel="manifest" href="manifest.webmanifest">`,
+  `<link rel="icon" href="favicon.png" sizes="32x32">`,
+  `<link rel="apple-touch-icon" href="apple-touch-icon.png">`,
   `<meta property="og:type" content="website">`,
   `<meta property="og:site_name" content="Nazariy">`,
   `<meta property="og:title" content="${TITLE}">`,
@@ -128,9 +128,9 @@ const noscript = `
 mavzular bo‘yicha mashq, yo‘l belgilari va xatolar ustida ishlash.
 Ilova internetsiz ham to‘liq ishlaydi.</p>
 <p><strong>Ilovadan foydalanish uchun JavaScript yoqilishi kerak.</strong></p>
-<p><a href="/maxfiylik/">Maxfiylik siyosati</a> ·
-<a href="/shartlar/">Foydalanish shartlari</a> ·
-<a href="/aloqa/">Aloqa</a></p>
+<p><a href="maxfiylik/">Maxfiylik siyosati</a> ·
+<a href="shartlar/">Foydalanish shartlari</a> ·
+<a href="aloqa/">Aloqa</a></p>
 </div>
 </noscript>
 `;
@@ -185,11 +185,25 @@ footer .wrap{padding-block:24px 48px;display:flex;justify-content:space-between;
 gap:16px;flex-wrap:wrap}
 `;
 
+/* Havolalar NISBIY ("../maxfiylik/"), ildizga nisbatan emas ("/…").
+
+   Ikki sabab:
+
+   1. TUZATILGAN XATO: matn sahifalari ichki papkada turadi
+      (maxfiylik/index.html) va ularning @font-face havolasi
+      "./fonts/…" edi — ya'ni brauzer /maxfiylik/fonts/… ni so'rardi,
+      bunday fayl esa yo'q. Natijada maxfiylik siyosati va qolgan
+      uchta sahifa SHRIFTSIZ ko'rinardi (tizim shriftiga tushardi) va
+      buni sezish qiyin, chunki sahifa baribir o'qiladi.
+
+   2. Sayt endi ildizga bog'liq emas: uni pastki papkada ham
+      (example.com/nazariy/) yoki oflayn papka sifatida ham ochish
+      mumkin. */
 const NAV = [
-  ['/', 'Bosh sahifa'],
-  ['/maxfiylik/', 'Maxfiylik'],
-  ['/shartlar/', 'Shartlar'],
-  ['/aloqa/', 'Aloqa'],
+  ['../', 'Bosh sahifa'],
+  ['../maxfiylik/', 'Maxfiylik'],
+  ['../shartlar/', 'Shartlar'],
+  ['../aloqa/', 'Aloqa'],
 ];
 
 /* Shriftni ilova build'idan qayta ishlatamiz: u allaqachon dist/site/fonts
@@ -199,12 +213,14 @@ const fontFaces = (() => {
   // Faqat Manrope kerak — matn sahifalarida sarlavha shrifti ishlatilmaydi.
   const all = index.slice(index.indexOf('<style>') + 7, index.indexOf('</style>'));
   return all.split('@font-face').filter(x => /Manrope/.test(x))
-    .map(x => '@font-face' + x.slice(0, x.lastIndexOf('}') + 1)).join('\n');
+    .map(x => '@font-face' + x.slice(0, x.lastIndexOf('}') + 1)).join('\n')
+    // Matn sahifasi ichki papkada — "./fonts/" u yerdan topilmaydi.
+    .replace(/url\(\.\/fonts\//g, 'url(../fonts/');
 })();
 
 function page(p) {
   const nav = NAV.map(([href, label]) =>
-    `<a href="${href}"${href === '/' + p.slug + '/' ? ' aria-current="page"' : ''}>${label}</a>`
+    `<a href="${href}"${href === '../' + p.slug + '/' ? ' aria-current="page"' : ''}>${label}</a>`
   ).join('\n');
   const canonical = SITE ? `<link rel="canonical" href="${SITE}/${p.slug}/">\n` : '';
   return `<!DOCTYPE html>
@@ -213,7 +229,7 @@ function page(p) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#F5F3FF">
-<link rel="icon" href="/favicon.png" sizes="32x32">
+<link rel="icon" href="../favicon.png" sizes="32x32">
 <title>${p.title} — Nazariy</title>
 <meta name="description" content="${p.description}">
 ${canonical}<meta property="og:type" content="article">
@@ -224,14 +240,14 @@ ${SITE && hasOg ? `<meta property="og:image" content="${SITE}/og.jpg">\n` : ''}<
 </head>
 <body>
 <header><div class="wrap">
-<a class="brand" href="/">Nazariy</a>
+<a class="brand" href="../">Nazariy</a>
 <nav>${nav}</nav>
 </div></header>
 <main><div class="wrap">${p.body}
 </div></main>
 <footer><div class="wrap">
 <span>© ${new Date().getFullYear()} ${cfg.publisher}${cfg.domainConfirmed ? ' · ' + cfg.domain : ''}</span>
-<span><a href="/malumot-ochirish/">Ma’lumotni o‘chirish</a></span>
+<span><a href="../malumot-ochirish/">Ma’lumotni o‘chirish</a></span>
 </div></footer>
 </body>
 </html>
@@ -261,7 +277,7 @@ if (existsSync(ICON_SRC)) {
     const name = `icon-${size}.png`;
     await sharp(ICON_SRC).resize(size, size).png({ compressionLevel: 9 })
       .toFile(join(OUT, name));
-    icons.push({ src: '/' + name, sizes: `${size}x${size}`, type: 'image/png' });
+    icons.push({ src: name, sizes: `${size}x${size}`, type: 'image/png' });
   }
   // Apple Safari manifest ikonkalarini o'qimaydi — unga alohida teg kerak.
   await sharp(ICON_SRC).resize(180, 180).png({ compressionLevel: 9 })
@@ -276,8 +292,8 @@ writeFileSync(join(OUT, 'manifest.webmanifest'), JSON.stringify({
   name: 'Nazariy — avtotest tayyorgarligi',
   short_name: 'Nazariy',
   description: DESC,
-  start_url: '/',
-  scope: '/',
+  start_url: './',
+  scope: './',
   display: 'standalone',
   orientation: 'portrait',
   background_color: '#F5F3FF',
