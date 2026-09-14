@@ -472,6 +472,35 @@
         </div>
         </sc-if>
 
+        <!-- MAVZU TANLASH. "Mavzular" kartasi ilgari darhol test boshlardi
+             va u test butun bank bo'yicha edi — ya'ni imtihon bilan aynan
+             bir xil, faqat soatsiz. Karta esa "8 mavzu" deb va'da berardi.
+             Endi u avval qaysi mavzu ekanini so'raydi. -->
+        <sc-if value="{{ topicPickOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;padding:20px 16px 84px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;animation:nzRise .22s ease-out">
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onClick="{{ closeTopicPick }}" aria-label="Orqaga" style="width:40px;height:40px;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);color:var(--foreground);display:grid;place-items:center;flex:none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 6l-6 6 6 6"></path></svg>
+            </button>
+            <h1 class="display" style="margin:0;font-size:28px;font-weight:800;letter-spacing:-.02em">Mavzular</h1>
+          </div>
+          <p style="margin:0 0 4px;font-size:14px;font-weight:500;color:var(--muted-foreground);text-wrap:pretty">Bitta mavzuni tanlang — faqat shu mavzudagi savollar beriladi, soatsiz.</p>
+          <sc-for list="{{ topicList }}" as="t" hint-placeholder-count="6">
+            <button onClick="{{ t.open }}" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow);color:var(--foreground)">
+              <span style="{{ t.tileStyle }}">{{ t.initial }}</span>
+              <span style="flex:1;min-width:0">
+                <span style="display:block;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.name }}</span>
+                <span style="display:block;font-size:13px;font-weight:500;color:var(--muted-foreground)">{{ t.countLabel }} · {{ t.subLabel }}</span>
+              </span>
+              <sc-if value="{{ t.hasMine }}" hint-placeholder-val="{{ true }}">
+                <span style="{{ t.mineStyle }}">{{ t.mineLabel }}</span>
+              </sc-if>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)"><path d="M9 6l6 6-6 6"></path></svg>
+            </button>
+          </sc-for>
+        </div>
+        </sc-if>
+
         <sc-if value="{{ isTasks }}" hint-placeholder-val="{{ false }}">
         <div style="flex:1;padding:20px 16px 84px;display:flex;flex-direction:column;gap:12px;animation:nzRise .22s ease-out">
           <h1 class="display" style="margin:0;font-size:28px;font-weight:800;letter-spacing:-.02em">Vazifalar</h1>
@@ -2043,10 +2072,18 @@ function leagueOf(points) {
   };
 }
 
+/* Bankdagi mavzular — nomi va savollar soni bilan, bankdagi tartibda.
+   Ilgari bu funksiya faqat SONNI qaytarardi va shu sabab "Mavzular"
+   rejimi mavzu bo'yicha filtrlay olmasdi: ro'yxatning o'zi hech
+   qayerda yo'q edi. Karta esa "8 mavzu" deb va'da berardi. */
 function bankTopics() {
-  const seen = {};
-  QUESTIONS.forEach(q => { if (q.topic) seen[q.topic] = 1; });
-  return Object.keys(seen).length;
+  const seen = {}, out = [];
+  QUESTIONS.forEach(q => {
+    if (!q.topic) return;
+    if (seen[q.topic] === undefined) { seen[q.topic] = out.length; out.push({ name: q.topic, n: 0 }); }
+    out[seen[q.topic]].n += 1;
+  });
+  return out;
 }
 
 /* ═══ IMTIHON FORMATI ═══
@@ -2557,7 +2594,10 @@ class Component extends DCLogic {
     // Bildirishnoma qurilma plaginini talab qiladi. Brauzerda (sayt,
     // Telegram) u yo'q, shuning uchun sozlama qatori KO'RSATILMAYDI —
     // bootstrap.js plagin borligini aniqlab shu bayroqni yoqadi.
-    notifAvailable: false
+    notifAvailable: false,
+    /* Mavzu tanlash ekrani ochiqmi. "Mavzular" kartasi endi darhol test
+       boshlamaydi — avval qaysi mavzu ekanini so'raydi. */
+    topicPick: false
   };
 
   componentDidMount() {
@@ -2618,7 +2658,7 @@ class Component extends DCLogic {
     this.awardTasks();
   }
 
-  nav(tab) { return () => this.setState({ tab, quiz: null }); }
+  nav(tab) { return () => this.setState({ tab, quiz: null, topicPick: false }); }
 
   // Har bir yozuv amali SHU yerdan o'tadi — jurnalga tushmaydigan yo'l yo'q.
   logAction(act, res, before, after, why) {
@@ -2632,12 +2672,18 @@ class Component extends DCLogic {
   }
   may(perm) { return ROLES[this.state.adminRole].can.indexOf(perm) !== -1; }
 
-  startQuizMode(mode) {
+  startQuizMode(mode, topic) {
     return () => {
       const isExam = mode === "exam" || !mode;
+      /* "Mavzular" rejimi ilgari bu yerda SHOXSIZ qolgan edi va
+         ALL_INDICES.slice() ga tushardi — ya'ni imtihon bilan aynan
+         bir xil, faqat soatsiz. Karta "8 mavzu" deb, landing esa
+         "8 bo'lim, har biri alohida progress bilan" deb va'da
+         berardi; ikkalasi ham noto'g'ri edi. */
       let pool = mode === "signs" ? (SIGN_INDICES.length ? SIGN_INDICES.slice() : ALL_INDICES.slice())
         : mode === "mistakes" ? this.state.wrongIds.slice()
         : mode === "saved" ? this.state.savedIds.slice()
+        : (mode === "topics" && topic) ? ALL_INDICES.filter(i => QUESTIONS[i].topic === topic)
         : ALL_INDICES.slice();
 
       /* Imtihon — bankdan TASODIFIY tanlangan 20 savol, butun bank emas.
@@ -2650,9 +2696,10 @@ class Component extends DCLogic {
       // To'plamga asoslangan rejimlar (xatolarim / saqlangan) bo'sh bo'lishi
       // mumkin — bunda quiz "bo'sh holat" ekrani sifatida ochiladi.
       const empty = COLLECTION_MODES.indexOf(mode) !== -1 && pool.length === 0;
-      this.setState({ quiz: {
+      this.setState({ topicPick: false, quiz: {
         index: 0, selected: null, correct: 0, wrong: 0, results: [],
-        time: pool.length * EXAM_PER_Q, finished: false, mode, pool, empty
+        time: pool.length * EXAM_PER_Q, finished: false, mode, pool, empty,
+        topic: topic || null
       } });
     };
   }
@@ -2986,7 +3033,7 @@ class Component extends DCLogic {
       tabAppStyle: this.pill(s.view === "app"),
       tabWebStyle: this.pill(s.view === "landing"),
 
-      isHome: s.tab === "home", isTasks: s.tab === "tasks",
+      isHome: s.tab === "home" && !s.topicPick, isTasks: s.tab === "tasks",
       isLeague: s.tab === "league", isProfile: s.tab === "profile",
       goHome: this.nav("home"), goTasks: this.nav("tasks"),
       goLeague: this.nav("league"), goProfile: this.nav("profile"),
@@ -3057,7 +3104,7 @@ class Component extends DCLogic {
         : { padding: "16px 26px", borderRadius: "14px", background: "var(--primary)",
             color: "#fff", fontSize: "16px", fontWeight: 700 },
 
-      topicCountLabel: bankTopics() + " " + T("mavzu"),
+      topicCountLabel: bankTopics().length + " " + T("mavzu"),
       signCountLabel: SIGN_INDICES.length + " " + T("belgi"),
       pointsLabel: s.points.toLocaleString("ru-RU").replace(/\u00a0/g, " "),
 
@@ -3066,7 +3113,40 @@ class Component extends DCLogic {
       quizEmptyState: !!q && !!q.empty,
       quizDone: !!q && q.finished,
       startQuiz: this.startQuizMode("exam"),
-      startTopics: this.startQuizMode("topics"),
+      startTopics: () => this.setState({ topicPick: true }),
+      closeTopicPick: () => this.setState({ topicPick: false }),
+      topicPickOpen: s.topicPick && s.tab === "home" && !s.quiz,
+      /* Mavzular ro'yxati. Har bir qatorda savollar soni va — javob
+         berilgan bo'lsa — o'sha odamning shu mavzudagi natijasi.
+         Foiz hech qachon o'ylab topilmaydi: javob berilmagan mavzuda
+         raqam o'rniga "hali boshlanmagan" turadi. */
+      topicList: (() => {
+        const mine = {};
+        if (window.nzProgress) {
+          window.nzProgress.topicStats(1).forEach(t => { mine[t.name] = t; });
+        }
+        return bankTopics().map((t, i) => {
+          const got = mine[t.name];
+          const c = !got ? "--muted-foreground"
+            : got.pct >= 80 ? "--success" : got.pct >= 60 ? "--gold" : "--destructive";
+          return {
+            name: t.name,
+            countLabel: t.n + " " + T("savol"),
+            hasMine: !!got,
+            mineLabel: got ? got.pct + "%" : "",
+            subLabel: got ? (got.n + " " + T("javob berilgan")) : T("hali boshlanmagan"),
+            mineStyle: { fontSize: "14px", fontWeight: 800, fontVariantNumeric: "tabular-nums", color: "var(" + c + ")" },
+            /* Rang juftligi avatar() dan olinadi — u yerda har bir
+               palitra rangi uchun AA beradigan YAGONA matn toni
+               allaqachon tanlangan. Bu yerda o'zimiz rang tanlasak,
+               yorqin to'ldirish ustida oq matn yana qaytib kelardi. */
+            tileStyle: Object.assign({}, this.avatar("", i).avatarStyle,
+              { width: "40px", height: "40px", borderRadius: "11px", fontSize: "15px" }),
+            initial: t.name.charAt(0).toUpperCase(),
+            open: this.startQuizMode("topics", t.name)
+          };
+        });
+      })(),
       startSigns: this.startQuizMode("signs"),
       startMistakes: this.startQuizMode("mistakes"),
       startMarathon: this.startQuizMode("marathon"),
@@ -4140,7 +4220,7 @@ class Component extends DCLogic {
       // qarang). To'rtinchisi — imtihon formati, u bankka bog'liq emas.
       landingStats: [
         { value: String(QUESTIONS.length), label: "savol bazasi" },
-        { value: String(bankTopics()), label: "mavzu" },
+        { value: String(bankTopics().length), label: "mavzu" },
         { value: String(SIGN_INDICES.length), label: "yoʻl belgisi" },
         { value: "20/25", label: "savol / daqiqa" }
       ],
@@ -4165,7 +4245,7 @@ class Component extends DCLogic {
       })),
       landingModes: [
         { title: "Imtihon", sub: "20 savol, 25 daqiqa, 2 xato limiti — haqiqiy simulyatsiya." },
-        { title: "Mavzular", sub: bankTopics() + " boʻlim, har biri alohida progress bilan." },
+        { title: "Mavzular", sub: bankTopics().length + " boʻlim — har birini alohida mashq qiling." },
         { title: "Yoʻl belgilari", sub: "Belgilar lugʻati va «rasm → nom» testi." },
         { title: "Xatolarim", sub: "Faqat notoʻgʻri yechilgan savollar takrori." },
         { title: "Marafon", sub: "Cheksiz savollar — xatoga qadar davom etadi." },
