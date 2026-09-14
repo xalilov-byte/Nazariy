@@ -57,6 +57,43 @@
     } catch (e) { return null; }
   }
 
+  function dropCache() {
+    try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
+  }
+
+  /* ── Kelgan ma'lumot shakli ───────────────────────────────────────────
+     Bazadan kelgan javob ham, saqlangan nusxa ham ISHONCHSIZ manba:
+     birinchisini noto'g'ri deploy buzishi mumkin, ikkinchisini esa
+     foydalanuvchi qo'lda tahrirlashi mumkin.
+
+     Nima uchun bu shunchalik muhim: bir marta buzuq javob kelib kesh
+     yozilsa, keyingi ochilishlarda kesh YANGI hisoblanadi va ilova
+     tarmoqqa UMUMAN chiqmaydi. Ya'ni bitta noto'g'ri deploy o'sha
+     oynada ilova ochgan har bir odamning kontent quvurini abadiy
+     o'ldiradi — yagona chiqish Android sozlamalaridan ilova ma'lumotini
+     tozalash, u esa butun progressni ham o'chiradi.
+
+     Buzuq qatorlar tashlab yuboriladi, butun to'plam emas: bitta xato
+     savol tufayli qolgan 599 tasidan voz kechish foydalanuvchiga
+     yordam bermaydi. Lekin birorta ham yaroqli qator qolmasa — bu
+     javob umuman ishlatilmaydi. */
+  function sane(rows) {
+    if (!Array.isArray(rows)) return null;
+    const ok = rows.filter(r =>
+      r && typeof r === 'object'
+      && (typeof r.ref === 'string' || typeof r.id === 'string')
+      && typeof r.text === 'string' && r.text.trim() !== ''
+      && Array.isArray(r.options) && r.options.length === 4
+      && r.options.every(o => typeof o === 'string')
+      && typeof r.correct === 'number' && r.correct >= 0 && r.correct <= 3
+    );
+    if (!ok.length) return null;
+    if (ok.length < rows.length) {
+      log((rows.length - ok.length) + ' ta buzuq savol tashlab yuborildi');
+    }
+    return ok;
+  }
+
   function writeCache(rows, ru) {
     try {
       localStorage.setItem(CACHE_KEY, JSON.stringify({
@@ -111,7 +148,13 @@
      dizayn mantiqida birorta joy oʻzgartirilmadi: u qanday ishlagan
      boʻlsa, shundayligicha ishlaydi, faqat bank boshqa manbadan keladi. */
   function toItem(row, ru, lang) {
-    const t = (lang === 'ru' && ru[row.id]) ? ru[row.id] : null;
+    let t = (lang === 'ru' && ru[row.id]) ? ru[row.id] : null;
+    /* Tarjima qatori qisman bo'lishi mumkin (matn bor, variantlar yo'q —
+       yoki teskarisi). Bo'sh matnli tarjima qo'llansa savol matni null
+       bo'lib qoladi va ekran chizilmaydi. Shuning uchun tarjima faqat
+       MATNI joyida bo'lsa ishlatiladi; variantlar esa pastda alohida
+       tekshiriladi va kerak bo'lsa o'zbekchasi qoladi. */
+    if (t && (typeof t.text !== 'string' || t.text.trim() === '')) t = null;
     return {
       /* ref — barqaror belgi. Foydalanuvchining saqlangan va xato
          savollari qurilmada SHU belgi bilan saqlanadi, massiv indeksi
@@ -128,8 +171,9 @@
     };
   }
 
-  function swap(items) {
-    if (typeof QUESTIONS === 'undefined') return false;
+  let bundled = null;        // APK ichidagi asl to'plamning nusxasi
+
+  function fill(items) {
     QUESTIONS.length = 0;
     items.forEach(x => QUESTIONS.push(x));
 
@@ -138,7 +182,23 @@
 
     SIGN_INDICES.length = 0;
     QUESTIONS.forEach((q, i) => { if (q.sign) SIGN_INDICES.push(i); });
-    return true;
+  }
+
+  function swap(items) {
+    if (typeof QUESTIONS === 'undefined') return false;
+    /* Asl to'plam almashtirishdan OLDIN saqlab qo'yiladi: almashtirish
+       yarim yo'lda yiqilsa (QUESTIONS bo'shatilgan, lekin to'ldirilmagan)
+       ilova savolsiz qolardi — bu bo'sh ekran demakdir. */
+    if (!bundled) bundled = QUESTIONS.slice();
+    if (!Array.isArray(items) || !items.length) return false;
+    try {
+      fill(items);
+      return true;
+    } catch (e) {
+      log('bank almashtirilmadi: ' + (e && e.message) + ' — APK toʻplami qaytarildi');
+      try { fill(bundled); } catch (e2) {}
+      return false;
+    }
   }
 
   window.nzData = {
@@ -159,12 +219,21 @@
        davomida bank oʻzgarsa, indekslar buziladi). */
     sync: async function (lang, canSwap, onSwap) {
       // 1) Avval saqlangan nusxa — darhol va tarmoqsiz.
-      const cached = readCache();
+      let cached = readCache();
       if (cached && canSwap()) {
-        raw = { rows: cached.rows, ru: cached.ru || {} };
-        if (swap(cached.rows.map(r => toItem(r, raw.ru, lang)))) {
+        const rows = sane(cached.rows);
+        if (!rows || !swap(rows.map(r => toItem(r, cached.ru || {}, lang)))) {
+          /* Buzuq nusxani O'CHIRAMIZ. Aks holda u "yangi" bo'lib qolib
+             ilovani tarmoqqa chiqishdan to'sardi va ilova o'zi tuzala
+             olmasdi. O'chirilgach, quyidagi yangilik tekshiruvi ham
+             o'tkazib yuborilmaydi — shuning uchun cached null qilinadi. */
+          log('saqlangan nusxa yaroqsiz — oʻchirildi');
+          dropCache();
+          cached = null;
+        } else {
+          raw = { rows: rows, ru: cached.ru || {} };
           status = 'cache';
-          log('saqlangan nusxadan ' + cached.rows.length + ' savol');
+          log('saqlangan nusxadan ' + rows.length + ' savol');
           onSwap();
         }
       }
@@ -180,10 +249,16 @@
       }
       try {
         const got = await fetchAll();
-        writeCache(got.rows, got.ru);
+        /* Kesh faqat TEKSHIRUVDAN KEYIN yoziladi. Ilgari u so'rovdan
+           keyin darhol yozilardi, ya'ni buzuq javob ham diskka tushib
+           qolardi. */
+        const rows = sane(got.rows);
+        if (!rows) throw new Error('bazadan kelgan savollar shakli notoʻgʻri');
+        got.rows = rows;
+        writeCache(rows, got.ru);
         raw = got;
         if (canSwap()) {
-          if (swap(got.rows.map(r => toItem(r, got.ru, lang)))) {
+          if (swap(rows.map(r => toItem(r, got.ru, lang)))) {
             status = 'live';
             log('bazadan ' + got.rows.length + ' savol');
             onSwap();

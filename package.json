@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "node build.mjs",
+    "test": "node --test 'tests/**/*.test.mjs'",
     "build:web": "node build.mjs --target=web",
     "build:admin": "node build.mjs --target=admin",
     "site": "node tools/mksite.mjs",

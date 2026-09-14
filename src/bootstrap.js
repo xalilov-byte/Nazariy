@@ -182,7 +182,14 @@
       }
       app.setState({});
     };
-    window.nzData.sync(app.state.lang, canSwap, redraw);
+    /* .catch() SHART: sync() — async funksiya, ya'ni undagi kutilmagan
+       xato promise ichida qoladi va hech qayerda ko'rinmaydi. Ilova
+       ishlayveradi (APK ichidagi to'plam bilan), lekin sabab yo'qoladi
+       va muammo faqat "savollar yangilanmayapti" shikoyati bo'lib
+       qaytadi. */
+    window.nzData.sync(app.state.lang, canSwap, redraw).catch(e => {
+      try { console.warn('[nzData] sync yiqildi: ' + (e && e.message)); } catch (e2) {}
+    });
 
     /* Til almashganda savol matni ham o'sha tilga o'tishi kerak —
        tarjima bazada saqlanadi (question_translations). */
