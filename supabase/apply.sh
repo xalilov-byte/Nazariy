@@ -28,19 +28,53 @@ PSQL=(psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -X -q)
 echo "── Ulanish tekshirilmoqda ──"
 "${PSQL[@]}" -tAc "select 'server: '||current_setting('server_version');"
 
-# ── Sxema allaqachon bormi? ──
-# to_regclass jadval yo'q bo'lsa null qaytaradi — xato bermaydi.
-HAS_SCHEMA=$("${PSQL[@]}" -tAc "select case when to_regclass('public.topics') is null then 'no' else 'yes' end;")
+# ── Migratsiyalar ──
+# Ilgari bu yerda faqat 0001_init.sql bor edi va "topics jadvali bormi?"
+# degan bitta tekshiruv qilinardi. Bu ikkinchi migratsiya yozilishi bilan
+# buziladi: sxema mavjud bo'lgani uchun YANGI migratsiya ham o'tkazib
+# yuborilardi va tuzatish hech qachon qo'llanmasdi.
+#
+# Endi qo'llanganlar jadvalda qayd etiladi va migrations/ dagi har bir
+# fayl tartib bilan bir marta ishlaydi.
+"${PSQL[@]}" -c "
+  create table if not exists public.schema_migrations (
+    filename    text primary key,
+    applied_at  timestamptz not null default now()
+  );
 
-if [ "$HAS_SCHEMA" = "no" ]; then
-  echo "── Migratsiya qo'llanmoqda: 0001_init.sql ──"
-  "${PSQL[@]}" -f "$HERE/migrations/0001_init.sql"
-  echo "   sxema yaratildi"
-else
-  echo "── Migratsiya allaqachon qo'llangan — o'tkazib yuborildi ──"
-  echo "   (topics jadvali mavjud; sxemani o'zgartirish uchun yangi"
-  echo "    migratsiya fayli yoziladi, eskisi qayta ishga tushirilmaydi)"
-fi
+  /* public sxemasidagi har bir jadval PostgREST orqali ochiq turadi,
+     shuning uchun bu yerda ham RLS yoqiladi. SIYOSAT ATAYLAB YOZILMAYDI:
+     RLS yoqilgan va siyosati yo'q jadval hech kimga ko'rinmaydi. Jadval
+     faqat shu skript uchun kerak — u baza egasi sifatida ulanadi va RLS
+     unga taalluqli emas. Migratsiya tarixi maxfiy emas, lekin 'public
+     dagi hamma jadvalda RLS bor' qoidasining istisnosi bo'lishi ham
+     kerak emas — istisno bir marta yo'l qo'yilsa, keyingisi sezilmay
+     qoladi. */
+  alter table public.schema_migrations enable row level security;"
+
+# Eski bazalar uchun: sxema bor, lekin jadval bo'sh bo'lsa 0001 allaqachon
+# qo'llangan degani — uni qayta ishga tushirmaymiz, faqat qayd etamiz.
+"${PSQL[@]}" -c "
+  insert into public.schema_migrations (filename)
+  select '0001_init.sql'
+   where to_regclass('public.topics') is not null
+     and not exists (select 1 from public.schema_migrations
+                      where filename = '0001_init.sql');"
+
+for f in "$HERE"/migrations/*.sql; do
+  name="$(basename "$f")"
+  done_already=$("${PSQL[@]}" -tAc \
+    "select 1 from public.schema_migrations where filename = '$name';")
+  if [ -n "$done_already" ]; then
+    echo "── $name — allaqachon qo'llangan, o'tkazib yuborildi ──"
+    continue
+  fi
+  echo "── Migratsiya qo'llanmoqda: $name ──"
+  "${PSQL[@]}" -f "$f"
+  "${PSQL[@]}" -c \
+    "insert into public.schema_migrations (filename) values ('$name');"
+  echo "   qo'llandi"
+done
 
 # Seed idempotent: "on conflict" bilan yozilgan, shuning uchun har doim
 # xavfsiz ishga tushadi va mavjud savollarni takrorlamaydi.

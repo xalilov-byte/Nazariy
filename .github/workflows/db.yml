@@ -57,8 +57,16 @@ jobs:
       - name: Supabase auth sxemasi taqlidi
         run: psql -v ON_ERROR_STOP=1 -q -f supabase/tests/_stub.sql
 
-      - name: Migratsiya
-        run: psql -v ON_ERROR_STOP=1 -q -f supabase/migrations/0001_init.sql
+      - name: Migratsiyalar
+        # Bitta fayl nomini yozib qo'yish xavfli: yangi migratsiya
+        # qo'shilganda CI uni jimgina o'tkazib yuborardi va faqat eski
+        # sxema tekshirilardi. Shuning uchun papkadagi hammasi tartib
+        # bilan ishlaydi — apply.sh ham xuddi shunday qiladi.
+        run: |
+          for f in supabase/migrations/*.sql; do
+            echo "── $f"
+            psql -v ON_ERROR_STOP=1 -q -f "$f"
+          done
 
       - name: Seed (savollar va mavzular)
         run: psql -v ON_ERROR_STOP=1 -q -f supabase/seed/0002_questions.sql
@@ -78,6 +86,11 @@ jobs:
 
       - name: RLS va to'rt ko'z qoidasi tekshiruvi
         run: psql -v ON_ERROR_STOP=1 -f supabase/tests/0001_rls.sql
+
+      - name: To'rt ko'z qoidasining uchta teshigi yopiqligini tekshirish
+        # Tartib muhim: 0001_rls.sql profil va savol sonini aniq raqam
+        # bilan tekshiradi, shuning uchun u birinchi ishlashi kerak.
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/0003_guard.sql
 
       - name: Ma'lumot xulosasi
         run: |
