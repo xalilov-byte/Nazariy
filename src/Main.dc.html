@@ -158,11 +158,13 @@
                             Jadval: sarlavha 11px/700 + hairline, qator 13px/600.
                             Overlay: pastdan sheet (mobil), o'ngdan drawer va
                             markazda confirm (admin).
-       4) MODUL qatlami   — mahsulotning beshta mustaqil bo'lagi, har biri JS'da
+       4) MODUL qatlami   — mahsulotning mustaqil bo'laklari, har biri JS'da
                             o'z valsX(s) metodiga ega: SHELL (ilova ekranlari),
-                            QUIZ, MONEY (Pro/to'lov), ANALYTICS (admin o'qish),
-                            MANAGE (admin yozish). Modul boshqa modulning ichki
-                            hisobiga tegmaydi — faqat state orqali gaplashadi.
+                            QUIZ, TASKS (vazifalar), PROFILE (profil, liga,
+                            sozlamalar), MONEY (Pro/to'lov), ANALYTICS (admin
+                            o'qish), MANAGE (admin yozish). Modul boshqa
+                            modulning ichki hisobiga tegmaydi — faqat state
+                            orqali gaplashadi.
                             Masalan narx MANAGE'da o'zgaradi, MONEY uni
                             state.pricing'dan o'qiydi.
        5) EKRAN qatlami   — sc-if bilan almashadigan ko'rinishlar; ular faqat
@@ -1857,24 +1859,34 @@
       </div>
       <div style="background:var(--surface);border-radius:28px;padding:24px;box-shadow:var(--shadow)">
         <div style="display:flex;align-items:center;justify-content:space-between">
-          <span style="font-size:15px;font-weight:700">Bugungi natija</span>
+          <!-- NAMUNA ekrani. Raqamlar illyustratsiya — ular hech kimning
+               haqiqiy natijasi emas, shuning uchun karta ochiq
+               "namuna" deb belgilangan. Ilgari bunday yozuv yo'q edi
+               va "18/20", "#142 Reyting" da'vo kabi o'qilardi; ustiga
+               18/20 ilovaning haqiqiy imtihon formatiga ham mos
+               kelmasdi. -->
+          <span style="font-size:15px;font-weight:700">Bugungi natija <span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface-alt);color:var(--muted-foreground);margin-left:6px;vertical-align:middle">namuna</span></span>
           <span style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:var(--green-ink)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22c4 0 7-2.8 7-6.5 0-4.5-4-6-4-9.5-2.5 1-3.5 3-3.5 4.5C11.5 8 10 6.5 10 5 7.8 6.6 5 9.2 5 15.5 5 19.2 8 22 12 22z"></path></svg>
             5 kun
           </span>
         </div>
         <div style="text-align:center;padding:24px 0 8px">
-          <div class="display" style="font-size:48px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums">18/20</div>
+          <div class="display" style="font-size:48px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums">{{ demoScore }}</div>
           <div style="margin-top:6px;font-size:14px;font-weight:700;color:var(--success)">Oʻtdingiz</div>
         </div>
-        <div style="height:10px;border-radius:999px;background:var(--surface-alt);overflow:hidden"><div style="width:90%;height:100%;background:var(--success);border-radius:999px"></div></div>
+        <div style="height:10px;border-radius:999px;background:var(--surface-alt);overflow:hidden"><div style="{{ demoBarStyle }}"></div></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px">
+          <!-- Ilgari bu yerda "#142 · Reyting" turardi. Haqiqiy reyting
+               hali yo'q (ro'yxat namunaviy), ya'ni landing mavjud
+               bo'lmagan imkoniyatni ko'rsatardi. O'rnida bor narsa:
+               imtihonga beriladigan vaqt. -->
           <div style="background:var(--purple);color:#fff;border-radius:16px;padding:14px">
-            <div style="font-size:20px;font-weight:800">#142</div>
-            <div style="font-size:12px;font-weight:600;opacity:.85">Reyting</div>
+            <div style="font-size:20px;font-weight:800">{{ demoTime }}</div>
+            <div style="font-size:12px;font-weight:600;opacity:.85">Imtihon vaqti</div>
           </div>
           <div style="background:var(--green);color:#0B2C1E;border-radius:16px;padding:14px">
-            <div style="font-size:20px;font-weight:800">+180</div>
+            <div style="font-size:20px;font-weight:800">{{ demoPoints }}</div>
             <div style="font-size:12px;font-weight:600;opacity:.75">Ball</div>
           </div>
         </div>
@@ -1966,8 +1978,16 @@
                                 navStyle, badge, avatar, answer, pill
 
    4. KO'RINISH MODULLARI ..... valsShell, valsAnalytics, valsManage,
-                                valsMoney, valsQuiz
-      renderVals() faqat shu beshtasini yig'adi.
+                                valsMoney, valsProfile, valsTasks, valsQuiz
+      renderVals() aynan shu YETTITASINI yig'adi — tartib bilan, chunki
+      keyingisi oldingisining kalitini bekor qila oladi (valsQuiz test
+      davomida qobiq holatini ustidan yozadi).
+
+      valsMoney mobil build'da BUTUNLAY kesiladi (build.mjs). Shuning
+      uchun u faqat pul qiymatlarini saqlaydi: liga, reyting va profil
+      qiymatlari valsProfile'ga ajratilgan. Ilgari ikkisi bitta
+      funksiyada edi va aynan shu sabab pul mantig'ini kesib
+      bo'lmasdi.
 
    QOIDA: har qanday YOZUV amali (foydalanuvchi, savol, narx) faqat
    confirm oynasi orqali va logAction() bilan bajariladi. Jurnalga
@@ -3005,7 +3025,8 @@ class Component extends DCLogic {
       this.valsShell(s),      // tema, ko'rinish almashtirish, ilova ekranlari
       this.valsAnalytics(s),  // admin → Tahlil
       this.valsManage(s),     // admin → Boshqaruv
-      this.valsMoney(s),      // Pro obuna va to'lov oqimi
+      this.valsMoney(s),      // Pro obuna va to'lov oqimi (mobil build'dan kesiladi)
+      this.valsProfile(s),    // profil, reyting, liga, sozlamalar
       this.valsTasks(s),      // kunlik / bir martalik / ijtimoiy vazifalar
       this.valsQuiz(s)        // faol test (test yo'q bo'lsa bo'sh)
     );
@@ -3055,6 +3076,19 @@ class Component extends DCLogic {
          Endi yorliq ham o'sha konstantalardan chiqadi, ya'ni bank
          kattalashganda yoki format o'zgarganda u eskirib qololmaydi. */
       examCardSub: examFmt().full,
+
+      /* Landing'dagi NAMUNA ekrani. Raqam o'ylab topilmaydi — imtihon
+         formatidan chiqadi, aks holda "18/20" yozib turib ilovada 10
+         savol berilardi. */
+      demoScore: (examFmt().n - EXAM_MAX_WRONG) + "/" + examFmt().n,
+      demoTime: examFmt().time,
+      demoBarStyle: {
+        width: Math.round((examFmt().n - EXAM_MAX_WRONG) / examFmt().n * 100) + "%",
+        height: "100%", background: "var(--success)", borderRadius: "999px"
+      },
+      // Ilovadagi qoida bilan bir xil: har to'g'ri javobga 10, o'tgan
+      // imtihonga 100. Qo'lda yozilgan "+180" formatga bog'lanmagan edi.
+      demoPoints: "+" + ((examFmt().n - EXAM_MAX_WRONG) * 10 + 100),
 
       theme,
       isDark: theme === "dark",
@@ -4047,6 +4081,23 @@ class Component extends DCLogic {
         pro: { active: true, until: dateAfter(st.plan === "year" ? 365 : 30) },
         pay: { step: "done", method: st.pay ? st.pay.method : null }
       })),
+    };
+  }
+
+  /* ─── MODUL 5: profil, reyting va sozlamalar ────────────────────────
+     Bu qiymatlar ILGARI valsMoney ichida turardi va aynan shu sabab
+     pul qatlamini kesib bo'lmasdi: liga, reyting va profil qiymatlari
+     to'lov oqimi bilan bitta funksiyada edi. Natijada mobil build'da
+     "kesildi — pul qatlami" deb chop etilardi, lekin openPro, openPay,
+     openRedeem va payStepMethod ijro etiladigan kodda qolib ketardi.
+     Markup'da kirish nuqtasi yo'q edi, ya'ni zarar yo'q — LEKIN
+     TASDIQ YOLG'ON edi. Xavfsizlik chegarasi o'zi haqida noto'g'ri
+     xabar bermasligi kerak.
+
+     Endi ikkisi ajratilgan: valsMoney faqat pul, valsProfile qolgani.
+     build.mjs mobil build'dan valsMoney'ni BUTUNLAY kesadi. */
+  valsProfile(s) {
+    return {
       savedCountLabel: s.savedIds.length
         ? s.savedIds.length + " " + T("ta savol · qayta yechish")
         : "Hozircha boʻsh — testda xatchoʻp bilan saqlang",
@@ -4259,7 +4310,7 @@ class Component extends DCLogic {
         { value: String(QUESTIONS.length), label: "savol bazasi" },
         { value: String(bankTopics().length), label: "mavzu" },
         { value: String(SIGN_INDICES.length), label: "yoʻl belgisi" },
-        { value: examFmt().n + "/" + Math.round(examFmt().sec / 60), label: "savol / daqiqa" }
+        { value: String(examFmt().n), label: "savollik imtihon" }
       ],
       // Birinchi qadam bot bor-yo'qligiga qarab o'zgaradi: bot yo'q
       // bo'lsa "Botni oching" deb yozish odamni mavjud bo'lmagan
@@ -4296,7 +4347,7 @@ class Component extends DCLogic {
     };
   }
 
-  // ─── MODUL 5: faol test ─────────────────────────────────────────────
+  // ─── MODUL 6: kunlik va bir martalik vazifalar ──────────────────────
   /* Vazifalar paneli. taskList() dan keladigan holatni ko'rinishga
      aylantiradi: nishon, uslub va bosish xulqi. */
   valsTasks(s) {
@@ -4354,6 +4405,7 @@ class Component extends DCLogic {
     };
   }
 
+  // ─── MODUL 7: faol test ─────────────────────────────────────────────
   valsQuiz(s) {
     const q = s.quiz;
     if (!q) return {};

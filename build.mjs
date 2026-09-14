@@ -298,6 +298,27 @@ if (!CFG.admin) {
   for (const name of ADMIN_CONSTS)  { logic = cutConst(logic, name); removed.push(name); }
 }
 
+/* Pul qatlamining MANTIG'I ham kesiladi, faqat markup emas.
+
+   Ilgari faqat markup kesilardi va valsMoney qolardi — sabab: liga,
+   reyting va profil qiymatlari o'sha funksiyaning ichida edi. Natijada
+   build "kesildi — pul qatlami" deb chop etardi, lekin www/index.html
+   da openPro, openPay, openRedeem va payStepMethod ijro etiladigan
+   kodda turardi. Markup'da kirish nuqtasi yo'q edi, ya'ni foydalanuvchi
+   uchun zarar yo'q — LEKIN TASDIQ YOLG'ON edi, va do'kon tekshiruvi
+   APK ichidan to'lov nomlarini topishi mumkin.
+
+   Manbadagi valsMoney endi FAQAT pul qiymatlarini saqlaydi (qolgani
+   valsProfile'ga ajratilgan), shuning uchun uni butunlay kesish
+   mumkin. */
+if (!CFG.money) {
+  logic = cutLine(logic, 'this.valsMoney(s),', 'renderVals → valsMoney chaqiruvi');
+  logic = cutFn(logic, 'valsMoney', 'method');   removed.push('valsMoney');
+  logic = cutFn(logic, 'plansFrom', 'function'); removed.push('plansFrom');
+  logic = cutConst(logic, 'PRO_BENEFITS');       removed.push('PRO_BENEFITS');
+  logic = cutConst(logic, 'PAY_METHODS');        removed.push('PAY_METHODS');
+}
+
 /* Kesishdan keyingi tekshiruv: o'chirilgan nom qolgan kodda ishlatilsa,
    ilova ishlash vaqtida jimgina buziladi. Shuning uchun build yiqiladi. */
 const logicCode = codeOnly(logic);
@@ -543,11 +564,20 @@ if (CFG.app) NEED.push('nz-nav', 'nz-frame');
 if (CFG.admin) NEED.push('valsManage', 'Admin panel');
 if (CFG.landing) NEED.push('Avtotestdan birinchi urinishda');
 
-/* Pul qatlami kesilgan build'da unga kirish YO'LI qolmasligi kerak.
-   Markup'da bitta ham chaqiruv qolsa, tugma chizilib, bosilganda
-   hech narsa bo'lmaydi — aynan Play rad etadigan holat. */
+/* Pul qatlami kesilgan build'da na kirish yo'li, na MANTIG'I qolmasligi
+   kerak. Ilgari bu tekshiruv faqat `markup` ustida ishlardi — ya'ni u
+   "tugma chizilmaydi" ni tasdiqlardi, "kod yo'q" ni emas. Admin
+   tekshiruvi (pastda) boshidan `logicCode` ustida ishlagan va aynan
+   shuning uchun kuchli edi; endi ikkalasi bir xil qat'iylikda. */
 if (!CFG.money) {
-  for (const bad of ['openPro', 'openPay', 'openRedeem', 'payStepMethod', 'proFinePrint']) {
+  const MONEY_NAMES = ['openPro', 'openPay', 'openRedeem', 'payStepMethod',
+                       'proFinePrint', 'valsMoney', 'plansFrom', 'confirmPay',
+                       'PRO_BENEFITS', 'PAY_METHODS'];
+  for (const bad of MONEY_NAMES) {
+    if (new RegExp(`\\b${bad}\\b`).test(logicCode)) {
+      throw new Error(`[build] XAVFSIZLIK: "${bad}" ${TARGET} build'ining KODIDA qoldi — ` +
+                      `pul qatlami kesilmagan`);
+    }
     if (markup.indexOf(bad) !== -1) {
       throw new Error(`[build] "${bad}" ${TARGET} build'ining markup'ida qoldi — ` +
                       `pul qatlami to'liq kesilmagan`);
