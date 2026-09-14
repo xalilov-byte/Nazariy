@@ -2207,8 +2207,17 @@ function plansFrom(pr) {
 // To'lov yo'llari. Logotiplar CHIZILMAYDI — bular boshqa kompaniyalarning
 // himoyalangan belgilari; nom matn bilan, ikonka esa umumiy (hamyon/karta/yulduz).
 /* ─── 1.2 PUL ────────────────────────────────────────────────────────── */
+/* To'lov usullari. DIQQAT: bu ro'yxat build maqsadiga qarab
+   FILTRLANMAYDI — u faqat pul qatlami bor build'larda (sayt, admin)
+   ko'rinadi, mobil build'dan esa butunlay kesiladi.
+
+   "Telegram Stars" tavsifi ilgari "Telegram ichida, ilovadan chiqmasdan"
+   derdi. Bu saytda ochilganda yolg'on: brauzerda Telegram yo'q va
+   Stars bilan to'lash uchun baribir Telegram'ga o'tish kerak. Telegram
+   Mini App hali qurilmagan (REJA.md), shuning uchun tavsif hozircha
+   qaysi muhitda ham to'g'ri bo'ladigan qilib yozilgan. */
 const PAY_METHODS = [
-  { id: "stars", label: "Telegram Stars", sub: "Telegram ichida, ilovadan chiqmasdan", color: "--purple",
+  { id: "stars", label: "Telegram Stars", sub: "Telegram hisobingizdagi Stars bilan", color: "--purple",
     path1: "M12 3.6 14.5 9l5.9.7-4.4 4 1.2 5.8-5.2-2.9-5.2 2.9 1.2-5.8-4.4-4 5.9-.7z", path2: "" },
   { id: "click", label: "Click", sub: "Hamyon yoki karta orqali", color: "--primary",
     path1: "M3.2 8.4a2.4 2.4 0 0 1 2.4-2.4h12.8a2.4 2.4 0 0 1 2.4 2.4v8.4a2.4 2.4 0 0 1-2.4 2.4H5.6a2.4 2.4 0 0 1-2.4-2.4z", path2: "M16.2 11.2h4.6v3.2h-4.6a1.6 1.6 0 0 1 0-3.2z" },
@@ -4083,7 +4092,7 @@ class Component extends DCLogic {
       payNote: (() => {
         if (!s.pay) return "";
         if (s.pay.method === "card") return "Karta maʼlumotlari bank tomonida tekshiriladi va Nazariy serverida saqlanmaydi. Tasdiqlash uchun telefoningizga bankdan SMS kod yuboriladi.";
-        if (s.pay.method === "stars") return "Toʻlov Telegram hisobingizdagi Stars bilan amalga oshiriladi — ilovadan chiqmaysiz. Yetkazib berilmagan xarid uchun /paysupport orqali qaytarib olish mumkin.";
+        if (s.pay.method === "stars") return "Toʻlov Telegram hisobingizdagi Stars bilan amalga oshiriladi. Yetkazib berilmagan xarid uchun /paysupport orqali qaytarib olish mumkin.";
         const m = PAY_METHODS.filter(x => x.id === s.pay.method)[0];
         return "Tasdiqlash uchun " + (m ? m.label : "hamyon") + " ilovasiga oʻtasiz va toʻlovdan soʻng shu yerga qaytasiz.";
       })(),

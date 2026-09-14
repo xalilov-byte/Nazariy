@@ -261,7 +261,7 @@ window.nzRu = {
   "Toʻlov": "Оплата",
   "Toʻlov usuli": "Способ оплаты",
   "Telegram Stars": "Telegram Stars",
-  "Telegram ichida, ilovadan chiqmasdan": "Внутри Telegram, не выходя из приложения",
+  "Telegram hisobingizdagi Stars bilan": "Звёздами с вашего счёта Telegram",
   "Hamyon yoki karta orqali": "Кошелёк или карта",
   "Hamyon · boʻlib toʻlash": "Кошелёк · рассрочка",
   "Karta raqamini kiritib": "Вводом номера карты",
@@ -282,8 +282,8 @@ window.nzRu = {
     "Pro на 1 месяц включится сразу. Списанные баллы не возвращаются, но подписка не продлевается автоматически — после срока вернётесь в обычный режим.",
   "Karta maʼlumotlari bank tomonida tekshiriladi va Nazariy serverida saqlanmaydi. Tasdiqlash uchun telefoningizga bankdan SMS kod yuboriladi.":
     "Данные карты проверяет банк, на сервере Nazariy они не хранятся. Для подтверждения банк отправит SMS-код на ваш телефон.",
-  "Toʻlov Telegram hisobingizdagi Stars bilan amalga oshiriladi — ilovadan chiqmaysiz. Yetkazib berilmagan xarid uchun /paysupport orqali qaytarib olish mumkin.":
-    "Оплата проходит звёздами Stars с вашего аккаунта Telegram — не выходя из приложения. Если покупка не доставлена, вернуть средства можно через /paysupport.",
+  "Toʻlov Telegram hisobingizdagi Stars bilan amalga oshiriladi. Yetkazib berilmagan xarid uchun /paysupport orqali qaytarib olish mumkin.":
+    "Оплата проходит звёздами Stars с вашего аккаунта Telegram. Если покупка не доставлена, вернуть средства можно через /paysupport.",
 
   /* ── Sozlamalar ───────────────────────────────────────────────────── */
   "Til": "Язык",

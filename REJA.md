@@ -29,20 +29,34 @@ Admin ikki rejimda: `analytics` (Tahlil) va `manage` (Boshqaruv).
 
 ### Yo'q narsalar — bu rejaning ish maydoni
 
-1. **Backend yo'q.** Kodda bitta ham `fetch()`, `localStorage` yoki
-   `IndexedDB` yo'q — buni tekshirib ko'rdim, nol marta uchraydi.
-2. **Hech narsa saqlanmaydi.** Barcha holat `state` ichida, xotirada.
-   Ilova yopilsa — ballar, streak, xatolar ro'yxati, saqlangan savollar,
-   hammasi nolga qaytadi.
-3. **Savollar kodga yozib qo'yilgan.** `QUESTIONS` massivida **10 ta**
-   savol bor. README'da esa "700+ savol" deb yozilgan — bu hozircha
-   marketing matni, haqiqat emas.
-4. **Admin paneldagi ma'lumot butunlay mock.** `ADMIN_QUESTIONS` (8 ta),
-   `ADMIN_USERS` (8 ta), `AUDIT_SEED` (5 ta), `DAU_90` — barchasi
-   namunaviy konstantalar. Tugmalar `state`'ni o'zgartiradi, lekin ilova
-   yopilsa yo'qoladi.
-5. **Hisob (auth) yo'q.** Foydalanuvchi kim ekani ma'lum emas.
-6. **Sayt yo'q.** Faqat APK ichidagi web ilova bor.
+> ⚠ **Bu ro'yxat 2026-yil boshidagi holatni tasvirlaydi va uning katta
+> qismi ALLAQACHON ESKIRGAN** — pastdagi "✅ BAJARILDI" fazalari bilan
+> solishtiring. Quyida har bandning bugungi holati qavs ichida
+> ko'rsatilgan; tarixiy kontekst uchun matnning o'zi qoldirilgan.
+
+1. ~~**Backend yo'q.** Kodda bitta ham `fetch()`, `localStorage` yoki
+   `IndexedDB` yo'q.~~
+   **(ESKIRGAN.)** `src/data.js` Supabase PostgREST'ga `fetch()`
+   qiladi, `src/progress.js` esa `localStorage` bilan ishlaydi.
+   Alohida backend kodi hamon YO'Q va bo'lmaydi ham — klient bazaga
+   to'g'ridan-to'g'ri murojaat qiladi, himoyani RLS beradi.
+2. ~~**Hech narsa saqlanmaydi.**~~
+   **(ESKIRGAN.)** `src/progress.js` ball, streak, "Xatolarim",
+   "Saqlangan", mavzu kesimidagi hisob va sozlamalarni qurilmada
+   saqlaydi (Faza 3).
+3. **Savollar kodga yozib qo'yilgan** — hamon shunday: `QUESTIONS`
+   massivida **10 ta** savol. Bank bazaga ko'chirilgan (`mkseed.mjs`),
+   lekin hajmi o'zgarmagan. Bu ro'yxatdagi eng katta ochiq ish.
+   "700+ savol" degan marketing matni butunlay olib tashlangan.
+4. **Admin paneldagi ma'lumot namunaviy** — `ADMIN_QUESTIONS`,
+   `ADMIN_USERS`, `AUDIT_SEED`, `DAU_90` hamon konstantalar.
+   Haqiqiy baza qatlami (`src/admin-api.js`) yozilgan va RLS bilan
+   himoyalangan, lekin maketdagi ma'lumot hali almashtirilmagan.
+5. **Hisob (auth) yo'q** — foydalanuvchi uchun hamon shunday. Admin
+   uchun esa Supabase Auth ishlaydi (`src/admin-boot.js`).
+6. ~~**Sayt yo'q.**~~
+   **(ESKIRGAN.)** `dist/site/` — landing, ilova va to'rtta matn
+   sahifasi (`tools/mksite.mjs`).
 
 ### Xavfsizlik: admin panel ilova ichida edi ✅ TUZATILDI
 

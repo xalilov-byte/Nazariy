@@ -10,6 +10,46 @@ import groovy.json.JsonSlurper
 def nzVersionFile = rootProject.file("../version.json")
 def nzVersion = new JsonSlurper().parseText(nzVersionFile.getText("UTF-8"))
 
+/* ── ASSETS ESKIRIB QOLMASLIGI UCHUN TO'SIQ ────────────────────────────
+   APK ichidagi veb-ilova `android/app/src/main/assets/public/` da
+   turadi va u `npm run sync` (build.mjs + cap sync) bilan yangilanadi.
+   Gradle buni O'ZI qilmaydi.
+
+   Xavf aniq: kim `npm run sync` qilmasdan to'g'ridan-to'g'ri
+   `./gradlew assembleRelease` desa, ESKI nusxa bilan APK chiqadi.
+   Bir marta shunday bo'lgan ham — assets ichida allaqachon kesilgan
+   taqlid to'lov oqimi (openPro, payStepMethod) qolib ketgan edi, ya'ni
+   Play RAD ETADIGAN APK yig'ilishi mumkin edi.
+
+   Shuning uchun yig'ish oldidan ikkala nusxa solishtiriladi. Farq
+   bo'lsa build TO'XTAYDI va nima qilish kerakligini aytadi — jimgina
+   eski fayl bilan davom etmaydi. */
+def nzAssets = project.file("src/main/assets/public/index.html")
+def nzWww = rootProject.file("../www/index.html")
+
+tasks.register("nzAssetsFresh") {
+    doLast {
+        if (!nzWww.exists()) {
+            throw new GradleException(
+                "www/index.html yo'q. Avval yig'ing:\n" +
+                "  npm run sync    (build.mjs + npx cap sync android)")
+        }
+        if (!nzAssets.exists()) {
+            throw new GradleException(
+                "APK ichidagi assets/public/index.html yo'q. Avval:\n" +
+                "  npm run sync")
+        }
+        if (nzAssets.getText("UTF-8") != nzWww.getText("UTF-8")) {
+            throw new GradleException(
+                "APK ichidagi nusxa ESKIRGAN — www/index.html dan farq qiladi.\n" +
+                "Bu holda do'kon rad etadigan yoki eskirgan ilova yig'iladi.\n" +
+                "Yangilash:\n" +
+                "  npm run sync    (build.mjs + npx cap sync android)")
+        }
+    }
+}
+tasks.matching { it.name == "preBuild" }.configureEach { dependsOn("nzAssetsFresh") }
+
 /* Yig'ilgan fayllar nomi: Nazariy-release.apk / Nazariy-debug.apk /
    Nazariy-release.aab (standart "app-..." o'rniga). */
 base {
