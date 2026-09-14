@@ -27,6 +27,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
+
+      # Testlarning o'ziga bog'liqlik kerak emas (node:vm + node:test —
+      # ikkalasi ham Node ichida), lekin build shriftlarni
+      # @fontsource/manrope dan o'qiydi.
+      - name: Bog'liqliklar
+        run: npm ci
 
       - name: Testlar
         run: npm test
