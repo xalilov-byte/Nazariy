@@ -57,7 +57,7 @@ himoya olib tashlanganda haqiqatan yiqilishi alohida tekshirildi.
 
 | # | Nima | Nega hali yo'q |
 |---|---|---|
-| **2** | Savollar bazasi 10 → 600 | Kontent ishi — kod tayyor (`SAVOLLAR.md`, `mkseed.mjs`, ommaviy import) |
+| **2** | Savollar bazasi 10 → 600 | **Yarmi bajarildi.** Rasmiy avtotest hujjatidan 301 ta savol (140 tasi rasm bilan) olindi va bazaga yozildi — `tools/mkbank.mjs`, `supabase/seed/0005_bank.sql`. Hammasi `draft`: javob kaliti hujjatda matn bilan yozilmagan, u yashil nuqtaning koordinatasidan hisoblandi. 280 tasida o'zbekcha va ruscha nuqta bir xil javobni ko'rsatdi, 21 tasi kalitsiz. Nashr etish uchun **odam tasdiqlashi shart** (`0004_bank.sql`). Qolgani: admin panelda 301 ta savolni ko'rib chiqish |
 | 27 | `tg_id` cast xatosi | Haqiqiy Telegram auth oqimi qurilganda tekshiriladi |
 | 11-o'rin | «Reyting» → «Mavzular» tabi | Mahsulot qarori, bug emas |
 

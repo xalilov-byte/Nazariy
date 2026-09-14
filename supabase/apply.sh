@@ -78,8 +78,14 @@ done
 
 # Seed idempotent: "on conflict" bilan yozilgan, shuning uchun har doim
 # xavfsiz ishga tushadi va mavjud savollarni takrorlamaydi.
-echo "── Seed qo'llanmoqda: 0002_questions.sql ──"
-"${PSQL[@]}" -f "$HERE/seed/0002_questions.sql"
+#
+# Ilgari bu yerda bitta fayl nomi yozilgan edi. Ikkinchi seed qo'shilishi
+# bilan u sezdirmay tashlab ketilardi — migratsiyalardagi xuddi shu xato.
+# Endi seed/ dagi hamma fayl tartib bilan ishlaydi.
+for seed in "$HERE"/seed/*.sql; do
+  echo "── Seed qo'llanmoqda: $(basename "$seed") ──"
+  "${PSQL[@]}" -f "$seed"
+done
 
 echo "── Natija ──"
 "${PSQL[@]}" -tAc "

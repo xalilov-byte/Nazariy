@@ -69,7 +69,12 @@ jobs:
           done
 
       - name: Seed (savollar va mavzular)
-        run: psql -v ON_ERROR_STOP=1 -q -f supabase/seed/0002_questions.sql
+        # Migratsiyalardagi kabi: papkadagi hammasi tartib bilan.
+        run: |
+          for f in supabase/seed/*.sql; do
+            echo "── $f"
+            psql -v ON_ERROR_STOP=1 -q -f "$f"
+          done
 
       - name: Seed manbaga mos kelishini tekshirish
         # Generator qayta ishga tushirilganda fayl o'zgarmasligi kerak —
@@ -82,6 +87,12 @@ jobs:
             git diff --stat supabase/seed/0002_questions.sql
             exit 1
           fi
+          node tools/mkbankseed.mjs
+          if ! git diff --quiet supabase/seed/0005_bank.sql; then
+            echo "::error::supabase/seed/0005_bank.sql content/bank.json ga mos emas — 'node tools/mkbankseed.mjs' ni ishga tushirib, natijani commit qiling"
+            git diff --stat supabase/seed/0005_bank.sql
+            exit 1
+          fi
           echo "seed manbaga mos"
 
       - name: RLS va to'rt ko'z qoidasi tekshiruvi
@@ -91,6 +102,11 @@ jobs:
         # Tartib muhim: 0001_rls.sql profil va savol sonini aniq raqam
         # bilan tekshiradi, shuning uchun u birinchi ishlashi kerak.
         run: psql -v ON_ERROR_STOP=1 -f supabase/tests/0003_guard.sql
+
+      - name: Savollar banki sxemasi va javob kaliti himoyasi
+        # Eng muhimi: hujjatdan avtomatik olingan javob kaliti bilan
+        # savol nashr etilmasligi.
+        run: psql -v ON_ERROR_STOP=1 -f supabase/tests/0004_bank.sql
 
       - name: Ma'lumot xulosasi
         run: |

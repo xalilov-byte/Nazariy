@@ -60,9 +60,13 @@ begin
   if exists (select 1 from public.questions where ref = '#900') then
     raise exception 'FAIL: anon qoralama savolni ko''rdi — RLS teshik';
   end if;
-  -- Mavzular ko'rinadi (ilova birinchi ochilishda ularga muhtoj)
-  if (select count(*) from public.topics) <> 8 then
-    raise exception 'FAIL: anon mavzularni ko''rmadi';
+  -- Mavzular ko'rinadi (ilova birinchi ochilishda ularga muhtoj).
+  -- ANIQ SON tekshirilmaydi: yangi seed yangi mavzu qo'shadi va bu
+  -- tekshiruvning maqsadi "anon mavzularni ko'ra oladimi", "nechta
+  -- mavzu bor" emas. 0002 dagi sakkiztasi — eng kam chegara.
+  if (select count(*) from public.topics) < 8 then
+    raise exception 'FAIL: anon mavzularni ko''rmadi (% ta)',
+      (select count(*) from public.topics);
   end if;
   -- Tarjimalar ko'rinadi
   if (select count(*) from public.question_translations) <> 10 then
@@ -278,16 +282,18 @@ reset request.jwt.claim.sub;
 do $$
 declare blocked boolean := false;
 begin
-  -- 4 tadan boshqa variant soni qabul qilinmasligi kerak
+  /* Variant soni: 0004_bank.sql dan boshlab 2..5 (rasmiy avtotest
+     to'plamida 2, 3, 4 va 5 variantli savollar bor). Chegara baribir
+     bor — bitta variantli "savol" yarim yozilgan savol. */
   begin
     insert into public.questions (topic_id, text, options, correct)
-    select id, 'Uch variantli savol — qabul qilinmasligi kerak',
-           array['a','b','c'], 0 from public.topics limit 1;
+    select id, 'Bitta variantli savol — qabul qilinmasligi kerak',
+           array['yagona'], 0 from public.topics limit 1;
   exception when others then blocked := true;
   end;
-  if not blocked then raise exception 'FAIL: 3 variantli savol qabul qilindi'; end if;
+  if not blocked then raise exception 'FAIL: 1 variantli savol qabul qilindi'; end if;
 
-  -- Javob kaliti 0..3 dan tashqarida bo'lmasligi kerak
+  -- Javob kaliti massiv uzunligidan tashqarida bo'lmasligi kerak
   blocked := false;
   begin
     insert into public.questions (topic_id, text, options, correct)
