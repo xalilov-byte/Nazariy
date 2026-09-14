@@ -14,7 +14,15 @@
 <style>
   :root{
     --background:#F5F3FF; --surface:#FFFFFF; --surface-alt:#ECE9FB;
-    --foreground:#1C1B29; --muted-foreground:#6E6985;
+    /* --muted-foreground ilgari #6E6985 edi va --surface-alt (#ECE9FB)
+       ustida 4.38:1 berardi — AA uchun kerakli 4.5:1 dan past. Bu
+       kichik farq ko'p joyga tegadi: javob variantlarining harf
+       plitkasi (14px, qalin — "katta matn" sanalmaydi), segment
+       tugmalari, statistika yorliqlari — hammasi surface-alt ustida
+       turadi. #6A6580 — o'sha kulrang-siyohning o'zi, lekin uchala
+       fonda ham AA: surface-alt 4.65, surface 5.55, background 5.10.
+       Brauzerda o'lchandi, ko'z bilan chamalanmagan. */
+    --foreground:#1C1B29; --muted-foreground:#6A6580;
     --primary:#3D5EFF; --gold:#FFA726; --purple:#8552F0; --green:#4CC38A;
     --pink:#FF6FA5; --teal:#22B8B0; --success:#0C7A48; --destructive:#DE2A25;
     /* SIYOH ("ink") qatlami: to'ldirish (fill) uchun mo'ljallangan yorqin
@@ -63,6 +71,24 @@
        (3:1 grafika chegarasidan ham past). Shu sabab tungi qiymat to'q siyoh
        (#1C1B29 — logotipdagi bilan bir xil), unda 6.1:1. */
     --destructive-on-fill:#fff;
+    /* Xuddi shu naqsh yashil to'ldirish uchun. Kunduzgi --success
+       (#0C7A48) to'q — oq ustida 5.39:1 (AA). Tungi --success esa
+       (#3DDB8F) yorqin yalpiz: oq bilan atigi 1.79:1 bo'lardi, ya'ni
+       3:1 grafika chegarasidan ham ikki barobar past. Shu siyoh bilan
+       esa 9.47:1.
+
+       Nima uchun bu MUHIM: javob berilgandagi harf plitkasi —
+       ilovaning eng tez-tez takrorlanadigan lahzasi. Har bir savolda
+       ko'riladi va aynan u "to'g'ri javob qaysi" degan savolga javob
+       beradi. */
+    --success-on-fill:#fff;
+    /* --green to'ldirish ustidagi siyoh. Ikkala temada ham bir xil to'q
+       yashil: kunduzgi --green (#4CC38A) bilan 6.80:1, tungi (#5FE3A1)
+       bilan 9.32:1. Oq bilan esa 2.22:1 va 1.62:1 bo'lardi — ikkalasi
+       ham 3:1 grafika chegarasidan past. Bu naqsh ilovada allaqachon
+       bor edi ("Kunlik kirish" kartasi #0B2C1E ishlatadi), lekin
+       "Bu hafta" kartasida qo'llanmay qolgan edi. */
+    --green-on-fill:#0B2C1E;
     --shadow:0 8px 20px rgba(28,27,41,.10); --hairline:rgba(28,27,41,.07);
   }
   [data-theme="dark"]{
@@ -93,6 +119,8 @@
        siyoh = asosiy qiymatning o'zi, xuddi boshqa uchtasi kabi. */
     --destructive-ink:#FF6B6B;
     --destructive-on-fill:#1C1B29;
+    --success-on-fill:#1C1B29;
+    --green-on-fill:#0B2C1E;
     --shadow:0 8px 20px rgba(0,0,0,.40); --hairline:rgba(255,255,255,.07);
   }
   *{box-sizing:border-box}
@@ -361,7 +389,7 @@
                  gradient, shuning uchun avvalgi to'q matn endi o'qilmas
                  bo'lardi. Ikonka currentColor orqali xuddi shu rangni oladi.
                  Gradient yengillashtirilishi sababi yuqoridagi izohda. -->
-            <div class="nz-card-hafta" style="background-color:var(--green);border-radius:20px;padding:16px;box-shadow:var(--shadow);color:#fff">
+            <div class="nz-card-hafta" style="background-color:var(--green);border-radius:20px;padding:16px;box-shadow:var(--shadow);color:var(--green-on-fill)">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
               <!-- "2s 40d" birinchi o'qishda chalkash edi ("d" daqiqami, sanami?) —
                    "daq" ga to'liqroq qisqartma chiqarilgach, "s" (soat) bilan
@@ -3212,7 +3240,7 @@ class Component extends DCLogic {
         const STATE_META = {
           draft:     { label: "Qoralama", bg: "var(--surface-alt)", fg: "var(--muted-foreground)" },
           review:    { label: "Koʻrib chiqishda", bg: "var(--gold)", fg: "#2A1B00" },
-          published: { label: "Nashr etilgan", bg: "var(--success)", fg: "#fff" },
+          published: { label: "Nashr etilgan", bg: "var(--success)", fg: "var(--success-on-fill)" },
           archived:  { label: "Arxiv", bg: "var(--surface-alt)", fg: "var(--muted-foreground)" }
         };
         const users = s.users, questions = s.questions;
@@ -3238,7 +3266,7 @@ class Component extends DCLogic {
             planLabel: u.plan === "pro" ? "Pro · " + u.until : "Bepul",
             planStyle: u.plan === "pro" ? chip("var(--gold)", "#2A1B00") : chip("var(--surface-alt)", "var(--muted-foreground)"),
             statusLabel: u.status === "blocked" ? "Bloklangan" : "Faol",
-            statusStyle: u.status === "blocked" ? chip("var(--destructive)", "#fff") : chip("var(--surface-alt)", "var(--success)")
+            statusStyle: u.status === "blocked" ? chip("var(--destructive)", "var(--destructive-on-fill)") : chip("var(--surface-alt)", "var(--success)")
           })),
 
           qFilters: [
@@ -3468,8 +3496,8 @@ class Component extends DCLogic {
               bulkRaw: source,
               bulkStats: [
                 chip2(rows.length + " qator oʻqildi", "var(--surface-alt)", "var(--foreground)"),
-                chip2(good + " ta yaroqli", "var(--success)", "#fff"),
-                chip2((rows.length - good) + " ta xato", (rows.length - good) ? "var(--destructive)" : "var(--surface-alt)", (rows.length - good) ? "#fff" : "var(--muted-foreground)"),
+                chip2(good + " ta yaroqli", "var(--success)", "var(--success-on-fill)"),
+                chip2((rows.length - good) + " ta xato", (rows.length - good) ? "var(--destructive)" : "var(--surface-alt)", (rows.length - good) ? "var(--destructive-on-fill)" : "var(--muted-foreground)"),
                 /* Izohsiz savollar ALOHIDA ko'rsatiladi. Ular yaroqli
                    va qo'shiladi, lekin soni ko'rinib turishi kerak:
                    izoh savolning eng qimmatli qismi va 700 ta izohsiz
@@ -3492,7 +3520,7 @@ class Component extends DCLogic {
                 textStyle: { padding: "10px", fontSize: "12px", fontWeight: 600, lineHeight: 1.4 },
                 topicStyle: { padding: "10px", fontSize: "12px", fontWeight: 500, color: "var(--muted-foreground)" },
                 stateWrap: { padding: "10px" },
-                stateStyle: { padding: "3px 9px", borderRadius: "999px", fontSize: "11px", fontWeight: 800, background: r.ok ? "var(--success)" : "var(--destructive)", color: "#fff" },
+                stateStyle: { padding: "3px 9px", borderRadius: "999px", fontSize: "11px", fontWeight: 800, background: r.ok ? "var(--success)" : "var(--destructive)", color: r.ok ? "var(--success-on-fill)" : "var(--destructive-on-fill)" },
                 errStyle: { gridColumn: "2 / -1", padding: "0 10px 10px", fontSize: "11px", fontWeight: 700, color: "var(--destructive)", lineHeight: 1.45 },
                 warnStyle: { gridColumn: "2 / -1", padding: "0 10px 10px", fontSize: "11px", fontWeight: 700, color: "var(--gold-ink)", lineHeight: 1.45 }
               })),
@@ -3872,12 +3900,12 @@ class Component extends DCLogic {
           { value: st.accuracy === null ? "—" : st.accuracy + "%",
             label: "Toʻgʻri javob", color: "--success" },
           { value: nf(st.exams), label: "Imtihonlar", color: "--purple" },
-          { value: nf(st.longest) + " " + T("kun"), label: "Eng uzun streak", color: "--green" }
+          { value: nf(st.longest) + " " + T("kun"), label: "Eng uzun streak", color: "--green-ink" }
         ] : [
           { value: "1 248", label: "Yechilgan savollar", color: "--foreground" },
           { value: "87%", label: "Toʻgʻri javob", color: "--success" },
           { value: "36", label: "Imtihonlar", color: "--purple" },
-          { value: "9 " + T("kun"), label: "Eng uzun streak", color: "--green" }
+          { value: "9 " + T("kun"), label: "Eng uzun streak", color: "--green-ink" }
         ];
       })().map(x => Object.assign({}, x, {
         valStyle: { fontSize: "24px", fontWeight: 800, fontVariantNumeric: "tabular-nums", color: "var(" + x.color + ")" }
@@ -4187,7 +4215,7 @@ class Component extends DCLogic {
           fontSize: "15px", fontWeight: 800, fontVariantNumeric: "tabular-nums",
           padding: "7px 12px", borderRadius: "999px",
           background: q.time < 180 ? "var(--destructive)" : "var(--surface)",
-          color: q.time < 180 ? "#fff" : "var(--foreground)",
+          color: q.time < 180 ? "var(--destructive-on-fill)" : "var(--foreground)",
           boxShadow: "var(--shadow)"
         },
         segments: (q.pool || []).map((qi, i) => {
@@ -4231,7 +4259,12 @@ class Component extends DCLogic {
               width: "30px", height: "30px", borderRadius: "9px", flex: "none",
               display: "grid", placeItems: "center", fontSize: "14px", fontWeight: 800,
               background: answered && isRight ? "var(--success)" : answered && isSel ? "var(--destructive)" : "var(--surface-alt)",
-              color: answered && (isRight || isSel) ? "#fff" : "var(--muted-foreground)"
+              /* Ilgari ikkalasida ham qattiq "#fff" edi va tungi temada
+                 o'qilmasdi: yashil ustida 1.79:1, qizil ustida 2.78:1 —
+                 WCAG AA 4.5:1 ni talab qiladi. */
+              color: answered && isRight ? "var(--success-on-fill)"
+                : answered && isSel ? "var(--destructive-on-fill)"
+                : "var(--muted-foreground)"
             }
           };
         }),
