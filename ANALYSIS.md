@@ -19,6 +19,50 @@ telefondagi haqiqiy raqam emas.
 
 ---
 
+## ⚙️ BAJARILISH HOLATI
+
+> Bu hisobot tekshiruv paytidagi holatni tasvirlaydi. Quyidagi jadval
+> shundan keyin nima qilinganini ko'rsatadi — hisobotning matni esa
+> o'zgarmagan, chunki u nima uchun tuzatilganini tushuntiradi.
+
+**Bajarildi (24 ta):** 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26.
+
+| # | Qanday yopildi |
+|---|---|
+| 1, 12, 15 | `supabase/migrations/0003_guard.sql` + `supabase/tests/0003_guard.sql` — uchta hujum doimiy test bo'ldi |
+| 3 | `src/data.js` — `sane()`, kesh faqat tekshiruvdan keyin, buzuq nusxa o'chiriladi |
+| 4, 7, 8 | Profildagi yutuqlar, mavzular va foydalanuvchi ismi haqiqiy manbadan |
+| 5, 20 | Ball: bir savol uchun bir marta; imtihon bonusi faqat imtihonda |
+| 6 | `--success-on-fill`, `--green-on-fill`, `--muted-foreground` — ikkala temada 0 ta WCAG yiqilishi |
+| 9 | Mavzu tanlash ekrani + `startQuizMode` filtri |
+| 10 | Soat 0:00 da imtihon avtomatik yopiladi |
+| 11 | Javoblar navbati birlashtirildi — 50 javob → 2 yozuv (ilgari 50) |
+| 13 | `valsMoney` / `valsProfile` ajratildi; mobil build'dan pul MANTIG'I ham kesiladi |
+| 14 | Gradle `preBuild` to'sig'i — eskirgan assets bilan APK yig'ilmaydi |
+| 16 | Sessiya uzilganda import yuborilmaydi va xato ko'rsatiladi |
+| 17 | Liga sarlavhasi hisoblanadi (`{0} liga · top` qolipi) |
+| 18 | `EXAM_SIZE`/`EXAM_PER_Q`/`EXAM_MAX_WRONG` — bitta manba, `tools/source.mjs` generatorlar uchun |
+| 19 | Tayyorlik faqat imtihon rejimidagi javoblardan |
+| 21 | Kirish oynasi ochiqda orqadagi ekran berkitiladi — 488px → 390px |
+| 22, 26 | Modul ro'yxati va `REJA.md` kodga moslandi |
+| 23 | `Object.create(null)` — prototip kalitlari endi ro'yxatni o'chirmaydi |
+| 24 | Telegram Stars tavsifi har qanday muhitda to'g'ri |
+| 25 | `head()` — `rightAt`, sehrli `99` yo'q |
+
+**Testlar:** 36 ta JS testi (`npm test`) + 2 ta SQL to'plami. Har biri
+himoya olib tashlanganda haqiqatan yiqilishi alohida tekshirildi.
+
+**Ochiq qolgani:**
+
+| # | Nima | Nega hali yo'q |
+|---|---|---|
+| **2** | Savollar bazasi 10 → 600 | Kontent ishi — kod tayyor (`SAVOLLAR.md`, `mkseed.mjs`, ommaviy import) |
+| 27 | `tg_id` cast xatosi | Haqiqiy Telegram auth oqimi qurilganda tekshiriladi |
+| 11-o'rin | «Reyting» → «Mavzular» tabi | Mahsulot qarori, bug emas |
+
+---
+
 ## Uchta takrorlangan xulosa
 
 Uchala texnik tekshiruv **mustaqil ravishda** bir xil naqshni topdi, va
