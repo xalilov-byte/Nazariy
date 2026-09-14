@@ -426,7 +426,7 @@
             </span>
             <span style="flex:1">
               <span style="display:block;font-size:16px;font-weight:700">Imtihon (demo)</span>
-              <span style="display:block;font-size:13px;font-weight:500;opacity:.85">10 savol · 12:30 · 2 xato limiti</span>
+              <span style="display:block;font-size:13px;font-weight:500;opacity:.85">{{ examCardSub }}</span>
             </span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff"><path d="M9 6l6 6-6 6"></path></svg>
           </button>
@@ -2049,6 +2049,37 @@ function bankTopics() {
   return Object.keys(seen).length;
 }
 
+/* ═══ IMTIHON FORMATI ═══
+   O'zbekiston YHQ nazariy imtihonining haqiqiy sharti — 20 savol,
+   25 daqiqa, 2 tagacha xato. PLAY.md (do'kon tavsifi) ham aynan
+   shuni va'da qiladi.
+
+   Ilgari bu raqamlar uch joyda alohida yozilgan edi va uchtasi ham
+   boshqacha aytardi: karta yorlig'ida "10 savol · 12:30" (qo'lda
+   yozilgan matn), kodda `time: 750`, imtihon poolida esa BUTUN BANK.
+   Oxirgisi eng jiddiy: bank 600 savolga yetganda "imtihon" 600
+   savollik marafonga aylanardi.
+
+   EXAM_PER_Q — har savolga to'g'ri keladigan vaqt (25 daq / 20 savol
+   = 75 s). Bank hali 20 savolga yetmagan bo'lsa imtihon ham qisqa
+   bo'ladi va vaqt SHU nisbatda beriladi — aks holda 10 savolga 25
+   daqiqa berilib, vaqt bosimi yo'qolardi. */
+const EXAM_SIZE = 20;
+const EXAM_PER_Q = 75;
+const EXAM_MAX_WRONG = 2;
+
+/* Fisher–Yates. Massivni o'z joyida emas, NUSXASINI aralashtiradi:
+   ALL_INDICES va SIGN_INDICES ilovaning umumiy holati, ularni joyida
+   o'zgartirish boshqa rejimlarga ham tegib ketardi. */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
 const ALL_INDICES = QUESTIONS.map((_, i) => i);
 const SIGN_INDICES = QUESTIONS.map((q, i) => (q.sign ? i : null)).filter(i => i !== null);
 
@@ -2535,17 +2566,57 @@ class Component extends DCLogic {
     this.awardTasks();
     this.tick = setInterval(() => {
       const q = this.state.quiz;
-      if (!q || q.finished || q.time <= 0) return;
+      if (!q || q.finished) return;
       // Vaqt bosimi faqat haqiqiy imtihon simulyatsiyasida bo'lishi kerak —
       // amaliyot rejimlarida (mavzular/belgilar/xatolarim/marafon) soat
       // orqa fonda ham yurmasligi kerak, aks holda "shoshilmang" freymingi
       // yolg'onga chiqadi (test anxiety'ni oshiradi).
       const isExam = q.mode === "exam" || !q.mode;
-      if (!isExam) return;
-      this.setState(s => ({ quiz: Object.assign({}, s.quiz, { time: s.quiz.time - 1 }) }));
+      if (!isExam || q.time <= 0) return;
+      const left = q.time - 1;
+      this.setState(s => ({ quiz: Object.assign({}, s.quiz, { time: left }) }));
+      /* Soat 0:00 ga yetdi. Ilgari bu yerda HECH NARSA bo'lmasdi — soat
+         shunchaki to'xtardi va odam cheksiz javob berishda davom etardi.
+         Vaqt bosimi esa imtihon simulyatsiyasining butun mazmuni: ilova
+         "haqiqiy simulyatsiya" deb va'da berib eng muhim shartini
+         bajarmasdi. */
+      if (left <= 0) this.finishExam(true);
     }, 1000);
   }
   componentWillUnmount() { clearInterval(this.tick); }
+
+  /* Imtihonni yakunlaydi. Ikki yo'ldan chaqiriladi: oxirgi savoldan
+     keyin "Natijani ko'rish" bosilganda, va soat 0:00 ga yetganda.
+     Bitta joyda turishi shart — aks holda ikkinchi yo'l ball berishni
+     yoki "Imtihonlar" hisoblagichini oshirishni unutib qoladi va ikki
+     xil yakun ikki xil natija berardi.
+
+     timedOut — vaqt tugab qolgan yakun. Bunday holatda +100 bonus
+     BERILMAYDI: haqiqiy YHQ imtihonida ham javobsiz qolgan savol
+     o'tmagan deb hisoblanadi, 2 tadan kam xato qilgani bilan emas.
+     Urinish esa sanaladi — u haqiqatan bo'lib o'tdi. */
+  finishExam(timedOut) {
+    const cur = this.state.quiz;
+    if (!cur || cur.finished) return;
+    const wasExam = cur.mode === "exam" || !cur.mode;
+    if (window.nzFeedback) window.nzFeedback.finish();
+    // Oxirigacha yetgan imtihon saqlash qatlamiga ham aytiladi —
+    // profildagi "Imtihonlar" raqami shundan chiqadi. Yarim tashlangan
+    // (ekrandan chiqib ketilgan) imtihon sanalmaydi: bu chaqiruv faqat
+    // haqiqiy yakunda bo'ladi.
+    if (wasExam && window.nzProgress) window.nzProgress.examFinished();
+    this.setState(st => ({
+      quiz: Object.assign({}, st.quiz, { finished: true, timedOut: !!timedOut }),
+      /* wasExam SHU YERDA HAM tekshiriladi. Ilgari u faqat examsDone ga
+         qo'llangan edi, +100 ball esa rejimga qaramasdan berilardi:
+         "Xatolarim" yoki "Saqlangan" da 1-2 savol bo'lsa (odatiy holat),
+         ularni yechib "Qayta yechish"ni cheksiz bosib har safar +100
+         olish mumkin edi. Liga va reyting shu orqali qalbakilashardi. */
+      points: st.points + (wasExam && !timedOut && st.quiz.wrong <= EXAM_MAX_WRONG ? 100 : 0),
+      examsDone: st.examsDone + (wasExam ? 1 : 0)
+    }));
+    this.awardTasks();
+  }
 
   nav(tab) { return () => this.setState({ tab, quiz: null }); }
 
@@ -2563,14 +2634,26 @@ class Component extends DCLogic {
 
   startQuizMode(mode) {
     return () => {
-      const pool = mode === "signs" ? (SIGN_INDICES.length ? SIGN_INDICES.slice() : ALL_INDICES.slice())
+      const isExam = mode === "exam" || !mode;
+      let pool = mode === "signs" ? (SIGN_INDICES.length ? SIGN_INDICES.slice() : ALL_INDICES.slice())
         : mode === "mistakes" ? this.state.wrongIds.slice()
         : mode === "saved" ? this.state.savedIds.slice()
         : ALL_INDICES.slice();
+
+      /* Imtihon — bankdan TASODIFIY tanlangan 20 savol, butun bank emas.
+         Ikki sabab: (1) bank 600 savolga yetganda "imtihon" 600 savollik
+         marafonga aylanardi; (2) har safar bir xil tartibdagi bir xil
+         savollar imtihon emas, yodlash mashqi bo'lardi — odam javobni
+         emas, "uchinchi savolda B" ni eslab qoladi. */
+      if (isExam) pool = shuffle(pool).slice(0, EXAM_SIZE);
+
       // To'plamga asoslangan rejimlar (xatolarim / saqlangan) bo'sh bo'lishi
       // mumkin — bunda quiz "bo'sh holat" ekrani sifatida ochiladi.
       const empty = COLLECTION_MODES.indexOf(mode) !== -1 && pool.length === 0;
-      this.setState({ quiz: { index: 0, selected: null, correct: 0, wrong: 0, results: [], time: 750, finished: false, mode, pool, empty } });
+      this.setState({ quiz: {
+        index: 0, selected: null, correct: 0, wrong: 0, results: [],
+        time: pool.length * EXAM_PER_Q, finished: false, mode, pool, empty
+      } });
     };
   }
 
@@ -2875,6 +2958,19 @@ class Component extends DCLogic {
       meHandle: me.handle,
       hasHandle: !!me.handle,
       meInitial: me.short.charAt(0).toUpperCase(),
+
+      /* Imtihon kartasining yorlig'i ilgari qo'lda yozilgan matn edi —
+         "10 savol · 12:30 · 2 xato limiti" — va kodda `time: 750`,
+         poolda esa butun bank turardi. Uch joy, uch xil haqiqat.
+         Endi yorliq ham o'sha konstantalardan chiqadi, ya'ni bank
+         kattalashganda yoki format o'zgarganda u eskirib qololmaydi. */
+      examCardSub: (() => {
+        const n = Math.min(EXAM_SIZE, ALL_INDICES.length);
+        const sek = n * EXAM_PER_Q;
+        const mm = Math.floor(sek / 60), ss = sek % 60;
+        return n + " savol · " + mm + ":" + String(ss).padStart(2, "0")
+          + " · " + EXAM_MAX_WRONG + " xato limiti";
+      })(),
 
       theme,
       isDark: theme === "dark",
@@ -4300,30 +4396,17 @@ class Component extends DCLogic {
             return;
           }
           if (cur.index === cur.pool.length - 1) {
-            if (window.nzFeedback) window.nzFeedback.finish();
-            const wasExam = cur.mode === "exam" || !cur.mode;
-            // Oxirigacha yetgan imtihon saqlash qatlamiga ham aytiladi —
-            // profildagi "Imtihonlar" raqami shundan chiqadi. Yarim
-            // tashlangan imtihon sanalmaydi: shu chaqiruv faqat oxirida.
-            if (wasExam && window.nzProgress) window.nzProgress.examFinished();
-            this.setState(st => ({
-              quiz: Object.assign({}, st.quiz, { finished: true }),
-              /* wasExam SHU YERDA HAM tekshiriladi. Ilgari u faqat
-                 examsDone ga qo'llangan edi, +100 ball esa rejimga
-                 qaramasdan berilardi: "Xatolarim" yoki "Saqlangan" da
-                 1-2 savol bo'lsa (odatiy holat), ularni yechib "Qayta
-                 yechish"ni cheksiz bosib har safar +100 olish mumkin
-                 edi. Liga va reyting shu orqali qalbakilashardi. */
-              points: st.points + (wasExam && st.quiz.wrong <= 2 ? 100 : 0),
-              examsDone: st.examsDone + (wasExam ? 1 : 0)
-            }));
-            this.awardTasks();
+            this.finishExam(false);
           } else {
             this.setState(st => ({ quiz: Object.assign({}, st.quiz, { index: st.quiz.index + 1, selected: null }) }));
           }
         },
         correctCount: q.correct, wrongCount: q.wrong,
-        hasWrong: q.wrong > 0, noWrong: q.wrong === 0,
+        /* "Xatosiz natija!" faqat haqiqatan javob berilgan bo'lsa.
+           Vaqt tugab, birorta savolga javob berilmagan holatda ham
+           "xatosiz" deyish — odamni tabriklab turib hech narsa
+           qilmaganini aytish. */
+        hasWrong: q.wrong > 0, noWrong: q.wrong === 0 && q.correct > 0,
         // Marafonda rekord yangilanganda alohida "Yangi rekord!" nishoni —
         // faqat matn bilan aytilgan yutuqni (avvalgi resultSub) vizual
         // mustahkamlash bilan kuchaytiradi (darhol ijobiy fikr-mulohaza).
@@ -4334,23 +4417,31 @@ class Component extends DCLogic {
         // allaqachon answer()'da +10 qilib hisoblangan) — shu yerda ham bonussiz
         // ko'rsatilishi kerak, aks holda "+ball" yorligʻi haqiqiy holatdan koʻproq
         // koʻrsatib chalgʻitadi.
-        earned: isMarathon ? q.correct * 10 : q.correct * 10 + (q.wrong <= 2 ? 100 : 0),
-        resultTitle: examMode ? (q.wrong <= 2 ? "Oʻtdingiz!" : "Oʻtmadingiz")
+        earned: isMarathon ? q.correct * 10
+          : q.correct * 10 + ((!q.timedOut && q.wrong <= EXAM_MAX_WRONG) ? 100 : 0),
+        /* Vaqt tugab qolgan yakun ALOHIDA aytiladi. Aks holda odam
+           2 tadan kam xato qilib turib "Oʻtmadingiz" ni ko'radi va
+           nima uchunligini tushunmaydi — bu ilovaning aybi kabi
+           ko'rinadi. Sabab aytilsa, u keyingi safar tezroq ishlaydi. */
+        examPassed: examMode && !q.timedOut && q.wrong <= EXAM_MAX_WRONG,
+        resultTitle: examMode ? (q.timedOut ? "Vaqt tugadi" : q.wrong <= EXAM_MAX_WRONG ? "Oʻtdingiz!" : "Oʻtmadingiz")
           : isMarathon ? (q.correct + " ta ketma-ket toʻgʻri!")
           : "Mashq yakunlandi",
         resultTitleStyle: {
           fontSize: "28px", fontWeight: 800, letterSpacing: "-.02em",
-          color: examMode ? (q.wrong <= 2 ? "var(--success)" : "var(--destructive)") : "var(--foreground)"
+          color: examMode ? ((!q.timedOut && q.wrong <= EXAM_MAX_WRONG) ? "var(--success)" : "var(--destructive)") : "var(--foreground)"
         },
         resultSub: examMode
-          ? (q.wrong <= 2 ? "Imtihon formatida 2 tagacha xato ruxsat etiladi. Shu tempda davom eting." : "Ruxsat etilgan xato — 2 ta. Xatolaringizni «Xatolarim» rejimida takrorlang.")
+          ? (q.timedOut
+              ? "Berilgan vaqt tugadi va test avtomatik yopildi — haqiqiy imtihonda ham shunday. Javob berilgan: " + (q.index + (q.selected === null ? 0 : 1)) + "/" + poolLen + "."
+              : q.wrong <= EXAM_MAX_WRONG ? "Imtihon formatida " + EXAM_MAX_WRONG + " tagacha xato ruxsat etiladi. Shu tempda davom eting." : "Ruxsat etilgan xato — " + EXAM_MAX_WRONG + " ta. Xatolaringizni «Xatolarim» rejimida takrorlang.")
           : isMarathon
           ? (q.newBest ? "Bu — sessiyadagi eng yaxshi natijangiz. Yana urinib koʻring!" : "Rekordingiz — " + s.marathonBest + ". Yana urinib koʻring!")
           : (q.correct + "/" + poolLen + " toʻgʻri javob. Istalgancha qayta mashq qilishingiz mumkin."),
         scoreRingStyle: {
           width: "150px", height: "150px", borderRadius: "999px", display: "grid", placeItems: "center",
           background: "var(--surface)", boxShadow: "var(--shadow)",
-          border: "10px solid " + (examMode ? (q.wrong <= 2 ? "var(--success)" : "var(--destructive)") : "var(--primary)"),
+          border: "10px solid " + (examMode ? ((!q.timedOut && q.wrong <= EXAM_MAX_WRONG) ? "var(--success)" : "var(--destructive)") : "var(--primary)"),
           animation: "nzPop .25s ease-out"
         },
         resultModeStyle: {
