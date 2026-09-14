@@ -34,6 +34,13 @@
 /* Playwright loyihaning bog'liqligi emas — mkog.mjs dagi izohga qarang. */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import { examFormat } from './source.mjs';
+
+/* Imtihon formati dizayn manbasidan o'qiladi, bu yerda qayta
+   yozilmaydi. Ilgari "20 savol · 25 daqiqa" qo'lda yozilgan edi,
+   ilova esa 10 savol / 12:30 berardi — do'kondagi rasm ilova
+   bermaydigan narsani va'da qilardi. */
+const FMT = examFormat();
 let chromium;
 try { ({ chromium } = await import('playwright')); }
 catch (e) {
@@ -96,7 +103,7 @@ p{margin-top:20px;font-size:26px;font-weight:500;color:#B9B4D4}
   <h1>Avtotestdan birinchi<br>urinishda oʻting</h1>
   <p>YHQ nazariy imtihoniga tayyorgarlik · internetsiz ishlaydi</p>
   <div class="row">
-    <span class="chip">20 savol · 25 daqiqa</span>
+    <span class="chip">${FMT.chip}</span>
     <span class="chip">Bepul</span>
   </div>
 </div>`;
@@ -206,3 +213,18 @@ for (const m of made) {
   console.log(`  ${m.file.replace(OUT + '/', '').padEnd(24)}${await dim(m.file)}  ${kb(m.file).padStart(6)}  ${m.label}`);
 }
 console.log('\nPlay Console → Store listing → Graphics bo\'limiga shu fayllar qo\'yiladi.');
+
+/* Do'konga chiqishdan oldingi oxirgi to'siq. Play qoidalari bo'yicha
+   do'kondagi tavsif va grafika ilova HAQIQATAN beradigan narsani
+   ko'rsatishi shart. Bank hali imtihon formatini ko'tarmasa, grafika
+   qisqa formatni aytadi (u avtomatik) — lekin PLAY.md dagi QO'LDA
+   yozilgan tavsif eskirib qolishi mumkin, shuning uchun bu yerda ochiq
+   aytiladi. */
+if (!FMT.full) {
+  console.log(
+    `\n⚠ IMTIHON FORMATI HALI TO'LIQ EMAS\n` +
+    `  Bankda ${FMT.bank} savol bor, format esa ${FMT.size} savolni talab qiladi.\n` +
+    `  Grafikada "${FMT.chip}" yozildi — ilova aynan shuni beradi.\n` +
+    `  PLAY.md dagi tavsifda ham "${FMT.size} savol" deb yozilgan bo'lsa,\n` +
+    `  do'konga chiqishdan OLDIN bankni to'ldiring yoki tavsifni tuzating.`);
+}

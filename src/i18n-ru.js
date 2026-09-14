@@ -77,18 +77,19 @@ window.nzRu = {
   "Imtihon (demo)": "Экзамен (демо)",
   "10 savol · 12:30 · 2 xato limiti": "10 вопросов · 12:30 · лимит 2 ошибки",
   "Mavzular": "Темы",
-  "18 mavzu": "18 тем",
   "Yoʻl belgilari": "Дорожные знаки",
-  "240 belgi": "240 знаков",
   "Xatolarim": "Мои ошибки",
   "Marafon": "Марафон",
   "Saqlangan": "Сохранённые",
-  "20 savol, 25 daqiqa, 2 xato limiti — haqiqiy simulyatsiya.":
-    "20 вопросов, 25 минут, лимит 2 ошибки — настоящая симуляция.",
-  "18 boʻlim, har biri alohida progress bilan.":
-    "18 разделов, у каждого свой прогресс.",
-  "240 belgi lugʻati va «rasm → nom» testi.":
-    "Справочник из 240 знаков и тест «картинка → название».",
+  /* Mavzu va belgi sonlari BANKDAN hisoblanadi, shuning uchun bu
+     yerdagi kalit son bilan boshlanmaydi — faqat qo'shilib
+     yasaladigan matn bo'lagi turadi. Ilgari "18 mavzu" va "240 belgi"
+     kaliti bor edi: bank boshqa son bergan zahoti ikkalasi ham
+     ishlamay qolgan va rus tilida o'zbekcha matn chiqib turgan. */
+  "boʻlim — har birini alohida mashq qiling.":
+    "разделов — тренируйте каждый отдельно.",
+  "Belgilar lugʻati va «rasm → nom» testi.":
+    "Справочник знаков и тест «картинка → название».",
   "Faqat notoʻgʻri yechilgan savollar takrori.":
     "Повтор только тех вопросов, где была ошибка.",
   "Cheksiz savollar — xatoga qadar davom etadi.":
@@ -101,10 +102,17 @@ window.nzRu = {
   "Saqlangan savol yoʻq": "Нет сохранённых вопросов",
   "Hozircha boʻsh — testda xatchoʻp bilan saqlang":
     "Пока пусто — сохраняйте вопросы закладкой во время теста",
-  "Tezkor test": "Быстрый тест",
-  "10 savol, 5 daqiqa — kunlik vazifa uchun.": "10 вопросов, 5 минут — для ежедневного задания.",
-  "20 savol · 25 daqiqa · 2 xato — haqiqiy format bilan mashq.":
-    "20 вопросов · 25 минут · 2 ошибки — тренировка в реальном формате.",
+  /* "Tezkor test" rejimi landing'dan olib tashlandi — u ilovada yo'q
+     edi. Imtihon formati endi qo'shib yasaladi (examFmt), shuning
+     uchun bu yerda butun jumla emas, BO'LAKLARI o'giriladi. */
+  "Xatchoʻp bilan belgilangan savollar takrori.":
+    "Повтор вопросов, отмеченных закладкой.",
+  "daqiqa": "минут",
+  /* "2 xato limiti" → "2 ошибки". So'zma-so'z "лимит ошибок" qo'shilib
+     yasalganda "2 лимит ошибок" bo'lib chiqardi — grammatik xato. */
+  "xato limiti": "ошибки",
+  "haqiqiy format bilan mashq.": "тренировка в реальном формате.",
+  "haqiqiy simulyatsiya.": "настоящая симуляция.",
   "Barcha mavzular": "Все темы",
 
   /* ── Test ekrani ──────────────────────────────────────────────────── */
@@ -125,9 +133,9 @@ window.nzRu = {
   "Yangi rekord!": "Новый рекорд!",
   "Eng tez oʻsish imkoniyati shu yerda": "Здесь быстрее всего вырастет результат",
   "Marafon rejimida bilimingizni sinang": "Проверьте себя в режиме марафона",
-  "Imtihon formatida 2 tagacha xato ruxsat etiladi. Shu tempda davom eting.":
+  "Imtihon formatida {n} tagacha xato ruxsat etiladi. Shu tempda davom eting.":
     "В формате экзамена допускается до 2 ошибок. Продолжайте в этом темпе.",
-  "Ruxsat etilgan xato — 2 ta. Xatolaringizni «Xatolarim» rejimida takrorlang.":
+  "Ruxsat etilgan xato — {n} ta. Xatolaringizni «Xatolarim» rejimida takrorlang.":
     "Допустимо 2 ошибки. Повторите свои ошибки в режиме «Мои ошибки».",
   "Bu — sessiyadagi eng yaxshi natijangiz. Yana urinib koʻring!":
     "Это ваш лучший результат за сессию. Попробуйте ещё!",
@@ -282,8 +290,6 @@ window.nzRu = {
   /* ── Landing (sayt) ───────────────────────────────────────────────── */
   "Telegram Mini App · Oʻzbekiston": "Telegram Mini App · Узбекистан",
   "Avtotestdan birinchi urinishda oʻting": "Сдайте автотест с первой попытки",
-  "700+ savol, 18 mavzu va haqiqiy imtihon simulyatsiyasi. Har kuni 10 daqiqa — streak, liga va guruhlar bilan.":
-    "700+ вопросов, 18 тем и настоящая симуляция экзамена. 10 минут в день — с серией, лигой и группами.",
   "Telegramda ochish": "Открыть в Telegram",
   "Brauzerda sinash": "Попробовать в браузере",
   "Bugungi natija": "Результат дня",
@@ -293,13 +299,13 @@ window.nzRu = {
   "Botni ochish 10 soniya — birinchi test bepul.":
     "Открыть бота — 10 секунд, первый тест бесплатно.",
   "Botni oching": "Откройте бота",
-  "t.me/NazariyBot — roʻyxatdan oʻtish shart emas, Telegram akkaunt yetarli.":
+  "— roʻyxatdan oʻtish shart emas, Telegram akkaunt yetarli.":
     "t.me/NazariyBot — регистрация не нужна, достаточно аккаунта Telegram.",
   "Kuniga 10 daqiqa: 20 savol, kunlik vazifa va streak.":
     "10 минут в день: 20 вопросов, ежедневное задание и серия.",
   "Imtihonni topshiring": "Сдайте экзамен",
   "Imtihonga tayyorlanishni tezlashtiring": "Ускорьте подготовку к экзамену",
-  "Kunlik test yechng": "Проходите ежедневный тест",
+  "Kunlik test yeching": "Проходите ежедневный тест",
   "savol bazasi": "вопросов в базе",
   "mavzu": "тем",
   "yoʻl belgisi": "дорожных знаков",

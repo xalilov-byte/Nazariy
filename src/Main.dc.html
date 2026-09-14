@@ -2105,6 +2105,29 @@ const EXAM_SIZE = 20;
 const EXAM_PER_Q = 75;
 const EXAM_MAX_WRONG = 2;
 
+/* Imtihon formatining ko'rsatiladigan ko'rinishi. Karta yorlig'i ham,
+   landing va'dasi ham, do'kon grafikasi ham (tools/source.mjs) shu
+   raqamlardan chiqadi — uchtasi uch xil aytib turolmaydi.
+
+   Bank hali EXAM_SIZE ga yetmagan bo'lsa QISQA format aytiladi:
+   "20 savol" deb yozib turib 10 ta berish yolg'on va'da. */
+function examFmt() {
+  const n = Math.min(EXAM_SIZE, ALL_INDICES.length);
+  const sec = n * EXAM_PER_Q;
+  const mm = Math.floor(sec / 60), ss = sec % 60;
+  // Butun daqiqa bo'lsa "25 daqiqa", aks holda "12:30" — "13 daqiqa"
+  // deb yaxlitlash kichik yolg'on: odam o'sha 30 soniyani sezadi.
+  /* Satr QO'SHIB yasalgani uchun butun natijani lug'atdan topib
+     bo'lmaydi — faqat matn bo'lagi T() bilan o'giriladi (yuqoridagi
+     T() izohidagi qoida). */
+  const time = ss === 0 ? mm + " " + T("daqiqa")
+                        : mm + ":" + String(ss).padStart(2, "0");
+  return { n: n, sec: sec, time: time,
+           chip: n + " " + T("savol") + " · " + time,
+           full: n + " " + T("savol") + " · " + time
+                 + " · " + EXAM_MAX_WRONG + " " + T("xato limiti") };
+}
+
 /* Fisher–Yates. Massivni o'z joyida emas, NUSXASINI aralashtiradi:
    ALL_INDICES va SIGN_INDICES ilovaning umumiy holati, ularni joyida
    o'zgartirish boshqa rejimlarga ham tegib ketardi. */
@@ -3011,13 +3034,7 @@ class Component extends DCLogic {
          poolda esa butun bank turardi. Uch joy, uch xil haqiqat.
          Endi yorliq ham o'sha konstantalardan chiqadi, ya'ni bank
          kattalashganda yoki format o'zgarganda u eskirib qololmaydi. */
-      examCardSub: (() => {
-        const n = Math.min(EXAM_SIZE, ALL_INDICES.length);
-        const sek = n * EXAM_PER_Q;
-        const mm = Math.floor(sek / 60), ss = sek % 60;
-        return n + " savol · " + mm + ":" + String(ss).padStart(2, "0")
-          + " · " + EXAM_MAX_WRONG + " xato limiti";
-      })(),
+      examCardSub: examFmt().full,
 
       theme,
       isDark: theme === "dark",
@@ -4222,7 +4239,7 @@ class Component extends DCLogic {
         { value: String(QUESTIONS.length), label: "savol bazasi" },
         { value: String(bankTopics().length), label: "mavzu" },
         { value: String(SIGN_INDICES.length), label: "yoʻl belgisi" },
-        { value: "20/25", label: "savol / daqiqa" }
+        { value: examFmt().n + "/" + Math.round(examFmt().sec / 60), label: "savol / daqiqa" }
       ],
       // Birinchi qadam bot bor-yo'qligiga qarab o'zgaradi: bot yo'q
       // bo'lsa "Botni oching" deb yozish odamni mavjud bo'lmagan
@@ -4238,18 +4255,21 @@ class Component extends DCLogic {
         },
         title,
         sub: [site.bot
-                ? site.botHandle + " — roʻyxatdan oʻtish shart emas, Telegram akkaunt yetarli."
+                ? site.botHandle + " " + T("— roʻyxatdan oʻtish shart emas, Telegram akkaunt yetarli.")
                 : "Roʻyxatdan oʻtish shart emas — darhol yechishni boshlaysiz.",
               "Kuniga 10 daqiqa: 20 savol, kunlik vazifa va streak.",
-              "20 savol · 25 daqiqa · 2 xato — haqiqiy format bilan mashq."][i]
+              examFmt().full + " — " + T("haqiqiy format bilan mashq.")][i]
       })),
       landingModes: [
-        { title: "Imtihon", sub: "20 savol, 25 daqiqa, 2 xato limiti — haqiqiy simulyatsiya." },
-        { title: "Mavzular", sub: bankTopics().length + " boʻlim — har birini alohida mashq qiling." },
+        { title: "Imtihon", sub: examFmt().full + " — " + T("haqiqiy simulyatsiya.") },
+        { title: "Mavzular", sub: bankTopics().length + " " + T("boʻlim — har birini alohida mashq qiling.") },
         { title: "Yoʻl belgilari", sub: "Belgilar lugʻati va «rasm → nom» testi." },
         { title: "Xatolarim", sub: "Faqat notoʻgʻri yechilgan savollar takrori." },
         { title: "Marafon", sub: "Cheksiz savollar — xatoga qadar davom etadi." },
-        { title: "Tezkor test", sub: "10 savol, 5 daqiqa — kunlik vazifa uchun." }
+        /* "Tezkor test · 10 savol, 5 daqiqa" shu yerda reklama qilinardi,
+           lekin bunday rejim ilovada YO'Q. Landing bor narsani
+           ko'rsatishi kerak, rejadagini emas. */
+        { title: "Saqlangan", sub: "Xatchoʻp bilan belgilangan savollar takrori." }
       ].map((m, i) => Object.assign({}, m, {
         dotStyle: { width: "36px", height: "36px", borderRadius: "10px", background: "var(" + PALETTE[i] + ")" }
       }))
@@ -4514,7 +4534,12 @@ class Component extends DCLogic {
         resultSub: examMode
           ? (q.timedOut
               ? "Berilgan vaqt tugadi va test avtomatik yopildi — haqiqiy imtihonda ham shunday. Javob berilgan: " + (q.index + (q.selected === null ? 0 : 1)) + "/" + poolLen + "."
-              : q.wrong <= EXAM_MAX_WRONG ? "Imtihon formatida " + EXAM_MAX_WRONG + " tagacha xato ruxsat etiladi. Shu tempda davom eting." : "Ruxsat etilgan xato — " + EXAM_MAX_WRONG + " ta. Xatolaringizni «Xatolarim» rejimida takrorlang.")
+              /* {n} — qolip. Lug'at kaliti son bilan emas, qolip bilan
+                 turadi: EXAM_MAX_WRONG o'zgarsa ham tarjima ishlaydi va
+                 rus tilida to'satdan o'zbekcha jumla chiqib qolmaydi. */
+              : q.wrong <= EXAM_MAX_WRONG
+                ? T("Imtihon formatida {n} tagacha xato ruxsat etiladi. Shu tempda davom eting.").replace("{n}", EXAM_MAX_WRONG)
+                : T("Ruxsat etilgan xato — {n} ta. Xatolaringizni «Xatolarim» rejimida takrorlang.").replace("{n}", EXAM_MAX_WRONG))
           : isMarathon
           ? (q.newBest ? "Bu — sessiyadagi eng yaxshi natijangiz. Yana urinib koʻring!" : "Rekordingiz — " + s.marathonBest + ". Yana urinib koʻring!")
           : (q.correct + "/" + poolLen + " toʻgʻri javob. Istalgancha qayta mashq qilishingiz mumkin."),

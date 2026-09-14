@@ -45,6 +45,14 @@ Nazariy — avtotest va YHQ
 YHQ nazariy imtihoniga tayyorgarlik. Internetsiz ishlaydi, reklama yo'q.
 ```
 
+> ⚠ **Quyidagi tavsifdagi "20 savol, 25 daqiqa" — ilovaning MAQSADLI
+> formati** (`EXAM_SIZE` / `EXAM_PER_Q`, `src/Main.dc.html`). Ilova bankda
+> yetarli savol bo'lgandagina shu formatni beradi; hozir bank kichik va
+> imtihon qisqaroq. **Do'konga chiqarishdan oldin** `node tools/mkplay.mjs`
+> ni ishga tushiring — u bank formatni ko'tara olmasa ogohlantiradi va
+> grafikaga haqiqiy raqamni yozadi. Tavsifni ham o'shanda tekshiring:
+> bermaydigan narsani va'da qilish Play qoidalarini buzadi.
+
 ### To'liq tavsif (4000 belgigacha)
 
 ```

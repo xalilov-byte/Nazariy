@@ -22,6 +22,11 @@
        npm i -D playwright && npx playwright install chromium
    Brauzer boshqa joyda bo'lsa: CHROME=/yo'l/chrome node tools/mkog.mjs */
 import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { examFormat } from './source.mjs';
+
+/* Imtihon formati dizayn manbasidan o'qiladi — bu yerda qayta
+   yozilmaydi, aks holda ilova o'zgarganda rasm eskirib qolardi. */
+const FMT = examFormat();
 let chromium;
 try { ({ chromium } = await import('playwright')); }
 catch (e) {
@@ -77,7 +82,7 @@ p{margin:22px 0 0;font-size:25px;font-weight:500;line-height:1.45;color:#9C97B8}
   <h1>Avtotestdan birinchi urinishda oʻting</h1>
   <p>Haqiqiy imtihon simulyatsiyasi, mavzular boʻyicha mashq va yoʻl belgilari.</p>
   <div class="row">
-    <span class="chip">20 savol · 25 daqiqa</span>
+    <span class="chip">${FMT.chip}</span>
     <span class="chip">Internetsiz</span>
   </div>
 </div>

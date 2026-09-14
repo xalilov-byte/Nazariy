@@ -17,39 +17,17 @@
 
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { designSource, questions as extractQuestions } from './source.mjs';
 
 const SRC = 'src';
 const OUT_DIR = join('supabase', 'seed');
 const OUT = join(OUT_DIR, '0002_questions.sql');
 
 /* ── 1. Manbadan QUESTIONS massivini olish ───────────────────────────── */
-/* Qavslarni hisoblab kesamiz: satr va izohlar chetlab o'tiladi, aks holda
-   savol matnidagi qavs ("(1-guruh)") hisobni buzadi. */
-function extractArray(code, marker) {
-  const i = code.indexOf(marker);
-  if (i === -1) throw new Error(`[seed] "${marker}" topilmadi`);
-  const open = code.indexOf('[', i);
-  let depth = 0, st = 'code';
-  for (let k = open; k < code.length; k++) {
-    const c = code[k], n = code[k + 1];
-    if (st === 'code') {
-      if (c === '"') st = 'dq';
-      else if (c === "'") st = 'sq';
-      else if (c === '/' && n === '/') st = 'lc';
-      else if (c === '/' && n === '*') st = 'bc';
-      else if (c === '[') depth++;
-      else if (c === ']' && --depth === 0) return code.slice(open, k + 1);
-    }
-    else if (st === 'dq') { if (c === '\\') k++; else if (c === '"') st = 'code'; }
-    else if (st === 'sq') { if (c === '\\') k++; else if (c === "'") st = 'code'; }
-    else if (st === 'lc') { if (c === '\n') st = 'code'; }
-    else if (st === 'bc') { if (c === '*' && n === '/') { k++; st = 'code'; } }
-  }
-  throw new Error('[seed] massiv yopilmadi');
-}
-
-const design = readFileSync(join(SRC, 'Main.dc.html'), 'utf8');
-const questions = new Function(`return ${extractArray(design, 'const QUESTIONS = [')};`)();
+/* Ajratish mantiqi tools/source.mjs da — OG rasmi va Play grafikasi ham
+   xuddi shu manbadan o'qiydi, shuning uchun u bitta joyda turadi. */
+const design = designSource();
+const questions = extractQuestions(design);
 
 /* ── 2. Rus lug'atini olish ──────────────────────────────────────────── */
 const ruSrc = readFileSync(join(SRC, 'i18n-ru.js'), 'utf8');
