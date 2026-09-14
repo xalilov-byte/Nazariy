@@ -303,10 +303,12 @@
         <div style="flex:1;padding:20px 16px 84px;display:flex;flex-direction:column;gap:12px;animation:nzRise .22s ease-out">
           <div style="display:flex;align-items:center;justify-content:space-between">
             <div style="display:flex;align-items:center;gap:10px">
-              <div style="width:40px;height:40px;border-radius:999px;background:var(--purple);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px">S</div>
+              <div style="width:40px;height:40px;border-radius:999px;background:var(--purple);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px">{{ meInitial }}</div>
               <div>
-                <div style="font-size:15px;font-weight:700;line-height:1.2">Sardor</div>
-                <div style="font-size:13px;font-weight:500;color:var(--muted-foreground)">@sardor_t</div>
+                <div style="font-size:15px;font-weight:700;line-height:1.2">{{ meShort }}</div>
+                <sc-if value="{{ hasHandle }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size:13px;font-weight:500;color:var(--muted-foreground)">{{ meHandle }}</div>
+                </sc-if>
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:6px;background:var(--surface);box-shadow:var(--shadow);padding:8px 12px;border-radius:999px">
@@ -622,10 +624,12 @@
                ekranning eng pastida turadi va til almashtirish kabi tez-tez
                kerak bo'ladigan narsa uchun uzoq scroll qilish kerak edi. -->
           <div style="display:flex;align-items:center;gap:12px;padding:4px 0 2px">
-            <div style="width:56px;height:56px;border-radius:999px;background:var(--purple);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:800;flex:none">S</div>
+            <div style="width:56px;height:56px;border-radius:999px;background:var(--purple);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:800;flex:none">{{ meInitial }}</div>
             <div style="flex:1;min-width:0">
-              <div style="font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Sardor Toshmatov</div>
-              <div style="font-size:13px;font-weight:500;color:var(--muted-foreground)">@sardor_t</div>
+              <div style="font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ meName }}</div>
+              <sc-if value="{{ hasHandle }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:13px;font-weight:500;color:var(--muted-foreground)">{{ meHandle }}</div>
+              </sc-if>
             </div>
             <button onClick="{{ goSettings }}" aria-label="Sozlamalar" style="width:44px;height:44px;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);color:var(--muted-foreground);display:grid;place-items:center;flex:none">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.9 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.7 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.03z"></path></svg>
@@ -654,6 +658,12 @@
 
           <h2 style="margin:12px 0 0;font-size:20px;font-weight:700">Mavzular boʻyicha</h2>
           <div style="background:var(--surface);border-radius:20px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px">
+            <!-- Bo'sh holat: hali javob berilmagan mavzudan foiz chiqarib
+                 bo'lmaydi. Ilgari bu yerda qattiq yozilgan massiv turardi
+                 va birorta savolga javob bermagan odamga ham "Birinchi
+                 yordam mavzusida zaifsiz (42%)" derdi. Endi o'rniga nima
+                 qilish kerakligi aytiladi. -->
+            <sc-if value="{{ hasTopicStats }}" hint-placeholder-val="{{ true }}">
             <sc-for list="{{ topicStats }}" as="t" hint-placeholder-count="4">
               <div>
                 <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
@@ -668,11 +678,15 @@
                 </sc-if>
               </div>
             </sc-for>
+            </sc-if>
+            <sc-if value="{{ noTopicStats }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center;padding:8px 4px;font-size:14px;font-weight:500;color:var(--muted-foreground);line-height:1.45">Bir nechta savolga javob bering — mavzular boʻyicha natijangiz shu yerda koʻrinadi</div>
+            </sc-if>
           </div>
 
           <div style="margin-top:12px;display:flex;align-items:baseline;justify-content:space-between">
             <h2 style="margin:0;font-size:20px;font-weight:700">Yutuqlar</h2>
-            <span style="font-size:13px;font-weight:800;color:var(--muted-foreground);font-variant-numeric:tabular-nums">3/5</span>
+            <span style="font-size:13px;font-weight:800;color:var(--muted-foreground);font-variant-numeric:tabular-nums">{{ achieveCount }}</span>
           </div>
           <div style="display:flex;gap:14px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none;-ms-overflow-style:none">
             <sc-for list="{{ achievements }}" as="a" hint-placeholder-count="5">
@@ -2709,7 +2723,10 @@ class Component extends DCLogic {
       // Dizayn qanday saqlanishini bilmaydi — faqat "javob berildi" deydi.
       if (window.nzProgress) {
         window.nzProgress.answered({
-          ref: QUESTIONS[realIdx].ref, chosen: i, correct: ok, mode: q.mode || "exam"
+          ref: QUESTIONS[realIdx].ref, chosen: i, correct: ok, mode: q.mode || "exam",
+          // Mavzu ham aytiladi — profildagi "Mavzular boʻyicha" shundan
+          // hisoblanadi. Ilgari u qattiq yozilgan massiv edi.
+          topic: QUESTIONS[realIdx].topic
         });
       }
       // setState holatni darhol yangilaydi (render keyinga qoldiriladi),
@@ -2745,6 +2762,33 @@ class Component extends DCLogic {
       return { enough: false, pct: 0, left: st ? MIN - st.answered : MIN };
     }
     return { enough: true, pct: st.accuracy, left: 0 };
+  }
+
+  /* Yutuqlar roʻyxati. `earned` HAR DOIM saqlash qatlamidan hisoblanadi —
+     ilgari u qattiq `true` edi va yangi hisobda ham uchtasi "olingan"
+     koʻrinardi.
+
+     Shart bilan yorliq bir joyda turadi: agar shart "500 savol" boʻlsa,
+     yorliq ham "500 savol yechildi" boʻlishi kerak. Ikkalasi ikki
+     joyda yozilsa, biri oʻzgarganda ikkinchisi eskirib qoladi va ilova
+     yolgʻon gapira boshlaydi. */
+  achieveList() {
+    const st = window.nzProgress ? window.nzProgress.stats()
+      : { exams: 0, answered: 0, longest: 0, marathonBest: 0, topicsTouched: 0 };
+    // Bankdagi mavzular soni — "Barcha mavzular" shu songa nisbatan.
+    const jami = (typeof bankTopics === "function") ? bankTopics().length : 0;
+    return [
+      { label: "Birinchi imtihon", earned: st.exams >= 1,
+        path1: "M9 11l3 3 6-6", path2: "M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" },
+      { label: "7 kunlik seriya", earned: st.longest >= 7,
+        path1: "M12 22c4 0 7-2.8 7-6.5 0-4.5-4-6-4-9.5-2.5 1-3.5 3-3.5 4.5C11.5 8 10 6.5 10 5 7.8 6.6 5 9.2 5 15.5 5 19.2 8 22 12 22z" },
+      { label: "500 savol yechildi", earned: st.answered >= 500,
+        path1: "M12 3l2.6 5.6 6.1.8-4.5 4.2 1.1 6-5.3-3-5.3 3 1.1-6L3.3 9.4l6.1-.8z" },
+      { label: "Barcha mavzular", earned: jami > 0 && st.topicsTouched >= jami,
+        path1: "M4 19.5A2.5 2.5 0 0 1 6.5 17H20", path2: "M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" },
+      { label: "Marafon chempioni", earned: st.marathonBest >= 50,
+        path1: "M6 21V4", path2: "M6 4h12l-3 4 3 4H6" }
+    ];
   }
 
   renderVals() {
@@ -2785,7 +2829,25 @@ class Component extends DCLogic {
     const ready = this.readiness();
     const q = s.quiz;
     const theme = s.theme;
+    /* Foydalanuvchi nomi ilgari markup'ga QATTIQ yozilgan edi —
+       "Sardor Toshmatov" va "@sardor_t" ikkita ekranda turardi va uni
+       ilovani ochgan HAR BIR odam o'z nomi o'rnida ko'rardi.
+
+       Hisob tizimi hali yo'q (kirish ekranlari qurilmagan), shuning
+       uchun to'g'ri javob — o'ylab topilgan ism emas, halol "Mehmon".
+       Hisob qo'shilganda bu yerga profil nomi keladi va markup
+       o'zgarmaydi. Design Canvas maketida (nzProgress yo'q) demo ism
+       qoladi: maket to'la ko'rinishi kerak. */
+    const me = window.nzProgress
+      ? { name: "Mehmon", short: "Mehmon", handle: "" }
+      : { name: "Sardor Toshmatov", short: "Sardor", handle: "@sardor_t" };
     return {
+      meName: me.name,
+      meShort: me.short,
+      meHandle: me.handle,
+      hasHandle: !!me.handle,
+      meInitial: me.short.charAt(0).toUpperCase(),
+
       theme,
       isDark: theme === "dark",
       isLight: theme === "light",
@@ -3821,36 +3883,61 @@ class Component extends DCLogic {
         valStyle: { fontSize: "24px", fontWeight: 800, fontVariantNumeric: "tabular-nums", color: "var(" + x.color + ")" }
       })),
 
+      /* Mavzular boʻyicha — ilgari qattiq yozilgan massiv edi
+         ([{name:"Yoʻl belgilari", n:94}, …]) va hech qachon
+         oʻzgarmasdi. Yangi foydalanuvchiga, birorta savolga javob
+         bermagan odamga ham "Birinchi yordam mavzusida zaifsiz (42%)"
+         derdi. Ustiga "Tezlik va joylashish" bankdagi mavzu ham emas —
+         bankda "Tezlik rejimi".
+
+         Endi raqam aynan shu odam javob bergan savollardan chiqadi.
+         Javob berilmagan mavzu roʻyxatda YOʻQ: nol javobdan foiz
+         chiqarib boʻlmaydi va "0%" yolgʻon boʻlardi. */
+      /* Design Canvas maketida saqlash qatlami yo'q — o'shanda demo
+         qiymatlar qoladi (profileStats bilan bir naqsh), aks holda
+         maket bo'sh holat bilan ochilardi va dizayn ishlab bo'lmasdi.
+         Haqiqiy ilovada esa faqat haqiqiy javoblar hisoblanadi. */
+      hasTopicStats: window.nzProgress
+        ? window.nzProgress.topicStats().length > 0 : true,
+      noTopicStats: window.nzProgress
+        ? window.nzProgress.topicStats().length === 0 : false,
+
       topicStats: (() => {
-        const raw = [
-          { name: "Yoʻl belgilari", n: 94 },
-          { name: "Chorrahalar", n: 78 },
-          { name: "Tezlik va joylashish", n: 61 },
-          { name: "Birinchi yordam", n: 42 }
+        const raw = window.nzProgress ? window.nzProgress.topicStats() : [
+          { name: "Yoʻl belgilari", pct: 94 }, { name: "Chorrahalar", pct: 78 },
+          { name: "Tezlik rejimi", pct: 61 }, { name: "Birinchi yordam", pct: 42 }
         ];
-        // Psixologik jihat: eng past koʻrsatkichni ogohlantiruvchi qizil raqam sifatida
-        // qoldirib (aniq signal kerak), lekin faqat ENG zaif mavzuga oʻsish yoʻnalishidagi
-        // qisqa undov qoʻshamiz — "yomon natija"dan koʻra "eng katta imkoniyat" sifatida.
-        const weakestN = Math.min(...raw.map(t => t.n));
-        return raw.map(t => {
-          const c = t.n >= 80 ? "--success" : t.n >= 60 ? "--gold" : "--destructive";
+        // Eng past koʻrsatkich ogohlantiruvchi qizil raqam sifatida
+        // qoladi (aniq signal kerak), lekin unga oʻsish yoʻnalishidagi
+        // qisqa undov qoʻshiladi — "yomon natija"dan koʻra "eng katta
+        // imkoniyat" sifatida.
+        const weakest = raw.length ? Math.min(...raw.map(t => t.pct)) : -1;
+        return raw.slice(0, 8).map(t => {
+          const c = t.pct >= 80 ? "--success" : t.pct >= 60 ? "--gold" : "--destructive";
           return {
-            name: t.name, pct: t.n + "%",
+            name: t.name, pct: t.pct + "%",
             pctStyle: { fontSize: "14px", fontWeight: 800, color: "var(" + c + ")", fontVariantNumeric: "tabular-nums" },
-            barStyle: { width: t.n + "%", height: "100%", borderRadius: "999px", background: "var(" + c + ")" },
-            showTip: t.n === weakestN,
+            barStyle: { width: t.pct + "%", height: "100%", borderRadius: "999px", background: "var(" + c + ")" },
+            showTip: t.pct === weakest,
             tip: "Eng katta oʻsish imkoniyati — shu mavzuni koʻproq mashq qiling"
           };
         });
       })(),
 
-      achievements: [
-        { label: "Birinchi imtihon", earned: true, path1: "M9 11l3 3 6-6", path2: "M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" },
-        { label: "7 kunlik seriya", earned: true, path1: "M12 22c4 0 7-2.8 7-6.5 0-4.5-4-6-4-9.5-2.5 1-3.5 3-3.5 4.5C11.5 8 10 6.5 10 5 7.8 6.6 5 9.2 5 15.5 5 19.2 8 22 12 22z" },
-        { label: "500 savol yechildi", earned: true, path1: "M12 3l2.6 5.6 6.1.8-4.5 4.2 1.1 6-5.3-3-5.3 3 1.1-6L3.3 9.4l6.1-.8z" },
-        { label: "Barcha mavzular", earned: false, path1: "M4 19.5A2.5 2.5 0 0 1 6.5 17H20", path2: "M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" },
-        { label: "Marafon chempioni", earned: false, path1: "M6 21V4", path2: "M6 4h12l-3 4 3 4H6" }
-      ].map(a => Object.assign({}, a, {
+      /* Yutuqlar — ilgari `earned` qattiq yozilgan edi: 0 imtihon,
+         0 savol va 0 kunlik seriyasi bor yangi hisobda ham uchtasi
+         yashil ✓ bilan "olingan" koʻrinardi. Ilova birinchi
+         ochilishidayoq "siz 500 ta savol yechgansiz" derdi.
+
+         Endi har biri saqlash qatlamidagi umrbod hisoblagichdan
+         hisoblanadi — profildagi toʻrtta raqam bilan bir manbadan,
+         shuning uchun ular bir-biriga zid boʻla olmaydi. */
+      /* "3/5" markup'da qattiq yozilgan edi — yutuqlar haqiqiy
+         hisoblanadigan bo'lgach, u darhol yolg'onga aylanardi. */
+      achieveCount: this.achieveList().filter(a => a.earned).length
+        + "/" + this.achieveList().length,
+
+      achievements: this.achieveList().map(a => Object.assign({}, a, {
         hasPath2: !!a.path2,
         boxStyle: {
           width: "56px", height: "56px", borderRadius: "16px", display: "grid", placeItems: "center",
@@ -4188,7 +4275,13 @@ class Component extends DCLogic {
             if (wasExam && window.nzProgress) window.nzProgress.examFinished();
             this.setState(st => ({
               quiz: Object.assign({}, st.quiz, { finished: true }),
-              points: st.points + (st.quiz.wrong <= 2 ? 100 : 0),
+              /* wasExam SHU YERDA HAM tekshiriladi. Ilgari u faqat
+                 examsDone ga qo'llangan edi, +100 ball esa rejimga
+                 qaramasdan berilardi: "Xatolarim" yoki "Saqlangan" da
+                 1-2 savol bo'lsa (odatiy holat), ularni yechib "Qayta
+                 yechish"ni cheksiz bosib har safar +100 olish mumkin
+                 edi. Liga va reyting shu orqali qalbakilashardi. */
+              points: st.points + (wasExam && st.quiz.wrong <= 2 ? 100 : 0),
               examsDone: st.examsDone + (wasExam ? 1 : 0)
             }));
             this.awardTasks();

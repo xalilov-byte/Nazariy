@@ -102,6 +102,16 @@
       streak: 0,
       longest: 0,
       lastActiveDay: null,     // oxirgi javob berilgan kun
+      /* Mavzu kesimidagi umrbod hisob: { "Yoʻl belgilari": [n, toʻgʻri] }.
+         Profildagi "Mavzular boʻyicha" ilgari qattiq yozilgan massiv edi
+         va yangi foydalanuvchiga ham "Birinchi yordam mavzusida zaifsiz
+         (42%)" derdi. Bu raqamni bank emas, aynan shu odam javob
+         bergan savollar berishi kerak.
+
+         Ikki elementli massiv — obyekt emas: har bir mavzu uchun
+         localStorage'da 8 belgi o'rniga ~14 belgi ketardi va bu yozuv
+         har javobda diskka tushadi. */
+      topics: {},
       wrong: [],               // ref'lar
       saved: [],               // ref'lar
       day: null,               // kunlik hisoblagichlar qaysi kunga tegishli
@@ -139,6 +149,23 @@
       streak: num(raw.streak, 0),
       longest: num(raw.longest, 0),
       lastActiveDay: str(raw.lastActiveDay),
+      /* Mavzu nomlari bazadan keladi, ya'ni ular ham ishonchsiz kirish.
+         Nomi 60 belgidan uzun yoki qiymati ikkita musbat son bo'lmagan
+         yozuv tashlanadi; to'g'ri javob soni umumiy sondan katta
+         bo'lolmaydi, aks holda profilda 300% chiqardi. */
+      topics: (() => {
+        const out = {};
+        const t = raw.topics;
+        if (!t || typeof t !== 'object') return out;
+        Object.keys(t).slice(0, 200).forEach(k => {
+          const v = t[k];
+          if (typeof k !== 'string' || !k || k.length > 60) return;
+          if (!Array.isArray(v) || v.length !== 2) return;
+          const n = num(v[0], 0), c = num(v[1], 0);
+          if (n > 0) out[k] = [n, Math.min(c, n)];
+        });
+        return out;
+      })(),
       wrong: refs(raw.wrong),
       saved: refs(raw.saved),
       day: str(raw.day),
@@ -317,6 +344,12 @@
       store.totalAnswered += 1;
       if (a && a.correct) store.totalCorrect += 1;
 
+      if (a && typeof a.topic === 'string' && a.topic) {
+        const k = a.topic.slice(0, 60);
+        const cur = store.topics[k] || [0, 0];
+        store.topics[k] = [cur[0] + 1, cur[1] + (a.correct ? 1 : 0)];
+      }
+
       if (store.lastActiveDay !== today) {
         const gap = daysBetween(store.lastActiveDay, today);
         // gap === 1 → kecha ham yechgan, ketma-ketlik davom etadi.
@@ -367,7 +400,28 @@
           ? Math.round(store.totalCorrect / store.totalAnswered * 100)
           : null,
         longest: store.longest,
+        marathonBest: store.marathonBest,
+        topicsTouched: Object.keys(store.topics).length,
       };
+    },
+
+    /* Mavzu kesimidagi haqiqiy natija, eng zaifi oxirida.
+       Bo'sh massiv = hali birorta savolga javob berilmagan; chaqiruvchi
+       shunda foiz emas, bo'sh holat ko'rsatishi kerak.
+
+       minN — shovqin chegarasi. 1 ta savolga javob berib xato qilgan
+       odamga "Chorrahalar: 0%" deyish ma'lumot emas, tasodif: u
+       mavzuni bilmasligini emas, bitta savolni ko'rganini bildiradi. */
+    topicStats: function (minN) {
+      const min = typeof minN === 'number' ? minN : 3;
+      return Object.keys(store.topics)
+        .map(name => {
+          const v = store.topics[name];
+          return { name: name, n: v[0], correct: v[1],
+                   pct: Math.round(v[1] / v[0] * 100) };
+        })
+        .filter(t => t.n >= min)
+        .sort((a, b) => a.pct - b.pct || b.n - a.n);
     },
 
     longest: function () { return store.longest; },
