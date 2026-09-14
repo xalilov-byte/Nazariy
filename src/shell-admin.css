@@ -27,3 +27,44 @@ html, body {
 /* Telefonda tasodifiy uzun bosishda kontekst menyusi chiqmasin, lekin
    matn tanlash saqlanadi — admin uchun nusxalash asosiy amal. */
 body { -webkit-tap-highlight-color: transparent }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   TOR EKRAN — admin panel telefonda ham ochiladi.
+
+   Bu yerda shu paytgacha birorta @media qoidasi yo'q edi: panel faqat
+   kompyuter uchun chizilgan. Lekin u telefonda ham ochiladi (moderator
+   yo'lda savolni tasdiqlashi mumkin), va 390px da o'lchanganda sahifa
+   488px ga cho'zilardi — gorizontal scroll, ya'ni kartalar ekrandan
+   chiqib ketardi.
+
+   Sabab: KPI kartalari `repeat(4,1fr)` bilan chizilgan va bu qiymat
+   elementning INLINE style'ida turardi. Inline qiymat @media ichidagi
+   klass qoidasidan har doim ustun turadi, shuning uchun ustun soni
+   klassga ko'chirildi (landing'da xuddi shu yo'l tanlangan edi).
+   Boshqa hamma narsa — padding, rang, matn — o'z joyida qoldi.
+   ───────────────────────────────────────────────────────────────────── */
+.nz-admin-cards { display: grid; grid-template-columns: repeat(4, 1fr) }
+.nz-admin-grid3 { display: grid; grid-template-columns: repeat(3, 1fr) }
+/* Ikki ustunli bloklar (grafik + voronka, kogortalar, daromad) —
+   ularning nisbati har xil edi (1.35fr 1fr, 1fr 1.15fr, 1.3fr 1fr),
+   lekin tor ekranda uchalasi ham bitta ustunga tushadi. */
+.nz-admin-two { display: grid; grid-template-columns: 1.3fr 1fr }
+
+@media (max-width: 900px) {
+  .nz-admin-cards { grid-template-columns: repeat(2, 1fr) }
+  .nz-admin-grid3 { grid-template-columns: repeat(2, 1fr) }
+  .nz-admin-two   { grid-template-columns: 1fr }
+}
+
+@media (max-width: 560px) {
+  .nz-admin-cards,
+  .nz-admin-grid3 { grid-template-columns: 1fr }
+}
+
+/* Jadvallar tor ekranga sig'maydi va sig'ishi ham shart emas: ustunlar
+   qisqartirilsa ID va sana o'qilmay qoladi. Ular o'z konteyneri ichida
+   yon tomonga suriladi — SAHIFA esa surilmaydi. */
+@media (max-width: 900px) {
+  .nz-admin-table { overflow-x: auto; -webkit-overflow-scrolling: touch }
+  .nz-admin-table > * { min-width: 720px }
+}

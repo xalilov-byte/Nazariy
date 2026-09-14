@@ -1262,7 +1262,7 @@
 
     <sc-if value="{{ admOverview }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;flex-direction:column;gap:18px;animation:nzRise .2s ease-out">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <div class="nz-admin-cards" style="gap:12px">
         <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="8">
           <div style="background:var(--surface);border-radius:20px;padding:16px;box-shadow:var(--shadow)">
             <div style="font-size:13px;font-weight:600;color:var(--muted-foreground)">{{ k.label }}</div>
@@ -1272,7 +1272,7 @@
         </sc-for>
       </div>
 
-      <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:14px">
+      <div class="nz-admin-two" style="gap:14px">
         <div style="background:var(--surface);border-radius:20px;padding:18px;box-shadow:var(--shadow)">
           <div style="display:flex;align-items:baseline;justify-content:space-between">
             <h2 style="margin:0;font-size:17px;font-weight:700">Kunlik faol foydalanuvchi</h2>
@@ -1343,7 +1343,7 @@
           <span style="font-size:12px;font-weight:600;color:var(--muted-foreground)">{{ retentionNote }}</span>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <div class="nz-admin-cards" style="gap:12px">
         <sc-for list="{{ retentionKpis }}" as="k" hint-placeholder-count="4">
           <div style="background:var(--surface);border-radius:20px;padding:16px;box-shadow:var(--shadow)">
             <div style="font-size:13px;font-weight:600;color:var(--muted-foreground)">{{ k.label }}</div>
@@ -1360,7 +1360,7 @@
       <div style="background:var(--surface);border-radius:20px;padding:18px;box-shadow:var(--shadow)">
         <h2 style="margin:0 0 4px;font-size:17px;font-weight:700">Savol sifati — item analysis</h2>
         <p style="margin:0 0 14px;font-size:12px;font-weight:500;color:var(--muted-foreground);line-height:1.5;max-width:760px">Har bir savol ikki koʻrsatkich bilan baholanadi. <b>Qiyinlik (DIF)</b> — toʻgʻri javob bergan foizi, meʼyor 26–75%. <b>Ajratish kuchi (DIS)</b> — savol kuchli va zaif oʻquvchini qanchalik ajratadi: ≥0.35 aʼlo, 0.25–0.34 yaxshi, ≤0.20 ajratmaydi, <b>manfiy qiymat javob kaliti xato ekanini bildiradi</b>. <b>NFD</b> — 5% dan kam tanlangan “ishlamaydigan” variantlar soni.</p>
-        <div style="display:grid;grid-template-columns:1fr 1.15fr;gap:18px;align-items:start">
+        <div class="nz-admin-two" style="gap:18px;align-items:start">
           <div>
             <div style="position:relative;height:250px;background:var(--surface-alt);border-radius:14px;padding:10px">
               <div style="position:absolute;left:10px;right:10px;top:{{ scatterZeroTop }};height:1px;background:var(--grid)"></div>
@@ -1404,7 +1404,7 @@
 
     <sc-if value="{{ admRevenue }}" hint-placeholder-val="{{ false }}">
     <div style="display:flex;flex-direction:column;gap:14px;animation:nzRise .2s ease-out">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <div class="nz-admin-cards" style="gap:12px">
         <sc-for list="{{ revKpis }}" as="k" hint-placeholder-count="4">
           <div style="background:var(--surface);border-radius:20px;padding:16px;box-shadow:var(--shadow)">
             <div style="font-size:13px;font-weight:600;color:var(--muted-foreground)">{{ k.label }}</div>
@@ -1413,7 +1413,7 @@
           </div>
         </sc-for>
       </div>
-      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:14px">
+      <div class="nz-admin-two" style="gap:14px">
         <div style="background:var(--surface);border-radius:20px;padding:18px;box-shadow:var(--shadow)">
           <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px">
             <h2 style="margin:0;font-size:17px;font-weight:700">Pro faollashuvi — manba boʻyicha</h2>
@@ -1586,7 +1586,7 @@
         <h2 style="margin:0;font-size:17px;font-weight:700">Pro narxlari va ball kursi</h2>
         <p style="margin:4px 0 16px;font-size:12px;font-weight:500;color:var(--muted-foreground);line-height:1.5;max-width:760px">Bu yerdagi qiymatlarni Pro ekrani toʻgʻridan-toʻgʻri oʻqiydi. Oylik ekvivalent va chegirma foizi qoʻlda yozilmaydi — narxdan hisoblanadi, shuning uchun narx oʻzgarganda ular yolgʻonga aylanmaydi. <b>Oʻzgarish tasdiqlanmaguncha mahsulotga chiqmaydi.</b></p>
 
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        <div class="nz-admin-cards" style="gap:12px">
           <sc-for list="{{ priceFields }}" as="f" hint-placeholder-count="4">
             <div style="{{ f.cardStyle }}">
               <div style="font-size:12px;font-weight:700;color:var(--muted-foreground)">{{ f.label }}</div>
@@ -1604,7 +1604,7 @@
           </sc-for>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px">
+        <div class="nz-admin-grid3" style="gap:12px;margin-top:14px">
           <sc-for list="{{ priceDerived }}" as="d" hint-placeholder-count="3">
             <div style="background:var(--surface-alt);border-radius:16px;padding:14px">
               <div style="font-size:12px;font-weight:700;color:var(--muted-foreground)">{{ d.label }}</div>
