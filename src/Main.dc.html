@@ -601,7 +601,7 @@
             </div>
             <div style="margin-top:10px;font-size:13px;font-weight:500;color:var(--muted-foreground)">{{ leagueToNext }}</div>
           </div>
-          <h2 style="margin:12px 0 0;font-size:20px;font-weight:700">Kumush liga · top</h2>
+          <h2 style="margin:12px 0 0;font-size:20px;font-weight:700">{{ leagueTopTitle }}</h2>
           <sc-for list="{{ leaderboard }}" as="p" hint-placeholder-count="7">
             <sc-if value="{{ p.showGap }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;justify-content:center;padding:0 0 2px;color:var(--muted-foreground);font-size:13px;font-weight:800;letter-spacing:.12em">⋯</div>
@@ -3134,7 +3134,24 @@ class Component extends DCLogic {
       // ilovani birinchi ochgan odam ham o'zini Kumush ligada va 72%
       // tayyor deb ko'rardi. Endi ikkalasi ham haqiqiy raqamdan.
       leagueName: T(lg.name),
-      leagueLabel: T(lg.name) + " " + T("liga"),
+      /* Ilgari markup'da "Kumush liga · top" qattiq yozilgan edi va
+         foydalanuvchi bir ekranda ikkita ZID liga nomini ko'rardi:
+         yuqorida to'g'ri hisoblangan "Boshlovchi", pastda doim
+         "Kumush". Har bir yangi foydalanuvchi buni ko'radi — hamma
+         "Boshlovchi" dan boshlaydi. */
+      /* {0} — qolip. Nima uchun raqamli qolip, {liga} emas: kirill
+         rejimi matnni HARFMA-HARF o'giradi va harfli qolipni ham
+         o'girib yuboradi ({liga} → {лига}), keyin replace() mos
+         kelmay ekranda qolipning o'zi qolardi. Raqam
+         transliteratsiyaga tushmaydi.
+
+         Nima uchun oddiy qo'shish yaramaydi: o'zbekcha
+         "Boshlovchi liga" (nom + so'z), ruscha esa "Лига «Новичок»"
+         (so'z + nom). Qo'shib yasasak rus tilida "Новичок лига" bo'lib
+         chiqardi — grammatik xato. Qolip lug'atga so'z tartibini
+         o'zgartirish imkonini beradi. */
+      leagueTopTitle: T("{0} liga · top").replace("{0}", T(lg.name)),
+      leagueLabel: T("{0} liga").replace("{0}", T(lg.name)),
       leagueStep: lg.next ? T(lg.name) + " → " + T(lg.next.name) : T(lg.name),
       leagueProgressLabel: lg.next
         ? nf(s.points) + " / " + nf(lg.next.min)
@@ -3475,10 +3492,17 @@ class Component extends DCLogic {
     return (function (self) {
         const may = p => ROLES[s.adminRole].can.indexOf(p) !== -1;
         const chip = (bg, fg) => ({ display: "inline-flex", alignItems: "center", padding: "4px 10px", borderRadius: "999px", fontSize: "11px", fontWeight: 800, background: bg, color: fg });
-        const head = (labels, rightFrom) => labels.map((l, i) => ({
+        /* rightAt — o'ngga tekislanadigan ustunning indeksi (Ball kabi
+           sonli ustun). Ilgari shart `i >= rightFrom && i <= rightFrom + 0`
+           deb yozilgan edi — bu amalda `i === rightFrom` ning uzun
+           ko'rinishi, ya'ni "diapazon" degan taassurot beruvchi o'lik
+           murakkablik. Chaqiruvda esa `99` yozilardi ("hech biri"
+           ma'nosida) — sehrli son. Endi ikkalasi ham oshkor: null =
+           o'ngga tekislanadigan ustun yo'q. */
+        const head = (labels, rightAt) => labels.map((l, i) => ({
           label: l, style: {
             fontSize: "11px", fontWeight: 700, color: "var(--muted-foreground)",
-            padding: "0 10px 10px", textAlign: i >= rightFrom && i <= rightFrom + 0 ? "right" : "left",
+            padding: "0 10px 10px", textAlign: i === rightAt ? "right" : "left",
             borderBottom: "1px solid var(--hairline)"
           }
         }));
@@ -3521,7 +3545,7 @@ class Component extends DCLogic {
             { id: "review", label: "Koʻrib chiqishda" }, { id: "published", label: "Nashr etilgan" },
             { id: "archived", label: "Arxiv" }
           ].map(f => ({ label: f.label, pick: () => self.setState({ qFilter: f.id }), style: Object.assign(self.pill(s.qFilter === f.id), { fontSize: "12px", padding: "6px 12px" }) })),
-          qHead: head(["ID", "Savol", "Mavzu", "Holat", "Muallif", "Yangilangan"], 99),
+          qHead: head(["ID", "Savol", "Mavzu", "Holat", "Muallif", "Yangilangan"], null),
           qRows: fq.map(q => ({
             id: q.id, text: q.text.length > 92 ? q.text.slice(0, 92) + "…" : q.text,
             topic: q.topic, author: q.author, updated: q.updated,
@@ -4609,12 +4633,13 @@ class Component extends DCLogic {
         resultSub: examMode
           ? (q.timedOut
               ? "Berilgan vaqt tugadi va test avtomatik yopildi — haqiqiy imtihonda ham shunday. Javob berilgan: " + (q.index + (q.selected === null ? 0 : 1)) + "/" + poolLen + "."
-              /* {n} — qolip. Lug'at kaliti son bilan emas, qolip bilan
+              /* {0} — qolip (raqamli: kirill transliteratsiyasi harfli
+                 qolipni o'girib yuborardi). Lug'at kaliti son bilan emas, qolip bilan
                  turadi: EXAM_MAX_WRONG o'zgarsa ham tarjima ishlaydi va
                  rus tilida to'satdan o'zbekcha jumla chiqib qolmaydi. */
               : q.wrong <= EXAM_MAX_WRONG
-                ? T("Imtihon formatida {n} tagacha xato ruxsat etiladi. Shu tempda davom eting.").replace("{n}", EXAM_MAX_WRONG)
-                : T("Ruxsat etilgan xato — {n} ta. Xatolaringizni «Xatolarim» rejimida takrorlang.").replace("{n}", EXAM_MAX_WRONG))
+                ? T("Imtihon formatida {0} tagacha xato ruxsat etiladi. Shu tempda davom eting.").replace("{0}", EXAM_MAX_WRONG)
+                : T("Ruxsat etilgan xato — {0} ta. Xatolaringizni «Xatolarim» rejimida takrorlang.").replace("{0}", EXAM_MAX_WRONG))
           : isMarathon
           ? (q.newBest ? "Bu — sessiyadagi eng yaxshi natijangiz. Yana urinib koʻring!" : "Rekordingiz — " + s.marathonBest + ". Yana urinib koʻring!")
           : (q.correct + "/" + poolLen + " toʻgʻri javob. Istalgancha qayta mashq qilishingiz mumkin."),

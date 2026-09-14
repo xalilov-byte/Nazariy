@@ -133,9 +133,9 @@ window.nzRu = {
   "Yangi rekord!": "Новый рекорд!",
   "Eng tez oʻsish imkoniyati shu yerda": "Здесь быстрее всего вырастет результат",
   "Marafon rejimida bilimingizni sinang": "Проверьте себя в режиме марафона",
-  "Imtihon formatida {n} tagacha xato ruxsat etiladi. Shu tempda davom eting.":
+  "Imtihon formatida {0} tagacha xato ruxsat etiladi. Shu tempda davom eting.":
     "В формате экзамена допускается до 2 ошибок. Продолжайте в этом темпе.",
-  "Ruxsat etilgan xato — {n} ta. Xatolaringizni «Xatolarim» rejimida takrorlang.":
+  "Ruxsat etilgan xato — {0} ta. Xatolaringizni «Xatolarim» rejimida takrorlang.":
     "Допустимо 2 ошибки. Повторите свои ошибки в режиме «Мои ошибки».",
   "Bu — sessiyadagi eng yaxshi natijangiz. Yana urinib koʻring!":
     "Это ваш лучший результат за сессию. Попробуйте ещё!",
@@ -168,9 +168,16 @@ window.nzRu = {
   "Reyting hali ishga tushmagan — quyidagi roʻyxat namunaviy. Ballaringiz telefonda saqlanmoqda va reyting yoqilganda hisobga olinadi.":
     "Рейтинг ещё не запущен — список ниже демонстрационный. Ваши баллы сохраняются на телефоне и будут учтены, когда рейтинг включат.",
   "liga": "лига",
+  /* Qolipli kalitlar: o'zbekchada "Boshlovchi liga" (nom + so'z),
+     ruschada "Лига «Новичок»" (so'z + nom). Qo'shib yasaganda rus
+     tilida "Новичок лига" chiqardi — grammatik xato. */
+  "{0} liga": "Лига «{0}»",
+  "{0} liga · top": "Лига «{0}» · топ",
   "ligagacha": "до лиги —",
   "Eng yuqori liga": "Высшая лига",
-  "Kumush liga · top": "Серебряная лига · топ",
+  /* Liga nomi endi hisoblanadi, sarlavha esa qo'shib yasaladi
+     (leagueTopTitle) — shuning uchun kalit butun jumla emas, bo'lagi. */
+  "top": "топ",
   "Mening guruhim": "Моя группа",
   "Top guruhlar": "Топ групп",
   "Guruh yaratish": "Создать группу",

@@ -109,7 +109,25 @@
 
     back.appendChild(card);
     document.body.appendChild(back);
-    overlay = { back: back, err: err };
+
+    /* Orqadagi ekranni BUTUNLAY berkitamiz, faqat ustiga qo'ymaymiz.
+
+       Muammo (390px da o'lchangan): kirish oynasi ochiq bo'lsa ham
+       orqada admin paneli chizilib turardi va uning `repeat(4,1fr)`
+       gridi sahifani 488px ga cho'zardi — ya'ni telefonda gorizontal
+       scroll paydo bo'lardi va kirish kartasini ekrandan surib
+       yuborish mumkin edi.
+
+       Berkitish `visibility` bilan emas, `display:none` bilan:
+       ko'rinmaydigan element ham gridni va scrollWidth'ni saqlab
+       qoladi. */
+    const root = document.getElementById('nz-root');
+    const prevRoot = root ? root.style.display : null;
+    const prevOverflow = document.documentElement.style.overflow;
+    if (root) root.style.display = 'none';
+    document.documentElement.style.overflow = 'hidden';
+
+    overlay = { back: back, err: err, root: root, prevRoot: prevRoot, prevOverflow: prevOverflow };
     if (message) err.textContent = message;
 
     const submit = async () => {
@@ -138,7 +156,11 @@
   }
 
   function hideLogin() {
-    if (overlay && overlay.back.parentNode) overlay.back.parentNode.removeChild(overlay.back);
+    if (!overlay) return;
+    if (overlay.back.parentNode) overlay.back.parentNode.removeChild(overlay.back);
+    // Orqadagi ekranni tiklaymiz (yuqoridagi izohga qarang).
+    if (overlay.root) overlay.root.style.display = overlay.prevRoot || '';
+    document.documentElement.style.overflow = overlay.prevOverflow || '';
     overlay = null;
   }
 
