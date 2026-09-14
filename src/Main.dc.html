@@ -1673,6 +1673,9 @@
             </sc-for>
           </div>
         </div>
+        <sc-if value="{{ bulkShowBlocked }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:12px 14px;border-radius:12px;background:var(--surface-alt);border:1px solid var(--destructive);font-size:13px;font-weight:600;color:var(--destructive);line-height:1.45">{{ bulkBlockedMsg }}</div>
+        </sc-if>
         <button onClick="{{ runImport }}" style="{{ importBtnStyle }}">{{ importBtnLabel }}</button>
       </sc-if>
 
@@ -3810,6 +3813,11 @@ class Component extends DCLogic {
                 background: good ? "var(--primary)" : "var(--surface-alt)",
                 color: good ? "#fff" : "var(--muted-foreground)", cursor: good ? "pointer" : "not-allowed"
               },
+              bulkShowBlocked: !!(s.bulk && s.bulk.blocked),
+              bulkBlockedMsg: "Baza bilan aloqa yo'q — sessiya uzilgan bo'lishi mumkin. "
+                + "Import yuborilmadi. Sahifani yangilab qaytadan kiring, "
+                + "keyin shu faylni yana tanlang.",
+
               runImport: () => {
                 if (!good || !self.may("content")) return;
                 const st = self.state;
@@ -3829,6 +3837,24 @@ class Component extends DCLogic {
                   window.nzAdminActions.bulkInsert(items);
                   return;
                 }
+                /* Baza qatlami BOR, lekin ulanmagan (token yangilanmagan,
+                   sessiya uzilgan). Ilgari bu holatda kod bazaga hech
+                   narsa yubormasdan mahalliy soxta "#501, #502…" ID'li
+                   qatorlar qo'shardi va MUVAFFAQIYAT ko'rsatardi.
+
+                   Admin "700 savol qo'shdim" deb ishonardi, sahifa
+                   yangilanishi bilan hammasi yo'qolardi — xato xabari
+                   ham yo'q edi. Kontent kiritish ishining eng katta
+                   qismi shu yerdan o'tadi; jimgina yo'qotish bu yerda
+                   eng qimmat. */
+                if (window.nzAdminActions) {
+                  self.setState({ bulk: Object.assign({}, st.bulk, { blocked: true }) });
+                  return;
+                }
+
+                /* Bu yerga faqat Design Canvas maketida kelinadi (baza
+                   qatlami umuman yo'q) — o'shanda mahalliy qo'shish
+                   maketni ko'rsatish uchun qoladi. */
                 let next = 500;
                 const added = rows.filter(r => r.ok).map(r => {
                   next += 1;
