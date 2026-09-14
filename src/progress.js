@@ -49,6 +49,12 @@
      javobdan qimmatliroq. */
   const QUEUE_MAX = 2000;
 
+  /* Ball to'langan savollar ro'yxatining chegarasi. 600 savollik bank
+     uchun ~4 KB, ya'ni chegara amalda tegmaydi — u faqat cheksiz
+     o'sishdan himoya. Eng qadimgilari tashlanadi: ular qayta to'lanadi,
+     lekin bu yuzlab savol yechilgandan keyingi holat. */
+  const SCORED_MAX = 5000;
+
   /* ── Qurilma xotirasi ──────────────────────────────────────────────
      localStorage ishlamasligi mumkin: brauzerning maxfiy oynasi, sayt
      ma'lumoti bloklangan, joy tugagan. Bunday holda ilova SAQLAMASDAN
@@ -99,10 +105,17 @@
       totalAnswered: 0,
       totalCorrect: 0,
       totalExams: 0,
+      /* Imtihon rejimidagi javoblar — "Imtihon tayyorligi" shundan
+         hisoblanadi (umrbod aniqlikdan emas, izohi answered() da). */
+      examAnswered: 0,
+      examCorrect: 0,
       streak: 0,
       longest: 0,
       lastActiveDay: null,     // oxirgi javob berilgan kun
       /* Mavzu kesimidagi umrbod hisob: { "Yoʻl belgilari": [n, toʻgʻri] }.
+         Prototipsiz obyekt: mavzu nomi bazadan keladi va "constructor"
+         bo'lishi mumkin — oddiy {} da store.topics[nom] || [0,0] o'sha
+         nom uchun FUNKSIYA qaytarardi va hisob NaN ga aylanardi.
          Profildagi "Mavzular boʻyicha" ilgari qattiq yozilgan massiv edi
          va yangi foydalanuvchiga ham "Birinchi yordam mavzusida zaifsiz
          (42%)" derdi. Bu raqamni bank emas, aynan shu odam javob
@@ -111,13 +124,26 @@
          Ikki elementli massiv — obyekt emas: har bir mavzu uchun
          localStorage'da 8 belgi o'rniga ~14 belgi ketardi va bu yozuv
          har javobda diskka tushadi. */
-      topics: {},
+      topics: Object.create(null),
       wrong: [],               // ref'lar
       saved: [],               // ref'lar
       day: null,               // kunlik hisoblagichlar qaysi kunga tegishli
       answered: 0,
       exams: 0,
       signs: [],               // ref'lar
+      /* Ball TO'LANGAN savollar (ref). Bir savol uchun +10 faqat BIR
+         MARTA beriladi.
+
+         Ilgari har to'g'ri javobga rejimdan qat'i nazar +10 berilardi —
+         "Xatolarim" takrorlariga ham, marafonning cheksiz aylanishiga
+         ham. Marafon poolni `(index + 1) % pool.length` bilan aylantiradi,
+         ya'ni o'sha 10 savolni qayta-qayta yechib ballni cheksiz
+         oshirish mumkin edi. Ball esa ligani belgilaydi.
+
+         Takrorlash o'zi JAZOLANMAYDI: streak, kunlik vazifa, mavzu
+         kesimidagi hisob va "Xatolarim" ro'yxatidan chiqish — hammasi
+         ishlayveradi. Faqat BALL ikkinchi marta to'lanmaydi. */
+      scored: [],
       tasks: [],               // mukofot berilgan vazifa id'lari
       /* Sozlamalar. Ilgari ular saqlanmasdi: ovozni o'chirgan odam
          ilovani qayta ochganda ovoz yana yonib turardi. Sozlama —
@@ -146,6 +172,8 @@
       totalAnswered: num(raw.totalAnswered, 0),
       totalCorrect: num(raw.totalCorrect, 0),
       totalExams: num(raw.totalExams, 0),
+      examAnswered: num(raw.examAnswered, 0),
+      examCorrect: num(raw.examCorrect, 0),
       streak: num(raw.streak, 0),
       longest: num(raw.longest, 0),
       lastActiveDay: str(raw.lastActiveDay),
@@ -154,7 +182,7 @@
          yozuv tashlanadi; to'g'ri javob soni umumiy sondan katta
          bo'lolmaydi, aks holda profilda 300% chiqardi. */
       topics: (() => {
-        const out = {};
+        const out = Object.create(null);
         const t = raw.topics;
         if (!t || typeof t !== 'object') return out;
         Object.keys(t).slice(0, 200).forEach(k => {
@@ -172,6 +200,7 @@
       answered: num(raw.answered, 0),
       exams: num(raw.exams, 0),
       signs: refs(raw.signs),
+      scored: refs(raw.scored).slice(-SCORED_MAX),
       tasks: Array.isArray(raw.tasks) ? raw.tasks.filter(x => typeof x === 'string') : [],
       soundOn: typeof raw.soundOn === 'boolean' ? raw.soundOn : null,
       notifOn: typeof raw.notifOn === 'boolean' ? raw.notifOn : null,
@@ -201,6 +230,14 @@
      Qoida: bugun yoki kechagi kunda javob berilgan bo'lsa streak amal
      qiladi (bugun hali tugamagan — uni yo'qotish uchun erta), undan
      eskisi esa uzilgan. */
+  /* Ball to'langan ref'lar — tez qidirish uchun. Massivning o'zi diskka
+     yoziladi (Set JSON'ga tushmaydi), Set esa faqat xotirada. */
+  let scoredIdx = null;
+  function scoredSet() {
+    if (!scoredIdx) scoredIdx = new Set(store.scored);
+    return scoredIdx;
+  }
+
   function liveStreak() {
     const d = daysBetween(store.lastActiveDay, dayKey());
     if (d === null || d > 1) return 0;
@@ -211,7 +248,17 @@
      QUESTIONS bank almashganda o'zgaradi, shuning uchun har o'girishda
      u parametr sifatida uzatiladi — modul global holatga tayanmaydi. */
   function indexMap(questions) {
-    const m = {};
+    /* Object.create(null) — oddiy {} EMAS. Sabab: `ref` erkin matn
+       (parseBulk uni cheklamaydi), ya'ni u "constructor" yoki
+       "__proto__" bo'lishi mumkin. Oddiy obyektda m["constructor"]
+       hech qachon undefined bo'lmaydi — u Object.prototype dan
+       KELADI. Natijasi ikki xil zarar edi:
+         toIndices(["constructor"], Q) → [ƒ Object]  (indeks o'rniga funksiya)
+         orphansOf(["constructor"], Q) → []          (yetim ham deb sanalmaydi)
+       Ikkinchisi og'irroq: bunday savol "Saqlangan" ro'yxatidan
+       BUTUNLAY va qaytarib bo'lmas o'chardi — yetimlar mexanizmi ham
+       uni ushlamasdi. */
+    const m = Object.create(null);
     (questions || []).forEach((q, i) => { if (q && q.ref) m[q.ref] = i; });
     return m;
   }
@@ -242,7 +289,7 @@
   }
 
   function uniq(a) {
-    const seen = {}, out = [];
+    const seen = Object.create(null), out = [];
     a.forEach(x => { if (!seen[x]) { seen[x] = 1; out.push(x); } });
     return out;
   }
@@ -265,11 +312,39 @@
   let timer = null;
   let pending = null;
 
+  /* Javoblar navbati ham SHU YERDA birlashtiriladi.
+
+     Ilgari u birlashtirilmasdi: har javobda butun navbat diskdan
+     o'qilib, parse qilinib, qaytadan yozilardi. Navbat to'lganda
+     (QUEUE_MAX = 2000 yozuv, ~221 KB) bu bitta javobga ~1.6 ms
+     SINXRON ish degani — aynan odam javobni bosgan lahzada, asosiy
+     oqimda. 20 savollik imtihonda ~4.4 MB yoziladi va ~32 ms
+     bloklanadi; telefonda 3–6 barobar ko'proq. Kuniga 50 savol
+     yechadigan odam ~40 kunda shu holatga tushadi.
+
+     Endi navbat xotirada turadi va holat bilan bir vaqtda, 400 ms da
+     bir marta yoziladi. Diskdan o'qish esa umuman bir marta —
+     birinchi javobda. */
+  let queue = null;          // null = hali diskdan o'qilmagan
+  let queueDirty = false;
+
+  function queueLoad() {
+    if (queue) return queue;
+    const q = read(QUEUE_KEY);
+    queue = Array.isArray(q) ? q : [];
+    return queue;
+  }
+
   function commit() {
     timer = null;
-    if (!pending) return;
-    write(KEY, pending);
-    pending = null;
+    if (pending) { write(KEY, pending); pending = null; }
+    if (queueDirty && queue) {
+      /* Kesish yozish paytida bo'ladi, har qo'shishda emas: eng
+         qadimgilari tashlanadi, yangi javob eski javobdan qimmatliroq. */
+      if (queue.length > QUEUE_MAX) queue = queue.slice(-QUEUE_MAX);
+      write(QUEUE_KEY, queue);
+      queueDirty = false;
+    }
   }
 
   function flush() {
@@ -330,11 +405,18 @@
 
     flush: flush,
 
-    /* Javob berildi. Ikki ish qiladi:
+    /* Javob berildi. Qiladigan ishlari:
          1. streak'ni yuritadi (kuniga bir marta)
          2. javobni navbatga qo'yadi (serverga yuborish uchun)
-       Qaytaradi: streak yoki kun o'zgargan bo'lsa 0 dan farqli qiymat,
-       aks holda null. Chaqiruvchi shunda ekranni yangilaydi. */
+         3. mavzu va imtihon kesimidagi hisobni yuritadi
+         4. shu javob uchun BERILADIGAN BALLNI hisoblaydi
+
+       Qaytaradi: { streak, award }.
+         streak — kun o'zgargan bo'lsa 0 dan farqli qiymat, aks holda
+                  null; chaqiruvchi shunda ekranni yangilaydi.
+         award  — shu javobga beriladigan ball (10 yoki 0). Qaror shu
+                  yerda qabul qilinadi, dizaynda emas: takror javob
+                  qaysi ekanini faqat saqlash qatlami biladi. */
     answered: function (a) {
       // Ilova 04:00 dan o'tib ochiq qolgan bo'lsa — yangi kun.
       const rolled = rollDay();
@@ -343,6 +425,35 @@
 
       store.totalAnswered += 1;
       if (a && a.correct) store.totalCorrect += 1;
+
+      /* Imtihon tayyorligi FAQAT imtihon rejimidagi javoblardan
+         hisoblanadi. Umrbod aniqlik yaramaydi: "Xatolarim" takrorlari
+         ham unga tushardi va bir savolni uch marta to'g'ri yechgan odam
+         "tayyorligi" oshib borardi. Natijada imtihondan oldingi eng
+         muhim raqam sistematik ravishda haqiqatdan yuqori chiqardi —
+         odamni tayyor bo'lmagan holda imtihonga yuborardi. */
+      const examMode = !a || !a.mode || a.mode === 'exam';
+      if (examMode) {
+        store.examAnswered += 1;
+        if (a && a.correct) store.examCorrect += 1;
+      }
+
+      // Ball: bir savol uchun bir marta (yuqoridagi `scored` izohiga qarang).
+      let award = 0;
+      if (a && a.correct) {
+        if (!a.ref) {
+          award = 10;                      // ref yo'q — takrorni aniqlab bo'lmaydi
+        } else if (scoredSet().has(a.ref)) {
+          award = 0;
+        } else {
+          award = 10;
+          scoredSet().add(a.ref);
+          store.scored.push(a.ref);
+          if (store.scored.length > SCORED_MAX) {
+            store.scored = store.scored.slice(-SCORED_MAX);
+          }
+        }
+      }
 
       if (a && typeof a.topic === 'string' && a.topic) {
         const k = a.topic.slice(0, 60);
@@ -361,9 +472,7 @@
       }
 
       if (a && a.ref) {
-        const q = read(QUEUE_KEY);
-        const queue = Array.isArray(q) ? q : [];
-        queue.push({
+        queueLoad().push({
           u: uuid(),
           r: a.ref,
           c: a.chosen,
@@ -371,13 +480,12 @@
           m: a.mode || 'exam',
           t: new Date().toISOString(),
         });
-        // Eng qadimgilari tashlanadi (yangi javob qimmatliroq).
-        write(QUEUE_KEY, queue.length > QUEUE_MAX ? queue.slice(-QUEUE_MAX) : queue);
+        queueDirty = true;
       }
 
       pending = Object.assign({}, store);
       if (!timer) timer = setTimeout(commit, 400);
-      return changed;
+      return { streak: changed, award: award };
     },
 
     /* Imtihon oxirigacha yetdi. Alohida chaqiruv kerak, chunki
@@ -398,6 +506,10 @@
         exams: store.totalExams,
         accuracy: store.totalAnswered
           ? Math.round(store.totalCorrect / store.totalAnswered * 100)
+          : null,
+        examAnswered: store.examAnswered,
+        examAccuracy: store.examAnswered
+          ? Math.round(store.examCorrect / store.examAnswered * 100)
           : null,
         longest: store.longest,
         marathonBest: store.marathonBest,
@@ -430,6 +542,9 @@
     /* Serverga yuborilmagan javoblar soni. Sinxronizatsiya kelganda
        (Faza 4) shu navbat bo'shatiladi. */
     queued: function () {
+      // Xotiradagi navbat diskdagidan yangiroq bo'lishi mumkin (hali
+      // yozilmagan javoblar) — shuning uchun avval u so'raladi.
+      if (queue) return Math.min(queue.length, QUEUE_MAX);
       const q = read(QUEUE_KEY);
       return Array.isArray(q) ? q.length : 0;
     },
@@ -441,6 +556,9 @@
       store.day = dayKey();
       orphans = { wrong: [], saved: [], signs: [] };
       pending = null;
+      queue = [];
+      queueDirty = false;
+      scoredIdx = null;
       if (timer) { clearTimeout(timer); timer = null; }
       try { localStorage.removeItem(KEY); localStorage.removeItem(QUEUE_KEY); }
       catch (e) {}

@@ -2077,7 +2077,10 @@ function leagueOf(points) {
    rejimi mavzu bo'yicha filtrlay olmasdi: ro'yxatning o'zi hech
    qayerda yo'q edi. Karta esa "8 mavzu" deb va'da berardi. */
 function bankTopics() {
-  const seen = {}, out = [];
+  // Prototipsiz obyekt: mavzu nomi bazadan keladi, "constructor" nomli
+  // mavzu oddiy {} da hech qachon "yangi" deb sanalmasdi va ro'yxatdan
+  // jimgina tushib qolardi.
+  const seen = Object.create(null), out = [];
   QUESTIONS.forEach(q => {
     if (!q.topic) return;
     if (seen[q.topic] === undefined) { seen[q.topic] = out.length; out.push({ name: q.topic, n: 0 }); }
@@ -2720,7 +2723,7 @@ class Component extends DCLogic {
       // mumkin — bunda quiz "bo'sh holat" ekrani sifatida ochiladi.
       const empty = COLLECTION_MODES.indexOf(mode) !== -1 && pool.length === 0;
       this.setState({ topicPick: false, quiz: {
-        index: 0, selected: null, correct: 0, wrong: 0, results: [],
+        index: 0, selected: null, correct: 0, wrong: 0, results: [], earned: 0,
         time: pool.length * EXAM_PER_Q, finished: false, mode, pool, empty,
         topic: topic || null
       } });
@@ -2879,14 +2882,35 @@ class Component extends DCLogic {
       // bog'langan). Dizayn faqat "to'g'ri/xato" faktini aytadi; u qanday
       // eshitilishi qurilma qatlamining ishi.
       if (window.nzFeedback) window.nzFeedback[ok ? "correct" : "wrong"]();
+      /* Saqlash qatlami avval xabardor qilinadi: u streak'ni yuritadi,
+         javobni navbatga qo'yadi va SHU JAVOBGA BERILADIGAN BALLNI
+         qaytaradi. Takror javob qaysi ekanini faqat u biladi — dizayn
+         bilmaydi va bilmasligi ham kerak. */
+      const res = window.nzProgress ? window.nzProgress.answered({
+        ref: QUESTIONS[realIdx].ref, chosen: i, correct: ok, mode: q.mode || "exam",
+        // Mavzu ham aytiladi — profildagi "Mavzular boʻyicha" shundan
+        // hisoblanadi. Ilgari u qattiq yozilgan massiv edi.
+        topic: QUESTIONS[realIdx].topic
+      }) : null;
+      const award = res ? res.award : (ok ? 10 : 0);
+
       this.setState(s => ({
         quiz: Object.assign({}, s.quiz, {
           selected: i,
           results: s.quiz.results.concat(ok ? "ok" : "bad"),
           correct: s.quiz.correct + (ok ? 1 : 0),
-          wrong: s.quiz.wrong + (ok ? 0 : 1)
+          wrong: s.quiz.wrong + (ok ? 0 : 1),
+          // Natija ekranidagi "+N ball" shu yig'indidan chiqadi, qayta
+          // hisoblashdan emas: takror savol ball to'lamaydi, ya'ni
+          // correct * 10 endi haqiqatga mos kelmaydi.
+          earned: (s.quiz.earned || 0) + award
         }),
-        points: s.points + (ok ? 10 : 0),
+        // Ball saqlash qatlamidan keladi: bir savol uchun +10 faqat
+        // BIR MARTA. Ilgari bu yerda shartsiz +10 turardi va marafonning
+        // cheksiz aylanishida ballni cheksiz oshirish mumkin edi.
+        // Design Canvas maketida saqlash qatlami yo'q — o'shanda eski
+        // xulq qoladi, aks holda maketda ball umuman o'smasdi.
+        points: s.points + award,
         answeredCount: s.answeredCount + 1,
         // Yoʻl belgisi savollari alohida sanaladi — "Barcha belgilarni
         // koʻrish" vazifasi shundan hisoblanadi (takror sanalmaydi).
@@ -2899,17 +2923,6 @@ class Component extends DCLogic {
           ? s.wrongIds.filter(id => id !== realIdx)
           : (s.wrongIds.includes(realIdx) ? s.wrongIds : s.wrongIds.concat(realIdx))
       }));
-      // Javob fakti saqlash qatlamiga aytiladi: u streak'ni kunlar
-      // bo'yicha yuritadi va javobni serverga yuborish navbatiga qo'yadi.
-      // Dizayn qanday saqlanishini bilmaydi — faqat "javob berildi" deydi.
-      if (window.nzProgress) {
-        window.nzProgress.answered({
-          ref: QUESTIONS[realIdx].ref, chosen: i, correct: ok, mode: q.mode || "exam",
-          // Mavzu ham aytiladi — profildagi "Mavzular boʻyicha" shundan
-          // hisoblanadi. Ilgari u qattiq yozilgan massiv edi.
-          topic: QUESTIONS[realIdx].topic
-        });
-      }
       // setState holatni darhol yangilaydi (render keyinga qoldiriladi),
       // shuning uchun mukofotni shu yerda tekshirish xavfsiz.
       this.awardTasks();
@@ -2932,17 +2945,24 @@ class Component extends DCLogic {
 
   leagueNow() { return leagueOf(this.state.points); }
 
-  /* Imtihon tayyorligi = to'g'ri javoblar ulushi. Lekin uch javobdan
-     foiz chiqarish shovqin: 3/3 "100% tayyor" degani emas. Shuning
-     uchun bitta imtihonlik javob (20 ta) yig'ilmaguncha foiz
+  /* Imtihon tayyorligi = IMTIHON REJIMIDAGI to'g'ri javoblar ulushi.
+
+     Ilgari u umrbod aniqlikni olardi — "Xatolarim" takrorlari ham
+     ichida. Bir savolni uch marta to'g'ri yechgan odamning
+     "tayyorligi" oshib borardi, holbuki u bitta savolni bilishini
+     uch marta ko'rsatdi, xolos. Natijada imtihondan oldingi eng muhim
+     raqam sistematik ravishda haqiqatdan yuqori chiqardi va odamni
+     tayyor bo'lmagan holda imtihonga yuborardi.
+
+     Uch javobdan foiz chiqarish ham shovqin: 3/3 "100% tayyor" degani
+     emas. Shuning uchun bitta imtihonlik javob yig'ilmaguncha foiz
      ko'rsatilmaydi. */
   readiness() {
     const st = window.nzProgress ? window.nzProgress.stats() : null;
-    const MIN = 20;
-    if (!st || st.answered < MIN) {
-      return { enough: false, pct: 0, left: st ? MIN - st.answered : MIN };
-    }
-    return { enough: true, pct: st.accuracy, left: 0 };
+    const MIN = EXAM_SIZE;
+    const n = st ? st.examAnswered : 0;
+    if (!st || n < MIN) return { enough: false, pct: 0, left: MIN - n };
+    return { enough: true, pct: st.examAccuracy, left: 0 };
   }
 
   /* Yutuqlar roʻyxati. `earned` HAR DOIM saqlash qatlamidan hisoblanadi —
@@ -3138,7 +3158,7 @@ class Component extends DCLogic {
          Foiz hech qachon o'ylab topilmaydi: javob berilmagan mavzuda
          raqam o'rniga "hali boshlanmagan" turadi. */
       topicList: (() => {
-        const mine = {};
+        const mine = Object.create(null);   // mavzu nomi — ishonchsiz kalit
         if (window.nzProgress) {
           window.nzProgress.topicStats(1).forEach(t => { mine[t.name] = t; });
         }
@@ -4517,8 +4537,11 @@ class Component extends DCLogic {
         // allaqachon answer()'da +10 qilib hisoblangan) — shu yerda ham bonussiz
         // ko'rsatilishi kerak, aks holda "+ball" yorligʻi haqiqiy holatdan koʻproq
         // koʻrsatib chalgʻitadi.
-        earned: isMarathon ? q.correct * 10
-          : q.correct * 10 + ((!q.timedOut && q.wrong <= EXAM_MAX_WRONG) ? 100 : 0),
+        /* Marafonda yakuniy bonus qo'shilmaydi (har to'g'ri javob
+           allaqachon hisoblangan). Imtihonda esa bonus qo'shiladi —
+           finishExam() ham aynan shu shart bilan beradi. */
+        earned: (q.earned || 0)
+          + ((!isMarathon && !q.timedOut && q.wrong <= EXAM_MAX_WRONG) ? 100 : 0),
         /* Vaqt tugab qolgan yakun ALOHIDA aytiladi. Aks holda odam
            2 tadan kam xato qilib turib "Oʻtmadingiz" ni ko'radi va
            nima uchunligini tushunmaydi — bu ilovaning aybi kabi
