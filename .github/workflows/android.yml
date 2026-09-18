@@ -40,7 +40,18 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # `packages` ATAYLAB berilgan. Standart qiymat "tools platform-tools",
+      # "tools" esa Google SDK omboridan OLIB TASHLANGAN paket — sdkmanager
+      # uni topa olmay yiqiladi va build 30-soniyada to'xtaydi
+      # ("Warning: Failed to find package 'tools'"). Bu kodga bog'liq emas,
+      # shuning uchun action'ga faqat hozir ham mavjud paketlar beriladi.
+      #
+      # compileSdk = 36 (android/variables.gradle), shuning uchun platforma
+      # va build-tools shu yerda aniq nomi bilan o'rnatiladi — runner
+      # obrazida qaysi versiya borligiga tayanmaymiz.
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
 
       # Gradle distributivi va bog'liqliklari keshlanadi. Ikki foyda: yig'ish
       # tezlashadi va har push'da services.gradle.org ga chiqilmaydi — aynan
