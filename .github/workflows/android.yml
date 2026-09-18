@@ -27,6 +27,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Release yaratish uchun kerak (pastdagi oxirgi qadam). Qolgan hamma
+    # narsa uchun o'qish yetarli, shuning uchun ro'yxat qisqa.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -152,3 +156,52 @@ jobs:
             android/app/build/outputs/apk/release/*.apk
             android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
+
+      # ── Telefonga to'g'ridan-to'g'ri yuklab olish uchun ────────────────
+      # Yuqoridagi artefakt zip'ini faqat GitHub'ga KIRGAN odam yuklay
+      # oladi va u 90 kundan keyin o'chadi. Telefonda esa odam brauzerdan
+      # bosib o'rnatadi — shuning uchun APK Release'ga ham qo'yiladi:
+      # havola ochiq, doimiy va to'g'ridan-to'g'ri .apk faylga olib boradi.
+      #
+      # Release "aylanma": har build'da o'chirilib qayta yaratiladi, ya'ni
+      # havola o'zgarmaydi va eski sinov APK'lari yig'ilib qolmaydi.
+      # Teg `sinov-` bilan boshlanadi, `v*` emas — shuning uchun bu
+      # workflow'ni qaytadan ishga tushirmaydi.
+      - name: Sinov APK'sini Release'ga qo'yish
+        if: github.event_name != 'push' || !startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="sinov-${GITHUB_REF_NAME//\//-}"
+
+          # Imzolanmagan release APK'si o'rnatilmaydi, shuning uchun u
+          # Release'ga qo'yilmaydi — faqat artefaktda qoladi.
+          files=()
+          for f in android/app/build/outputs/apk/debug/*.apk \
+                   android/app/build/outputs/apk/release/*.apk; do
+            [ -e "$f" ] || continue
+            case "$f" in *unsigned*) continue ;; esac
+            files+=("$f")
+          done
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "O'rnatsa bo'ladigan APK topilmadi" >&2
+            exit 1
+          fi
+          printf 'Release ga qo%s yiladi: %s\n' "'" "${files[*]}"
+
+          gh release delete "$tag" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "$tag" "${files[@]}" \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --title "Nazariy — sinov APK ($GITHUB_REF_NAME)" \
+            --notes "Avtomatik yig'ilgan sinov versiyasi.
+
+          Commit: \`$GITHUB_SHA\`
+          Yig'ildi: $(date -u '+%Y-%m-%d %H:%M UTC')
+
+          \`Nazariy-debug.apk\` — telefonga darhol o'rnatiladi. Android
+          \"noma'lum manbadan o'rnatish\" ruxsatini so'raydi.
+
+          Play Market uchun \`.aab\` fayli Actions artefaktida
+          (\`nazariy-android\`) — u imzo kalitini talab qiladi."
