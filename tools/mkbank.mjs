@@ -25,10 +25,22 @@
    boradi. Shubhali savol kalitsiz qoladi va admin panelda odam
    tasdiqlaguncha nashr etilmaydi (0004_bank.sql).
    ══════════════════════════════════════════════════════════════════════ */
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'fs';
 import { join } from 'path';
 import { inflateRawSync } from 'zlib';
+import sharp from 'sharp';
 import { parseParagraphs, layoutDocument, charWidth, unknownChars } from './docx-layout.mjs';
+
+/* ── Rasm o'lchami ────────────────────────────────────────────────────
+   Hujjatdagi rasmlar bosma uchun: eng kengi 1397 px, jami 7 MB. Ilova
+   ularni telefon ekranida ~360 dp kenglikda ko'rsatadi, ya'ni 3x
+   ekranda ham 1080 px yetadi. 7 MB esa APK'ga to'g'ridan-to'g'ri
+   qo'shiladi va offline ishlash uchun hammasi ichida turishi kerak.
+   Shuning uchun rasmlar shu yerda WebP'ga o'giriladi: sifat sezilmaydi,
+   hajm bir necha barobar kichrayadi. Kattalashtirilmaydi — kichik rasm
+   o'z o'lchamida qoladi. */
+const IMG_MAX_W = 1000;
+const IMG_QUALITY = 82;
 
 /* ── ZIP o'qish ────────────────────────────────────────────────────────
    .docx — oddiy ZIP. Node'da zip kutubxonasi yo'q, lekin zlib bor va
@@ -195,7 +207,11 @@ for (const l of lines) {
 
 const OUT_DIR = 'content';
 const IMG_DIR = join(OUT_DIR, 'images');
+/* Papka tozalanadi: hujjat o'zgarsa savol raqamlari siljiydi va eski
+   nomdagi rasm yetim qolib, ilovaga noto'g'ri rasm tushardi. */
+rmSync(IMG_DIR, { recursive: true, force: true });
 mkdirSync(IMG_DIR, { recursive: true });
+let imgBytesIn = 0, imgBytesOut = 0;
 
 const bank = [];
 const skipped = [];
@@ -285,9 +301,14 @@ for (let a = 0; a < anchors.length; a++) {
     if (target) {
       const data = zip.get('word/' + target.replace(/^\.\//, ''));
       if (data) {
-        const ext = target.split('.').pop().toLowerCase();
-        const name = `q${String(bank.length + 1).padStart(3, '0')}.${ext}`;
-        writeFileSync(join(IMG_DIR, name), data);
+        const name = `q${String(bank.length + 1).padStart(3, '0')}.webp`;
+        const meta = await sharp(data).metadata();
+        const out = await sharp(data)
+          .resize({ width: Math.min(meta.width || IMG_MAX_W, IMG_MAX_W), withoutEnlargement: true })
+          .webp({ quality: IMG_QUALITY })
+          .toBuffer();
+        writeFileSync(join(IMG_DIR, name), out);
+        imgBytesIn += data.length; imgBytesOut += out.length;
         image = name;
       }
     }
@@ -313,7 +334,9 @@ const count = (list, f) => list.reduce((a, x) => (a[f(x)] = (a[f(x)] || 0) + 1, 
 const keyed = bank.filter(q => q.correct !== null);
 console.log('sahifa (anchor):    ' + anchors.length);
 console.log('savol olindi:       ' + bank.length);
-console.log('rasm bilan:         ' + bank.filter(q => q.image).length);
+console.log('rasm bilan:         ' + bank.filter(q => q.image).length
+  + ' (' + (imgBytesIn / 1048576).toFixed(1) + ' MB → '
+  + (imgBytesOut / 1048576).toFixed(1) + ' MB WebP)');
 console.log('ruscha to‘liq:      ' + bank.filter(q => q.ru.text && q.ru.options.length).length);
 console.log('variantlar soni:    ' + JSON.stringify(count(bank, q => q.uz.options.length)));
 console.log('JAVOB KALITI:       ' + keyed.length + ' / ' + bank.length + ' tasdiqlandi');

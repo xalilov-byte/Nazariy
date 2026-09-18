@@ -24,7 +24,8 @@
    yiqiladi (ishlash vaqtidagi jimgina buzilish o'rniga baland xato).
    ───────────────────────────────────────────────────────────────────── */
 
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync, rmSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, rmSync,
+         existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 
 const SRC = 'src';
@@ -622,10 +623,36 @@ if (!CFG.admin) {
 writeFileSync(join(OUT, 'index.html'), html);
 for (const img of ['reyting-bg.jpg', 'hafta-bg.jpg']) copyFileSync(join(SRC, img), join(OUT, img));
 
+/* ── Savol rasmlari ───────────────────────────────────────────────────
+   Rasmiy avtotest to'plamidagi 140 ta savol yo'l vaziyati rasmiga
+   bog'liq: "Qaysi avtomobil birinchi o'tadi?" — rasmsiz javob berish
+   MUMKIN EMAS. Shuning uchun rasmlar ilova ichiga qo'yiladi, internetdan
+   olinmaydi: aks holda offline rejimda o'sha 140 savol javobsiz qolardi
+   va ilovaning asosiy kuchi — internetsiz ishlash — yo'qolardi.
+
+   Rasmlar tools/mkbank.mjs tomonidan WebP'ga o'girilgan (7.0 MB → 3.1 MB).
+   Admin build'iga ham ko'chiriladi: moderator kalitni tekshirayotganda
+   rasmni ko'rishi shart.
+
+   Papka bo'lmasa build yiqilmaydi — savollar bankisiz ham ilova
+   ishlaydi (src/Main.dc.html dagi namunaviy savollar rasmsiz). */
+const QIMG_SRC = join('content', 'images');
+const QIMG_OUT = join(OUT, 'savol');
+let qimgCount = 0;
+if (existsSync(QIMG_SRC)) {
+  mkdirSync(QIMG_OUT, { recursive: true });
+  for (const f of readdirSync(QIMG_SRC)) {
+    if (!/\.(webp|png|jpe?g)$/i.test(f)) continue;
+    copyFileSync(join(QIMG_SRC, f), join(QIMG_OUT, f));
+    qimgCount++;
+  }
+}
+
 const kb = n => (n / 1024).toFixed(0) + ' KB';
 console.log(`maqsad: ${TARGET} → ${OUT}/`);
 console.log(`${OUT}/index.html — ${kb(html.length)}`);
 console.log(`${OUT}/fonts     — ${fontCount} ta woff2`);
 console.log(`${OUT}/*.jpg     — 2 ta fon surati`);
+console.log(`${OUT}/savol    — ${qimgCount} ta savol rasmi`);
 if (removed.length) console.log(`kesildi        — admin qatlami (${removed.length} ta nom)`);
 if (!CFG.money) console.log(`kesildi        — pul qatlami (Pro va to'lov oqimi)`);

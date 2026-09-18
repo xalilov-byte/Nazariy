@@ -42,7 +42,7 @@
     "Все"
    ]
   },
-  "image": "q002.jpeg",
+  "image": "q002.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -114,7 +114,7 @@
     "Красный автомобиль"
    ]
   },
-  "image": "q005.jpeg",
+  "image": "q005.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -138,7 +138,7 @@
     "Красный автомобиль"
    ]
   },
-  "image": "q006.jpeg",
+  "image": "q006.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -162,7 +162,7 @@
     "Всех"
    ]
   },
-  "image": "q007.jpeg",
+  "image": "q007.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -188,7 +188,7 @@
     "Все"
    ]
   },
-  "image": "q008.jpeg",
+  "image": "q008.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -334,7 +334,7 @@
     "Синий автомобиль"
    ]
   },
-  "image": "q014.jpeg",
+  "image": "q014.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -358,7 +358,7 @@
     "Красный автомобиль"
    ]
   },
-  "image": "q015.jpeg",
+  "image": "q015.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -382,7 +382,7 @@
     "Разрешенную максимальную скорость движения на данном участке дороги"
    ]
   },
-  "image": "q016.jpeg",
+  "image": "q016.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -406,7 +406,7 @@
     "В"
    ]
   },
-  "image": "q017.jpeg",
+  "image": "q017.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -430,7 +430,7 @@
     "А и Б"
    ]
   },
-  "image": "q018.jpeg",
+  "image": "q018.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -552,7 +552,7 @@
     "Никто не нарушает"
    ]
   },
-  "image": "q023.jpeg",
+  "image": "q023.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "shatak-yuk"
@@ -600,7 +600,7 @@
     "Автомобиль"
    ]
   },
-  "image": "q025.jpeg",
+  "image": "q025.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -624,7 +624,7 @@
     "Автомобиль"
    ]
   },
-  "image": "q026.jpeg",
+  "image": "q026.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -674,7 +674,7 @@
     "Все знаки"
    ]
   },
-  "image": "q028.jpeg",
+  "image": "q028.webp",
   "correct": 3,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -698,7 +698,7 @@
     "С"
    ]
   },
-  "image": "q029.jpeg",
+  "image": "q029.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -766,7 +766,7 @@
     "Предупреждает Вас о приближении к месту, где нужно уступить дорогу необходимо остановиться необходимо остановиться"
    ]
   },
-  "image": "q032.jpeg",
+  "image": "q032.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "toxtab-turish"
@@ -862,7 +862,7 @@
     "Последним"
    ]
   },
-  "image": "q036.jpeg",
+  "image": "q036.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -934,7 +934,7 @@
     "Только А"
    ]
   },
-  "image": "q039.jpeg",
+  "image": "q039.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1032,7 +1032,7 @@
     "А и Б"
    ]
   },
-  "image": "q043.jpeg",
+  "image": "q043.webp",
   "correct": null,
   "keyWhy": "o‘zbekcha 1, ruscha 2 — mos emas",
   "topic": "shatak-yuk"
@@ -1056,7 +1056,7 @@
     "На обоих рисунках"
    ]
   },
-  "image": "q044.jpeg",
+  "image": "q044.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -1080,7 +1080,7 @@
     "Зелёный автомобиль"
    ]
   },
-  "image": "q045.jpeg",
+  "image": "q045.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -1106,7 +1106,7 @@
     "Б и Г"
    ]
   },
-  "image": "q046.jpeg",
+  "image": "q046.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "toxtab-turish"
@@ -1132,7 +1132,7 @@
     "Любую полосу"
    ]
   },
-  "image": "q047.jpeg",
+  "image": "q047.webp",
   "correct": 3,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -1158,7 +1158,7 @@
     "Все"
    ]
   },
-  "image": "q048.jpeg",
+  "image": "q048.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1182,7 +1182,7 @@
     "Обгон грузовых автомобилей запрещен"
    ]
   },
-  "image": "q049.jpeg",
+  "image": "q049.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1326,7 +1326,7 @@
     "На обоих рисунках"
    ]
   },
-  "image": "q055.jpeg",
+  "image": "q055.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -1350,7 +1350,7 @@
     "Желтый автомобиль"
    ]
   },
-  "image": "q056.jpeg",
+  "image": "q056.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -1400,7 +1400,7 @@
     "Грузовому автомобилю"
    ]
   },
-  "image": "q058.jpeg",
+  "image": "q058.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -1448,7 +1448,7 @@
     "Обозначает что, перед перекрестком заградительное устройство"
    ]
   },
-  "image": "q060.jpeg",
+  "image": "q060.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1496,7 +1496,7 @@
     "Регулируемый перекресток"
    ]
   },
-  "image": "q062.jpeg",
+  "image": "q062.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -1518,7 +1518,7 @@
     "Выполняет разворот, уступив дорогу трамваю"
    ]
   },
-  "image": "q063.jpeg",
+  "image": "q063.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -1592,7 +1592,7 @@
     "Об остановке"
    ]
   },
-  "image": "q066.jpeg",
+  "image": "q066.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "toxtab-turish"
@@ -1616,7 +1616,7 @@
     "Обозначает боковые поверхности ограждений дорог на закруглениях малого радиуса, крутых спусках, других опасных участках"
    ]
   },
-  "image": "q067.jpeg",
+  "image": "q067.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -1642,7 +1642,7 @@
     "1 и 4"
    ]
   },
-  "image": "q068.jpeg",
+  "image": "q068.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1668,7 +1668,7 @@
     "Б и Г"
    ]
   },
-  "image": "q069.jpeg",
+  "image": "q069.webp",
   "correct": 3,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1692,7 +1692,7 @@
     "Для принятия меры предосторожности"
    ]
   },
-  "image": "q070.jpeg",
+  "image": "q070.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1718,7 +1718,7 @@
     "4"
    ]
   },
-  "image": "q071.jpeg",
+  "image": "q071.webp",
   "correct": 3,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1742,7 +1742,7 @@
     "Регулируемый перекресток"
    ]
   },
-  "image": "q072.jpeg",
+  "image": "q072.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -1788,7 +1788,7 @@
     "Запрещает эвакуацию остановившихся транспортных средств в зоне действие знака"
    ]
   },
-  "image": "q074.jpeg",
+  "image": "q074.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1814,7 +1814,7 @@
     "4"
    ]
   },
-  "image": "q075.jpeg",
+  "image": "q075.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1884,7 +1884,7 @@
     "Зона действия знака"
    ]
   },
-  "image": "q078.jpeg",
+  "image": "q078.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1908,7 +1908,7 @@
     "Последнее"
    ]
   },
-  "image": "q079.jpeg",
+  "image": "q079.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -1958,7 +1958,7 @@
     "Во всех вышеперечисленных случаях, если не мешает движению маршрутных транспортных средств"
    ]
   },
-  "image": "q081.jpeg",
+  "image": "q081.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -1982,7 +1982,7 @@
     "Ни на одном рисунке"
    ]
   },
-  "image": "q082.jpeg",
+  "image": "q082.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -2006,7 +2006,7 @@
     "3"
    ]
   },
-  "image": "q083.jpeg",
+  "image": "q083.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -2030,7 +2030,7 @@
     "Вы уступаете дорогу пешеходам и другим транспортным средствам, пересекающим улицу в направлении движения и при повороте"
    ]
   },
-  "image": "q084.jpeg",
+  "image": "q084.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -2056,7 +2056,7 @@
     "На все направления"
    ]
   },
-  "image": "q085.jpeg",
+  "image": "q085.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -2080,7 +2080,7 @@
     "К легковому автомобилю Прямо и вправо"
    ]
   },
-  "image": "q086.jpeg",
+  "image": "q086.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -2130,7 +2130,7 @@
     "Только вправо"
    ]
   },
-  "image": "q088.jpeg",
+  "image": "q088.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -2154,7 +2154,7 @@
     "3"
    ]
   },
-  "image": "q089.jpeg",
+  "image": "q089.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -2202,7 +2202,7 @@
     "3"
    ]
   },
-  "image": "q091.jpeg",
+  "image": "q091.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "yol-belgilari"
@@ -2226,7 +2226,7 @@
     "Только водитель красного автомобиля"
    ]
   },
-  "image": "q092.jpeg",
+  "image": "q092.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "toxtab-turish"
@@ -2248,7 +2248,7 @@
     "Обязаны"
    ]
   },
-  "image": "q093.jpeg",
+  "image": "q093.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -2272,7 +2272,7 @@
     "Движение транспортных средств с взрывчатыми и легковоспламеняющимися грузами"
    ]
   },
-  "image": "q094.jpeg",
+  "image": "q094.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -2322,7 +2322,7 @@
     "Первым"
    ]
   },
-  "image": "q096.jpeg",
+  "image": "q096.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -2344,7 +2344,7 @@
     "Должны остановиться перед знаком и ждать разрешающего сигнала светофора"
    ]
   },
-  "image": "q097.jpeg",
+  "image": "q097.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -2366,7 +2366,7 @@
     "Нет"
    ]
   },
-  "image": "q098.jpeg",
+  "image": "q098.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "toxtab-turish"
@@ -2388,7 +2388,7 @@
     "Во всех случаях"
    ]
   },
-  "image": "q099.jpeg",
+  "image": "q099.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "tezlik-rejimi"
@@ -2412,7 +2412,7 @@
     "3"
    ]
   },
-  "image": "q100.jpeg",
+  "image": "q100.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -2530,7 +2530,7 @@
     "Мотоциклист"
    ]
   },
-  "image": "q105.jpeg",
+  "image": "q105.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -2630,7 +2630,7 @@
     "А и С"
    ]
   },
-  "image": "q109.jpeg",
+  "image": "q109.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -2746,7 +2746,7 @@
     "Указывает место стоянки механических транспортных средств"
    ]
   },
-  "image": "q114.jpeg",
+  "image": "q114.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -2792,7 +2792,7 @@
     "Синему автомобилю"
    ]
   },
-  "image": "q116.jpeg",
+  "image": "q116.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -2988,7 +2988,7 @@
     "Запрещает движение транспортных средств с взрывчатыми и легковоспламеняющимися грузами"
    ]
   },
-  "image": "q124.jpeg",
+  "image": "q124.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -3034,7 +3034,7 @@
     "Запрещается"
    ]
   },
-  "image": "q126.jpeg",
+  "image": "q126.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -3080,7 +3080,7 @@
     "Обозначает приближении к опасному перекрестку участках участках"
    ]
   },
-  "image": "q128.jpeg",
+  "image": "q128.webp",
   "correct": null,
   "keyWhy": "o‘zbekcha 3, ruscha 2 — mos emas",
   "topic": "chorrahalar"
@@ -3106,7 +3106,7 @@
     "Только С"
    ]
   },
-  "image": "q129.jpeg",
+  "image": "q129.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -3130,7 +3130,7 @@
     "Для принятия меры предосторожности"
    ]
   },
-  "image": "q130.jpeg",
+  "image": "q130.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -3272,7 +3272,7 @@
     "В любых направлениях"
    ]
   },
-  "image": "q136.jpeg",
+  "image": "q136.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "umumiy-qoidalar"
@@ -3296,7 +3296,7 @@
     "Только легковому автомобилю."
    ]
   },
-  "image": "q137.jpeg",
+  "image": "q137.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -3342,7 +3342,7 @@
     "«C»"
    ]
   },
-  "image": "q139.jpeg",
+  "image": "q139.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -3392,7 +3392,7 @@
     "Искусственная неровность дороги"
    ]
   },
-  "image": "q141.jpeg",
+  "image": "q141.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -3510,7 +3510,7 @@
     "«В»"
    ]
   },
-  "image": "q146.jpeg",
+  "image": "q146.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -3532,7 +3532,7 @@
     "Красный автомобиль"
    ]
   },
-  "image": "q147.jpeg",
+  "image": "q147.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -3604,7 +3604,7 @@
     "«Д»"
    ]
   },
-  "image": "q150.jpeg",
+  "image": "q150.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -3720,7 +3720,7 @@
     "Только «В»"
    ]
   },
-  "image": "q155.jpeg",
+  "image": "q155.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -3766,7 +3766,7 @@
     "Грузовой автомобиль"
    ]
   },
-  "image": "q157.jpeg",
+  "image": "q157.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -3792,7 +3792,7 @@
     "«Г»"
    ]
   },
-  "image": "q158.jpeg",
+  "image": "q158.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "svetofor"
@@ -3838,7 +3838,7 @@
     "«C»"
    ]
   },
-  "image": "q160.jpeg",
+  "image": "q160.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4002,7 +4002,7 @@
     "Автобус"
    ]
   },
-  "image": "q167.jpeg",
+  "image": "q167.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -4028,7 +4028,7 @@
     "«А», «Б», «В»"
    ]
   },
-  "image": "q168.jpeg",
+  "image": "q168.webp",
   "correct": 3,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4104,7 +4104,7 @@
     "«Г»"
    ]
   },
-  "image": "q171.jpeg",
+  "image": "q171.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4178,7 +4178,7 @@
     "«А» и «C»"
    ]
   },
-  "image": "q174.jpeg",
+  "image": "q174.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4228,7 +4228,7 @@
     "«C»"
    ]
   },
-  "image": "q176.jpeg",
+  "image": "q176.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4250,7 +4250,7 @@
     "Мотоцикл и желтый автомобиль"
    ]
   },
-  "image": "q177.jpeg",
+  "image": "q177.webp",
   "correct": null,
   "keyWhy": "o‘zbekcha 2, ruscha 1 — mos emas",
   "topic": "chorrahalar"
@@ -4274,7 +4274,7 @@
     "«Б»"
    ]
   },
-  "image": "q178.jpeg",
+  "image": "q178.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "tezlik-rejimi"
@@ -4298,7 +4298,7 @@
     "Всех видов транспортных средств."
    ]
   },
-  "image": "q179.jpeg",
+  "image": "q179.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4344,7 +4344,7 @@
     "«C»"
    ]
   },
-  "image": "q181.jpeg",
+  "image": "q181.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "yol-belgilari"
@@ -4470,7 +4470,7 @@
     "«Г»"
    ]
   },
-  "image": "q186.jpeg",
+  "image": "q186.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4546,7 +4546,7 @@
     "«B» и «C»"
    ]
   },
-  "image": "q189.jpeg",
+  "image": "q189.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4572,7 +4572,7 @@
     "Все"
    ]
   },
-  "image": "q190.jpeg",
+  "image": "q190.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4666,7 +4666,7 @@
     "Только «В»"
    ]
   },
-  "image": "q194.jpeg",
+  "image": "q194.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4714,7 +4714,7 @@
     "Красный, желтый и зеленый автомобиль"
    ]
   },
-  "image": "q196.jpeg",
+  "image": "q196.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -4738,7 +4738,7 @@
     "Никому"
    ]
   },
-  "image": "q197.jpeg",
+  "image": "q197.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -4810,7 +4810,7 @@
     "Места стоянки маршрутных такси."
    ]
   },
-  "image": "q200.jpeg",
+  "image": "q200.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "toxtab-turish"
@@ -4834,7 +4834,7 @@
     "О создании безопасной дистанции между транспортными средствами."
    ]
   },
-  "image": "q201.png",
+  "image": "q201.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "yol-belgilari"
@@ -4882,7 +4882,7 @@
     "«А» и «Б»"
    ]
   },
-  "image": "q203.jpeg",
+  "image": "q203.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "toxtab-turish"
@@ -4956,7 +4956,7 @@
     "Все"
    ]
   },
-  "image": "q206.jpeg",
+  "image": "q206.webp",
   "correct": 3,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -4978,7 +4978,7 @@
     "Нет"
    ]
   },
-  "image": "q207.jpeg",
+  "image": "q207.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "yol-belgilari"
@@ -5002,7 +5002,7 @@
     "В любых"
    ]
   },
-  "image": "q208.jpeg",
+  "image": "q208.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -5096,7 +5096,7 @@
     "Нет"
    ]
   },
-  "image": "q212.jpeg",
+  "image": "q212.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -5142,7 +5142,7 @@
     "Нет"
    ]
   },
-  "image": "q214.jpeg",
+  "image": "q214.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "toxtab-turish"
@@ -5186,7 +5186,7 @@
     "Нет"
    ]
   },
-  "image": "q216.jpeg",
+  "image": "q216.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "quvib-otish"
@@ -5234,7 +5234,7 @@
     "При отсутствии других транспортных средств проехать перекресток без остановки"
    ]
   },
-  "image": "q218.jpeg",
+  "image": "q218.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -5352,7 +5352,7 @@
     "Нет"
    ]
   },
-  "image": "q223.jpeg",
+  "image": "q223.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -5376,7 +5376,7 @@
     "Обоим транспортным средствам"
    ]
   },
-  "image": "q224.jpeg",
+  "image": "q224.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -5422,7 +5422,7 @@
     "Разрешена, если расстояние от Вашего транспортного средства до линии разметки не менее 3 м"
    ]
   },
-  "image": "q226.jpeg",
+  "image": "q226.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -5444,7 +5444,7 @@
     "Нет"
    ]
   },
-  "image": "q227.jpeg",
+  "image": "q227.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -5542,7 +5542,7 @@
     "Ни в каком"
    ]
   },
-  "image": "q231.jpeg",
+  "image": "q231.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "toxtab-turish"
@@ -5592,7 +5592,7 @@
     "«Б» и «В»"
    ]
   },
-  "image": "q233.jpeg",
+  "image": "q233.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -5780,7 +5780,7 @@
     "Имеете преимущественное право на движение"
    ]
   },
-  "image": "q241.jpeg",
+  "image": "q241.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -5804,7 +5804,7 @@
     "«В»"
    ]
   },
-  "image": "q242.jpeg",
+  "image": "q242.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -5878,7 +5878,7 @@
     "«Б» и «В»"
    ]
   },
-  "image": "q245.jpeg",
+  "image": "q245.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -5926,7 +5926,7 @@
     "Все знаки"
    ]
   },
-  "image": "q247.jpeg",
+  "image": "q247.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -5976,7 +5976,7 @@
     "«Б» и «Г»"
    ]
   },
-  "image": "q249.jpeg",
+  "image": "q249.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -6072,7 +6072,7 @@
     "Оба нарушают"
    ]
   },
-  "image": "q253.jpeg",
+  "image": "q253.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -6096,7 +6096,7 @@
     "Только по левой полосе"
    ]
   },
-  "image": "q254.jpeg",
+  "image": "q254.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -6122,7 +6122,7 @@
     "Все"
    ]
   },
-  "image": "q255.jpeg",
+  "image": "q255.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -6216,7 +6216,7 @@
     "Границы полос движения в пределах перекрестка"
    ]
   },
-  "image": "q259.jpeg",
+  "image": "q259.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -6316,7 +6316,7 @@
     "Направо, налево и в обратном направлении"
    ]
   },
-  "image": "q263.jpeg",
+  "image": "q263.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -6444,7 +6444,7 @@
     "Разрешает все перечисленные маневры"
    ]
   },
-  "image": "q268.jpeg",
+  "image": "q268.webp",
   "correct": 3,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "quvib-otish"
@@ -6468,7 +6468,7 @@
     "Вправо и влево от перекрестка организовано одностороннее движение"
    ]
   },
-  "image": "q269.jpeg",
+  "image": "q269.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -6516,7 +6516,7 @@
     "Во всех направлениях"
    ]
   },
-  "image": "q271.jpeg",
+  "image": "q271.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -6564,7 +6564,7 @@
     "«В»"
    ]
   },
-  "image": "q273.jpeg",
+  "image": "q273.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -6588,7 +6588,7 @@
     "В любом из указанных направлений"
    ]
   },
-  "image": "q274.jpeg",
+  "image": "q274.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "shatak-yuk"
@@ -6612,7 +6612,7 @@
     "Должны уступить дорогу только транспортным средствам, приближающимся справа"
    ]
   },
-  "image": "q275.jpeg",
+  "image": "q275.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -6708,7 +6708,7 @@
     "«А» и «В»"
    ]
   },
-  "image": "q279.jpeg",
+  "image": "q279.webp",
   "correct": 3,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "tezlik-rejimi"
@@ -6732,7 +6732,7 @@
     "Запрещается"
    ]
   },
-  "image": "q280.jpeg",
+  "image": "q280.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -6756,7 +6756,7 @@
     "По любой траектории из указанных"
    ]
   },
-  "image": "q281.jpeg",
+  "image": "q281.webp",
   "correct": 2,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "manyovr"
@@ -6780,7 +6780,7 @@
     "«В»"
    ]
   },
-  "image": "q282.jpeg",
+  "image": "q282.webp",
   "correct": 0,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -6830,7 +6830,7 @@
     "Все"
    ]
   },
-  "image": "q284.jpeg",
+  "image": "q284.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "yol-belgilari"
@@ -6877,7 +6877,7 @@
     "Не нарушил"
    ]
   },
-  "image": "q286.jpeg",
+  "image": "q286.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "toxtab-turish"
@@ -6901,7 +6901,7 @@
     "Все"
    ]
   },
-  "image": "q287.jpeg",
+  "image": "q287.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "yol-belgilari"
@@ -7021,7 +7021,7 @@
     "Никто не нарушил"
    ]
   },
-  "image": "q292.jpeg",
+  "image": "q292.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "toxtab-turish"
@@ -7069,7 +7069,7 @@
     "Три полосы для движения"
    ]
   },
-  "image": "q294.jpeg",
+  "image": "q294.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -7095,7 +7095,7 @@
     "«Б» или «В»"
    ]
   },
-  "image": "q295.jpeg",
+  "image": "q295.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "yol-belgilari"
@@ -7143,7 +7143,7 @@
     "Да"
    ]
   },
-  "image": "q297.jpeg",
+  "image": "q297.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "umumiy-qoidalar"
@@ -7191,7 +7191,7 @@
     "Никому"
    ]
   },
-  "image": "q299.jpeg",
+  "image": "q299.webp",
   "correct": null,
   "keyWhy": "nuqta variant satridan uzoq",
   "topic": "chorrahalar"
@@ -7213,7 +7213,7 @@
     "Убедитесь, что легковой автомобиль уступает дорогу, и проедете перекресток первым"
    ]
   },
-  "image": "q300.jpeg",
+  "image": "q300.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "chorrahalar"
@@ -7235,7 +7235,7 @@
     "Нет"
    ]
   },
-  "image": "q301.jpeg",
+  "image": "q301.webp",
   "correct": 1,
   "keyWhy": "ikkala til bir xil variantni ko‘rsatdi",
   "topic": "toxtab-turish"

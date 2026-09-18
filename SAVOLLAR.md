@@ -34,12 +34,22 @@ etiladi.
 | Ustun | Shartmi | Nima |
 |---|---|---|
 | `mavzu` | ✅ | Mavzu **nomi** — bazadagi nom bilan aynan bir xil (§3) |
-| `savol` | ✅ | Savol matni. Kamida 15 belgi |
-| `A` `B` `C` `D` | ✅ | To'rtta variant. Bo'sh bo'lishi mumkin emas, takrorlanmasligi kerak |
-| `togri` | ✅ | To'g'ri javob harfi: `A`, `B`, `C` yoki `D` |
+| `savol` | ✅ | Savol matni. Kamida 12 belgi |
+| `A` `B` | ✅ | Birinchi ikki variant — har doim to'ldiriladi |
+| `C` `D` `E` | — | Qo'shimcha variantlar. Oxiridan boshlab bo'sh qoldiriladi |
+| `togri` | ✅ | To'g'ri javob harfi. Savolda nechta variant bo'lsa, shuncha harf: 3 variantli savolda `A`, `B` yoki `C` |
 | `izoh` | ⚠️ | **Nima uchun** shunday. Pastga qarang |
-| `belgi` | — | Yo'l belgisi savollari uchun (§4) |
+| `belgi` | — | Chizilgan yo'l belgisi savollari uchun (§4) |
+| `rasm` | — | Yo'l vaziyati rasmining fayl nomi (`q005.webp`). Rasm `content/images/` da turishi kerak |
 | `id` | — | Savol raqami (`#142`). Yozmasangiz baza o'zi beradi |
+
+**Variant soni 2 dan 5 gacha.** Rasmiy avtotest to'plamida eng ko'p
+uchraydigani — uchta variant. Yo'q variant ustuni **bo'sh** qoldiriladi
+va u faqat oxiridan bo'lishi mumkin: `A;B;C;;` — uch variantli savol.
+O'rtada bo'sh variant (`A;;C`) xato deb qaytariladi, chunki u deyarli
+har doim ustunlar siljib ketganini bildiradi.
+
+Ilgari yozilgan, `E` va `rasm` ustunlari yo'q fayllar ham o'qiladi.
 
 **Ustunlar nomi bo'yicha o'qiladi, tartibi muhim emas.** Ustun
 qo'shsangiz yoki joyini almashtirsangiz ham to'g'ri o'qiladi. Faqat
@@ -143,10 +153,11 @@ ya'ni eksport → tahrir → import aylanishi matnni buzmaydi.
 |---|---|
 | `sarlavha qatorida ustun yo'q: …` | Birinchi qator noto'g'ri yoki ajratgich `;` emas |
 | `mavzu bo'sh` | Mavzu ustuni to'ldirilmagan |
-| `savol matni juda qisqa` | 15 belgidan kam — deyarli har doim yarim yozilgan savol |
-| `variant bo'sh` | To'rtta variantdan biri yo'q |
+| `savol matni juda qisqa` | 12 belgidan kam — deyarli har doim yarim yozilgan savol |
+| `variant kamida 2 ta bo'lishi kerak` | `A` yoki `B` to'ldirilmagan |
+| `o'rtada bo'sh variant` | `A;;C` — ustunlar siljib ketgan bo'lishi mumkin |
 | `variantlar takrorlangan` | Ikki variant bir xil |
-| `to'g'ri javob A–D emas` | `togri` ustunida A/B/C/D dan boshqa narsa |
+| `to'g'ri javob A–C emas` | `togri` ustunidagi harf savoldagi variantlar orasida yo'q |
 | `noma'lum belgi kaliti` | `belgi` ustunida ro'yxatdan tashqari kalit (§4) |
 | `ID bazada mavjud` | Shu `id` bilan savol allaqachon bor |
 | `faylda takrorlangan ID` | Bitta `id` faylda ikki marta |

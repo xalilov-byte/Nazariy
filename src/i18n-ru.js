@@ -49,6 +49,8 @@ window.nzRu = {
   "1 oy Pro": "1 месяц Pro",
   "Toʻgʻri! +10 ball": "Верно! +10 баллов",
   "Notoʻgʻri · toʻgʻri javob —": "Неверно · правильный ответ —",
+  /* Ekran oʻqiruvchi uchun rasmning alt matni. */
+  "Savol rasmi": "Изображение к вопросу",
   "Cheksiz imtihon va chuqur tahlil": "Неограниченные экзамены и глубокая аналитика",
   "ta xatoni koʻrib chiqing": "ошибок — разберите их",
   "ta ketma-ket toʻgʻri!": "верных подряд!",

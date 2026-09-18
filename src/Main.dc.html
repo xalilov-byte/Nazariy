@@ -894,6 +894,12 @@
               </div>
             </sc-if>
 
+            <sc-if value="{{ qImage }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ qImageBoxStyle }}">
+                <img src="{{ qImageSrc }}" alt="{{ qImageAlt }}" loading="lazy" decoding="async" style="{{ qImageStyle }}">
+              </div>
+            </sc-if>
+
             <div style="font-size:19px;font-weight:700;line-height:1.35;text-wrap:pretty">{{ qText }}</div>
 
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:2px">
@@ -1772,6 +1778,21 @@
           </div>
         </sc-if>
 
+        <sc-if value="{{ dQ.keyUnverified }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:10px;align-items:flex-start;background:var(--surface-alt);border-radius:14px;padding:12px 14px;border-left:3px solid var(--gold-ink)">
+            <span style="width:22px;height:22px;flex:none;color:var(--gold-ink);display:grid;place-items:center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8v5M12 16.5h.01"></path><circle cx="12" cy="12" r="9"></circle></svg>
+            </span>
+            <span style="flex:1;font-size:12px;font-weight:600;line-height:1.5">{{ dQ.keyNote }}</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ dQ.hasImage }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--surface-alt);border-radius:14px;padding:8px;display:grid;place-items:center;overflow:hidden">
+            <img src="{{ dQ.imageSrc }}" alt="{{ dQ.imageAlt }}" loading="lazy" decoding="async" style="display:block;width:100%;height:auto;max-height:220px;object-fit:contain;border-radius:8px">
+          </div>
+        </sc-if>
+
         <div style="font-size:15px;font-weight:700;line-height:1.45;text-wrap:pretty">{{ dQ.text }}</div>
 
         <div style="display:flex;flex-direction:column;gap:8px">
@@ -1998,6 +2019,22 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* ─── 1.1 TEST BANKI ─────────────────────────────────────────────────── */
+/* Variant harflari va soni. Rasmiy avtotest to'plamida savollarning
+   variant soni 2 dan 5 gacha (2 ta — 49, 3 ta — 197, 4 ta — 50, 5 ta — 5).
+   Ilgari hamma joyda "ABCD" yozib qo'yilgan edi: 5 variantli savolda
+   beshinchisining harfi `undefined` bo'lib chiqardi, 2 variantlisi esa
+   umuman yuklanmasdi. Chegara bazadagi cheklov bilan bir xil
+   (0004_bank.sql: array_length between 2 and 5). */
+const LETTERS = "ABCDE";
+/* Savol rasmlari ilova/sayt ichida shu papkada turadi (build.mjs
+   content/images/ dan ko'chiradi). Nisbiy yo'l — Capacitor'da ham,
+   saytda ham bir xil ishlaydi. */
+const IMG_DIR = "savol/";
+const MIN_OPTIONS = 2;
+const MAX_OPTIONS = LETTERS.length;
+/* Harf o'rniga raqam qaytmasligi uchun: chegaradan chiqsa ham o'qiladigan
+   narsa chiqadi (masalan "6"), `undefined` emas. */
+const letterOf = i => LETTERS[i] !== undefined ? LETTERS[i] : String(i + 1);
 /* ref — savolning BARQAROR belgisi va u bazadagi questions.ref bilan
    AYNAN bir xil (seed generatori shu yerdan oladi). Nima uchun kerak:
    foydalanuvchining "Saqlangan" va "Xatolarim" roʻyxatlari qurilmada
@@ -2310,8 +2347,13 @@ const METHOD_SHARE = [
 
    Eksport ham shu ustunlar bilan yoziladi, ya'ni eksport → tahrir →
    import aylanishi ma'lumot yo'qotmaydi. Ilgari yo'qotardi. */
-const CSV_COLUMNS = ["id", "mavzu", "savol", "A", "B", "C", "D", "togri",
-                     "izoh", "belgi", "holat"];
+/* "E" va "rasm" ustunlari 2..5 variant va yo'l vaziyati rasmi uchun
+   qo'shildi. Eksport → tahrir → import aylanishi ma'lumot yo'qotmasligi
+   kerak: rasm ustuni bo'lmasa, rasmli savolni eksport qilib qaytadan
+   import qilgan odam rasmni JIMGINA yo'qotardi. Bo'sh C/D/E — "bunday
+   variant yo'q" degani, xato emas. */
+const CSV_COLUMNS = ["id", "mavzu", "savol", "A", "B", "C", "D", "E", "togri",
+                     "izoh", "belgi", "rasm", "holat"];
 
 /* Chizilgan yo'l belgilari. Import shu ro'yxatga qarab tekshiradi:
    noma'lum kalit (masalan "tezlik") savolni "belgi savoli" qilib
@@ -2337,6 +2379,16 @@ Svetofor;Qisqa savol;A;B;C;D;A;;\n\
 Tezlik rejimi;Avtomagistralda yengil avtomobil uchun eng katta tezlik qancha?;90 km/soat;100 km/soat;110 km/soat;130 km/soat;C;Avtomagistralda yengil avtomobil uchun chegara 110 km/soat.;\n\
 Quvib oʻtish;Koʻprikda quvib oʻtish mumkinmi yoki taqiqlanadimi?;Ha;Yoʻq;Faqat kunduzi;Belgiga qarab;E;;\n\
 Yoʻl belgilari;Rasmda koʻrsatilgan belgi nimani anglatadi va qanday amal qilinadi?;Yoʻl berish;Bosh yoʻl;Toʻxtash;Kirish taqiqlangan;B;Bosh yoʻl belgisi imtiyozli yoʻlni koʻrsatadi.;tezlik" },
+
+  /* Rasmiy avtotest to'plamining shakli: variant soni har xil va
+     savolning yarmi rasmga bog'liq. Namuna shu yerda turadi, chunki
+     import ekranini sinash uchun eng ko'p ishlatiladigan holat aynan
+     shu — 4 ta variantli "ideal" savol emas. */
+  { id: "mixed", label: "3 ta savol — 2, 3 va 5 variant, rasm bilan", text:
+"mavzu;savol;A;B;C;D;E;togri;izoh;belgi;rasm\n\
+Toʻxtab turish;Yuk avtomobili haydovchisi toʻxtab turish qoidasini buzdimi?;Buzdi;Buzmadi;;;;A;Piyodalar oʻtish joyidan 5 metrdan yaqin toʻxtash taqiqlanadi.;;q286.webp\n\
+Chorrahalar;Chorrahadan birinchi boʻlib qaysi avtomobil oʻtadi?;Koʻk avtomobil;Yashil avtomobil;Qizil avtomobil;;;C;Tartibga solinmagan chorrahada oʻngdagi imtiyozli.;;q005.webp\n\
+Tezlik rejimi;Turar joy dahalarida ruxsat etilgan eng katta tezlik qancha?;5 km/soat;20 km/soat;30 km/soat;40 km/soat;60 km/soat;B;Turar joy dahasida chegara 20 km/soat — piyodalar ustunligi bor.;;" },
 
   { id: "noexplain", label: "3 ta savol — izohsiz", text:
 "mavzu;savol;A;B;C;D;togri\n\
@@ -2401,7 +2453,22 @@ const ADMIN_QUESTIONS = [
     options: ["3 m", "5 m", "10 m", "15 m"], correct: 1,
     author: "Egasi · Sardor", updated: "4-sentabr", flag: "" },
   { id: "#301", topic: "Umumiy qoidalar", state: "archived", text: "Eski tahrirdagi savol — 2024-yil qoidalariga asoslangan.",
-    options: ["A", "B", "C", "D"], correct: 0, author: "Egasi · Sardor", updated: "11-mart", flag: "" }
+    options: ["A", "B", "C", "D"], correct: 0, author: "Egasi · Sardor", updated: "11-mart", flag: "" },
+  /* Quyidagi ikkitasi rasmiy avtotest to'plamidan kelgan savollarning
+     shaklini ko'rsatadi va ataylab shu yerda turadi: maket haqiqiy
+     ma'lumotdan boshqacha bo'lsa, admin ekrani faqat ishga
+     tushirilgandan keyin sinaladi. Birinchisi — rasmga bog'liq, kaliti
+     hujjatdan avtomatik olingan; ikkinchisi — kaliti umuman yo'q. */
+  { id: "#A002", topic: "Yoʻl belgilari", state: "draft", image: "q002.webp", keySource: "docx-geometry",
+    text: "Qaysi belgi tartibga solinmagan piyodalar oʻtish joyiga yaqinlashayotganlik haqida ogohlantiradi?",
+    options: ["«A» va «Б»", "«A»", "Hammasi"], correct: 1,
+    author: "Import · hujjat", updated: "14-sentabr", flag: "" },
+  { id: "#A031", topic: "Yoʻl belgilari", state: "draft", keySource: "docx-geometry",
+    text: "Harakatlanish boʻlagidagi uchburchak shaklidagi chiziq nimani bildiradi?",
+    options: ["Yoʻlning xavfli qismini bildiradi",
+              "Yoʻl berishingiz kerak boʻlgan joy yaqinlashayotganligi haqida ogohlantiradi",
+              "Toʻxtashingiz zarur boʻlgan joyni bildiradi"], correct: null,
+    author: "Import · hujjat", updated: "14-sentabr", flag: "" }
 ];
 const AUDIT_SEED = [
   { t: "2026-09-04T09:12:44.318Z", who: "Nilufar", role: "support", act: "Pro berildi", res: "#479881 Dilshod A.", before: "bepul", after: "pro · 30 kun", why: "Toʻlov nosozligi", ip: "84.54.—.—" },
@@ -2483,15 +2550,17 @@ function parseBulk(text, existingIds) {
 
   const header = parseCsvLine(lines[0]).map(h => h.toLowerCase());
   const at = name => header.indexOf(name);
-  const need = ["mavzu", "savol", "a", "b", "c", "d", "togri"];
+  /* Faqat ikkita variant talab qilinadi: "c", "d", "e" bo'lmasligi
+     mumkin. Shu bilan ilgari yozilgan 4 ustunli fayllar ham ishlaydi. */
+  const need = ["mavzu", "savol", "a", "b", "togri"];
   const missing = need.filter(n => at(n) === -1);
 
   /* Sarlavha qatori tanilmasa butun faylni qator-qator xato deb
      ko'rsatishdan ma'no yo'q — bitta tushunarli xabar beriladi. */
   if (missing.length) {
     return [{
-      row: 1, id: "", topic: "", text: "", options: ["", "", "", ""],
-      correct: -1, explain: "", sign: null, warnings: [],
+      row: 1, id: "", topic: "", text: "", options: ["", ""],
+      correct: -1, explain: "", sign: null, image: null, warnings: [],
       errors: ["sarlavha qatorida ustun yo'q: " + missing.join(", ") +
                ". Kutilgan: " + CSV_COLUMNS.join(";")],
       ok: false,
@@ -2506,10 +2575,17 @@ function parseBulk(text, existingIds) {
     const id = col(c, "id");
     const topic = col(c, "mavzu");
     const q = col(c, "savol");
-    const opts = [col(c, "a"), col(c, "b"), col(c, "c"), col(c, "d")];
+    /* Variantlar oxiridan boshlab bo'shlari tashlanadi: "a;b;;;"
+       ikki variantli savol degani. O'RTADAGI bo'sh variant esa xato —
+       u pastda ushlanadi, chunki u ko'pincha ustun siljishi belgisi. */
+    const raw = [col(c, "a"), col(c, "b"), col(c, "c"), col(c, "d"), col(c, "e")];
+    let last = raw.length;
+    while (last > 0 && !raw[last - 1]) last--;
+    const opts = raw.slice(0, last);
     const key = col(c, "togri").toUpperCase();
     const explain = col(c, "izoh");
     const signRaw = col(c, "belgi").toLowerCase();
+    const imageRaw = col(c, "rasm").trim();
 
     const errs = [], warns = [];
     if (id && existingIds.indexOf(id) !== -1) errs.push("ID bazada mavjud: " + id);
@@ -2517,8 +2593,13 @@ function parseBulk(text, existingIds) {
     if (id) seen[id] = 1;
     if (!topic) errs.push("mavzu bo'sh");
     if (q.length < 15) errs.push("savol matni juda qisqa");
-    if (opts.some(o => !o)) errs.push("variant bo'sh");
-    if (["A", "B", "C", "D"].indexOf(key) === -1) errs.push("to'g'ri javob A–D emas: " + (key || "bo'sh"));
+    if (opts.length < MIN_OPTIONS) errs.push("variant kamida " + MIN_OPTIONS + " ta bo'lishi kerak");
+    if (opts.some(o => !o)) errs.push("o'rtada bo'sh variant — ustunlar siljigan bo'lishi mumkin");
+    const keyAt = opts.length ? LETTERS.slice(0, opts.length) : LETTERS;
+    if (keyAt.indexOf(key) === -1) {
+      errs.push("to'g'ri javob " + keyAt[0] + "–" + keyAt[keyAt.length - 1] +
+                " emas: " + (key || "bo'sh"));
+    }
     if (opts.filter(Boolean).length !== new Set(opts.filter(Boolean)).size) errs.push("variantlar takrorlangan");
 
     /* Noma'lum belgi kaliti — XATO, ogohlantirish emas: savol "belgi
@@ -2534,8 +2615,8 @@ function parseBulk(text, existingIds) {
 
     return {
       row: i + 1, id: id, topic: topic, text: q, options: opts,
-      correct: ["A", "B", "C", "D"].indexOf(key),
-      explain: explain, sign: signRaw || null,
+      correct: keyAt.indexOf(key),
+      explain: explain, sign: signRaw || null, image: imageRaw || null,
       errors: errs, warnings: warns, ok: errs.length === 0,
     };
   });
@@ -2554,8 +2635,13 @@ function toCsv(questions) {
      Import ustun NOMI bo'yicha o'qiganidan keyin bu xato jimgina
      bo'lmaydi, lekin baribir noto'g'ri bo'lardi. */
   const body = questions.map(q => [q.id, q.topic, q.text,
-    q.options[0], q.options[1], q.options[2], q.options[3],
-    "ABCD"[q.correct], q.explain || "", q.sign || "", q.state].map(csvCell).join(";"));
+    /* Har doim beshta ustun yoziladi — yo'q variant bo'sh qoladi.
+       Shunda fayl ustunlari har qatorda bir xil joyda turadi. */
+    q.options[0], q.options[1], q.options[2], q.options[3], q.options[4],
+    /* Kaliti hali tasdiqlanmagan savolda correct null bo'lishi mumkin
+       (hujjatdan olingan bank). Bo'sh katak "kalit yo'q" degani. */
+    q.correct === null || q.correct === undefined ? "" : letterOf(q.correct),
+    q.explain || "", q.sign || "", q.image || "", q.state].map(csvCell).join(";"));
   return [head].concat(body).join("\n");
 }
 
@@ -3661,12 +3747,28 @@ class Component extends DCLogic {
             }
             if (q.state === "published") acts.push(btn("qArchive", "Arxivlash", "content", true));
             if (q.state === "archived") acts.push(btn("qRestore", "Arxivdan tiklash", "content", false));
+            /* Kalit hali odam tomonidan tasdiqlanmaganini moderator
+               KO'RISHI kerak: 301 ta savol hujjatdagi yashil nuqtaning
+               koordinatasidan olingan kalit bilan keldi va 21 tasida
+               kalit umuman yo'q. Ogohlantirishsiz moderator ularni
+               tekshirilgan savol deb o'ylaydi. */
+            const noKey = q.correct === null || q.correct === undefined;
+            const auto = q.keySource === "docx-geometry";
             return {
               id: q.id, text: q.text, topic: q.topic, author: q.author, updated: q.updated,
               hasFlag: !!q.flag, flag: q.flag,
+              hasImage: !!q.image,
+              imageSrc: q.image ? IMG_DIR + q.image : "",
+              imageAlt: q.image ? "Savol rasmi: " + q.text : "",
+              keyUnverified: noKey || auto,
+              keyNote: noKey
+                ? "Javob kaliti YOʻQ — hujjatda aniqlanmadi. Toʻgʻri variantni bosib kalitni qoʻying."
+                : auto
+                  ? "Javob kaliti hujjatdan avtomatik olingan va hali odam tasdiqlamagan. Tekshirib, toʻgʻri variantni bosing — shundan keyingina savol nashr etiladi."
+                  : "",
               stateLabel: STATE_META[q.state].label, stateStyle: chip(STATE_META[q.state].bg, STATE_META[q.state].fg),
               options: q.options.map((o, i) => ({
-                text: o, letter: "ABCD"[i],
+                text: o, letter: letterOf(i),
                 tag: i === q.correct ? "Toʻgʻri javob" : "",
                 setKey: (i === q.correct || !may("content")) ? (() => {}) : ask("qKey", q.id, i),
                 tagStyle: { fontSize: "11px", fontWeight: 800, color: "var(--success)" },
@@ -3893,7 +3995,7 @@ class Component extends DCLogic {
               block:   { t: "Foydalanuvchini bloklash", perm: "block", rk: "block", before: "faol", after: "bloklangan", cta: "Bloklash", danger: true },
               unblock: { t: "Blokdan chiqarish", perm: "block", rk: "block", before: "bloklangan", after: "faol", cta: "Blokdan chiqarish", danger: false },
               anon:    { t: "Maʼlumotni anonimlashtirish", perm: "anonymize", rk: "anonymize", before: u ? u.name : "", after: "Anonim foydalanuvchi", cta: "Anonimlashtirish", danger: true, ack: true },
-              qKey:    { t: "Javob kalitini oʻzgartirish", perm: "content", rk: null, before: q ? "ABCD"[q.correct] : "", after: c.opt !== null ? "ABCD"[c.opt] : "", cta: "Kalitni oʻzgartirish", danger: true, ack: true },
+              qKey:    { t: "Javob kalitini oʻzgartirish", perm: "content", rk: null, before: q && q.correct !== null && q.correct !== undefined ? letterOf(q.correct) : "—", after: c.opt !== null ? letterOf(c.opt) : "", cta: "Kalitni oʻzgartirish", danger: true, ack: true },
               qReview: { t: "Koʻrib chiqishga yuborish", perm: "content", rk: null, before: "qoralama", after: "koʻrib chiqishda", cta: "Yuborish", danger: false },
               qPublish:{ t: "Tasdiqlash va nashr etish", perm: "publish", rk: null, before: "koʻrib chiqishda", after: "nashr etilgan", cta: "Nashr etish", danger: false },
               qDraft:  { t: "Qoralamaga qaytarish", perm: "content", rk: null, before: "koʻrib chiqishda", after: "qoralama", cta: "Qaytarish", danger: true },
@@ -4537,6 +4639,31 @@ class Component extends DCLogic {
         qTopic: item.topic, qText: item.text, qExplain: item.explain,
         signWarning: item.sign === "warning", signPriority: item.sign === "priority",
         signNoEntry: item.sign === "noentry", signStop: item.sign === "stop",
+        /* Yo'l vaziyati rasmi. Rasmiy avtotest to'plamidagi 140 ta savol
+           rasmga bog'liq ("Qaysi avtomobil birinchi o'tadi?") — rasm
+           chiqmasa savolga javob berish MUMKIN EMAS. Shuning uchun rasm
+           savol matnidan yuqorida, chizilgan belgilar bilan bir joyda
+           turadi.
+
+           Fayl ilova ichida (www/savol/) — internetdan olinmaydi, aks
+           holda offline rejimda 140 ta savol javobsiz qolardi. */
+        qImage: !!item.image,
+        qImageSrc: item.image ? IMG_DIR + item.image : "",
+        /* alt matni savolning o'zi: ekran o'qiruvchi uchun "rasm" deb
+           aytishdan foyda yo'q, rasmda nima borligini esa biz
+           bilmaymiz — savol matni eng yaqin ma'noli tavsif. */
+        qImageAlt: item.image ? T("Savol rasmi") + ": " + item.text : "",
+        qImageBoxStyle: {
+          background: "var(--surface-alt)", borderRadius: "16px", padding: "10px",
+          display: "grid", placeItems: "center", overflow: "hidden"
+        },
+        qImageStyle: {
+          /* Rasm kesilmaydi (object-fit: contain emas, balki tabiiy
+             o'lcham + maxHeight): yo'l chizmasining chetidagi avtomobil
+             kesilib qolsa savol ma'nosini yo'qotadi. */
+          display: "block", width: "100%", height: "auto",
+          maxHeight: "260px", objectFit: "contain", borderRadius: "10px"
+        },
         timeLabel: mm + ":" + String(ss).padStart(2, "0"),
         timerStyle: {
           fontSize: "15px", fontWeight: 800, fontVariantNumeric: "tabular-nums",
@@ -4560,7 +4687,7 @@ class Component extends DCLogic {
         // toʻgʻri javob harfini shu yerda darhol koʻrsatish (variantlar orasidagi
         // yashil hoshiya bilan bir vaqtda) tushunarli va tarbiyaviy signal beradi —
         // foydalanuvchi variantlar orasidan qidirib o'tirmaydi.
-        verdict: ok ? T("Toʻgʻri! +10 ball") : T("Notoʻgʻri · toʻgʻri javob —") + " " + "ABCD"[item.correct],
+        verdict: ok ? T("Toʻgʻri! +10 ball") : T("Notoʻgʻri · toʻgʻri javob —") + " " + letterOf(item.correct),
         verdictStyle: { fontSize: "15px", fontWeight: 800, color: ok ? "var(--success)" : "var(--destructive)" },
         options: item.options.map((text, i) => {
           const isSel = q.selected === i;
@@ -4574,7 +4701,7 @@ class Component extends DCLogic {
           const showCheck = answered && isRight;
           const showCross = answered && isSel && !isRight;
           return {
-            text, letter: "ABCD"[i], onClick: this.answer(i),
+            text, letter: letterOf(i), onClick: this.answer(i),
             showCheck, showCross, showLetter: !showCheck && !showCross,
             style: {
               display: "flex", alignItems: "center", gap: "12px", width: "100%", textAlign: "left",

@@ -51,7 +51,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A002', t.id, 'Qaysi belgi tartibga solinmagan piyodalar o‘tish joyiga yaqinlashayotganlik haqida ogohlantiradi?',
-       array['"A" va "Б"', '"A"', 'Hammasi'], 1, 'q002.jpeg', 'draft', 'docx-geometry'
+       array['"A" va "Б"', '"A"', 'Hammasi'], 1, 'q002.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -81,7 +81,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A005', t.id, 'Chorrahdan birinchi bo‘lib kesib o‘tadi',
-       array['Ko‘k avtomobil', 'Yashil avtomobil', 'Qizil avtomobil'], 1, 'q005.jpeg', 'draft', 'docx-geometry'
+       array['Ko‘k avtomobil', 'Yashil avtomobil', 'Qizil avtomobil'], 1, 'q005.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -91,7 +91,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A006', t.id, 'Chorrahadan ikkinchi bo‘lib qaysi transport vositasi kesib o‘tadi?',
-       array['Yashil avtomobil tramvay bilan bir vaqtda', 'Yashil avtomobil', 'Qizil avtomobil'], 0, 'q006.jpeg', 'draft', 'docx-geometry'
+       array['Yashil avtomobil tramvay bilan bir vaqtda', 'Yashil avtomobil', 'Qizil avtomobil'], 0, 'q006.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -101,7 +101,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A007', t.id, 'Ko‘rsatilgan belgilardan qaysilarining talabi bevosita o‘rnatilgan joyidan kuchga kiradi?',
-       array['Faqat Б', 'А va Б', 'Hammasi'], 1, 'q007.jpeg', 'draft', 'docx-geometry'
+       array['Faqat Б', 'А va Б', 'Hammasi'], 1, 'q007.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -111,7 +111,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A008', t.id, 'Tartibga solinmagan chorrahada qaysi belgi albatta to‘xyashni talab qiladi?',
-       array['Faqat А', 'Faqat Б', 'Б va В', 'Hammasi'], 1, 'q008.jpeg', 'draft', 'docx-geometry'
+       array['Faqat А', 'Faqat Б', 'Б va В', 'Hammasi'], 1, 'q008.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -171,7 +171,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A014', t.id, 'Chorrahadan uchinchi bo‘lib qaysi avtomobil kesib o‘tadi?',
-       array['Yashil avtomobil', 'Qizil avtomobil', 'Ko‘k avtomobil'], 1, 'q014.jpeg', 'draft', 'docx-geometry'
+       array['Yashil avtomobil', 'Qizil avtomobil', 'Ko‘k avtomobil'], 1, 'q014.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -181,7 +181,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A015', t.id, 'Chorrahadan birinchi bo‘lib qaysi transport vositasi kesib o‘tadi?',
-       array['Yashil avtomobil', 'Ko‘k avtomobil', 'Qizil avtomobil'], 0, 'q015.jpeg', 'draft', 'docx-geometry'
+       array['Yashil avtomobil', 'Ko‘k avtomobil', 'Qizil avtomobil'], 0, 'q015.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -191,7 +191,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A016', t.id, 'Ushbu "50" yozuvli yo‘l belgisi nimani bildradi?',
-       array['Yo‘l yoki marshrut raqamini', 'Yo‘lning ushbu qismida tavsiya berilgan tezlikni', 'Yo‘lning ushbu qismida ruxsat berilgan eng yuqori tezlikni'], 2, 'q016.jpeg', 'draft', 'docx-geometry'
+       array['Yo‘l yoki marshrut raqamini', 'Yo‘lning ushbu qismida tavsiya berilgan tezlikni', 'Yo‘lning ushbu qismida ruxsat berilgan eng yuqori tezlikni'], 2, 'q016.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -201,7 +201,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A017', t.id, 'Ko‘rsatilgan belgilardan qaysi biri ruxsat etilgan to‘la vazni 3,5 tonnadan oshmaydigan yuk avtomobillariga harakatlanishga ruxsat beradi?',
-       array['А va В', 'А va Б', 'В'], 0, 'q017.jpeg', 'draft', 'docx-geometry'
+       array['А va В', 'А va Б', 'В'], 0, 'q017.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -211,7 +211,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A018', t.id, 'Ko‘rsatilgan belgilardan qaysi biri texnik tavsifnomasiga yoki holatiga ko‘ra tezligi soatiga 40 kilometrdan kam bo‘lgan transport vositalarining harakatlanishini taqiqlaydi?',
-       array['Только А', 'Только В', 'А и Б'], 0, 'q018.jpeg', 'draft', 'docx-geometry'
+       array['Только А', 'Только В', 'А и Б'], 0, 'q018.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -261,7 +261,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A023', t.id, 'Kunning yorug‘ vaqtida harakatlanayotgan qaysi rasmdagi avtomobil haydovchisi yuk tashish qoidasini buzayapti?',
-       array['Faqat А', 'Har ikki rasmda', 'Hech kim buzmayapti'], 2, 'q023.jpeg', 'draft', 'docx-geometry'
+       array['Faqat А', 'Har ikki rasmda', 'Hech kim buzmayapti'], 2, 'q023.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'shatak-yuk'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -281,7 +281,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A025', t.id, 'Chorrahani ikkinchi bo‘lib kesib o‘tadi',
-       array['Tramvay', 'Mototsikl', 'Avtomobil'], 2, 'q025.jpeg', 'draft', 'docx-geometry'
+       array['Tramvay', 'Mototsikl', 'Avtomobil'], 2, 'q025.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -291,7 +291,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A026', t.id, 'Chorrahadan oxirgi bo‘lib qaysi transport vositasi kesib o‘tadi',
-       array['Velosiped', 'Avtobus', 'Avtomobil'], 2, 'q026.jpeg', 'draft', 'docx-geometry'
+       array['Velosiped', 'Avtobus', 'Avtomobil'], 2, 'q026.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -311,7 +311,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A028', t.id, 'Ko‘rsatilgan qaysi yo‘l belgisi yengil yo‘nalishsiz taksilarga yo‘lovchilarni tushirish-chiqarish (yuklarni ortish- tushirish) vaqtida ta‘sir qilmaydi?',
-       array['Faqat "A"', 'Faqat "Б"', 'Faqat "Б" "C" "Д"', 'Hammasi'], 3, 'q028.jpeg', 'draft', 'docx-geometry'
+       array['Faqat "A"', 'Faqat "Б"', 'Faqat "Б" "C" "Д"', 'Hammasi'], 3, 'q028.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -321,7 +321,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A029', t.id, 'Bu qo‘shimcha-axborot yo‘l belgisi qaysi yo‘l belgisi bilan birgalikda qo‘llaniladi?',
-       array['А', 'Б', 'С'], 1, 'q029.jpeg', 'draft', 'docx-geometry'
+       array['А', 'Б', 'С'], 1, 'q029.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -347,7 +347,7 @@ on conflict (ref) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A032', t.id, 'Harakatlanish bo‘lagidagi uchburchak shaklidagi chiziq',
-       array['Yo‘lning xavfli qismini bildiradi', 'Yo‘l berishingiz kerak bo‘lgan joy yaqinlashayotganligi haqida ogohlantiradi', 'To‘xtashingiz zarur bo‘lgan joyni bildiradi'], null, 'q032.jpeg', 'draft', 'docx-geometry'
+       array['Yo‘lning xavfli qismini bildiradi', 'Yo‘l berishingiz kerak bo‘lgan joy yaqinlashayotganligi haqida ogohlantiradi', 'To‘xtashingiz zarur bo‘lgan joyni bildiradi'], null, 'q032.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 
@@ -383,7 +383,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A036', t.id, 'Sariq avtomobil chorrahani nechanchi bo‘lib kesib o‘tadi?',
-       array['Uchinchi bo‘lib', 'Ikkinchi bo‘lib', 'Oxirgi bo‘lib'], 2, 'q036.jpeg', 'draft', 'docx-geometry'
+       array['Uchinchi bo‘lib', 'Ikkinchi bo‘lib', 'Oxirgi bo‘lib'], 2, 'q036.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -413,7 +413,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A039', t.id, 'Ko‘rsatilgan belgilardan qaysi biri faqat shu belgi o‘rnatilgan bo‘lakka ta‘sir qiladi?',
-       array['Б va В', 'Faqat Б', 'Faqat А'], 2, 'q039.jpeg', 'draft', 'docx-geometry'
+       array['Б va В', 'Faqat Б', 'Faqat А'], 2, 'q039.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -453,7 +453,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A043', t.id, 'Qaysi rasmdagi avtomobil haydovchisi yuk tashish qoidasini buzayapti?',
-       array['А', 'Б', 'А va Б'], null, 'q043.jpeg', 'draft', 'docx-geometry'
+       array['А', 'Б', 'А va Б'], null, 'q043.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'shatak-yuk'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -463,7 +463,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A044', t.id, 'O‘ng tomondagi yondosh hududan foydalanib qayrilib olishning ko‘rsatilgan qaysi usuli harakat xavfsizligini ta‘minlaydi:',
-       array['Faqat chap tomondagi suratda', 'Faqat o‘ng tomondagi suratda', 'Har ikki suratda'], 0, 'q044.jpeg', 'draft', 'docx-geometry'
+       array['Faqat chap tomondagi suratda', 'Faqat o‘ng tomondagi suratda', 'Har ikki suratda'], 0, 'q044.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -473,7 +473,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A045', t.id, 'Chorrahani oxirgi bo‘lib qaysi transport vositasi kesib o‘tadi',
-       array['Ko‘k avtomobil', 'Qizil avtomobil', 'Yashil avtomobil'], 1, 'q045.jpeg', 'draft', 'docx-geometry'
+       array['Ko‘k avtomobil', 'Qizil avtomobil', 'Yashil avtomobil'], 1, 'q045.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -483,7 +483,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A046', t.id, 'Balandlika yo‘l chetida to‘siq mavjud bo‘lganda to‘xtagan avtomobilni joyidan g‘ildirab ketishini oldini olish uchun oldingi g‘ildiraklarni burib qo‘yish usuli qaysi javobda to‘g‘ri:',
-       array['А ва Г', 'А ва В', 'Б ва В', 'Б ва Г'], 1, 'q046.jpeg', 'draft', 'docx-geometry'
+       array['А ва Г', 'А ва В', 'Б ва В', 'Б ва Г'], 1, 'q046.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -493,7 +493,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A047', t.id, 'Chapga burilayotgan sariq avtomobil haydovchisi qaysi bo‘lakni egallashi kerak?',
-       array['O‘ng bo‘lakni', 'Chap bo‘lakni', 'O‘rta bo‘lakni', 'Istalgan bo‘lakni'], 3, 'q047.jpeg', 'draft', 'docx-geometry'
+       array['O‘ng bo‘lakni', 'Chap bo‘lakni', 'O‘rta bo‘lakni', 'Istalgan bo‘lakni'], 3, 'q047.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -503,7 +503,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A048', t.id, 'Qaysi yo‘l belgilari yo‘nalishsiz transport vositalariga chapga burilishni taqiqlaydi?',
-       array['Faqat "A"', '"A" va "Б"', '"A" va "B"', 'Hammasi'], 2, 'q048.jpeg', 'draft', 'docx-geometry'
+       array['Faqat "A"', '"A" va "Б"', '"A" va "B"', 'Hammasi'], 2, 'q048.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -513,7 +513,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A049', t.id, 'Ushbu yo‘l belgisi qanday nomlanadi:',
-       array['Xavfli yuk tashiyotgan transport vositasining harakati taqiqlangan', 'Katta o‘lchamli yuklarni tashish taqiqlangan', 'Yuk avtomobillari bilan quvib o‘tish taqiqlangan'], 0, 'q049.jpeg', 'draft', 'docx-geometry'
+       array['Xavfli yuk tashiyotgan transport vositasining harakati taqiqlangan', 'Katta o‘lchamli yuklarni tashish taqiqlangan', 'Yuk avtomobillari bilan quvib o‘tish taqiqlangan'], 0, 'q049.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -573,7 +573,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A055', t.id, 'Chap tomondagi yondosh hududdan foydalanib qayrilib olishning ko‘rsatilgan qaysi usuli harakat xavfsizligini ta‘minlaydi:',
-       array['Faqat chap tomondagi rasmda', 'Faqat o‘ng tomondagi rasmda', 'Ikkisida ham'], 1, 'q055.jpeg', 'draft', 'docx-geometry'
+       array['Faqat chap tomondagi rasmda', 'Faqat o‘ng tomondagi rasmda', 'Ikkisida ham'], 1, 'q055.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -583,7 +583,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A056', t.id, 'Chorrahadan oxirgi bo‘lib qaysi transport vositasi kesib o‘tadi:',
-       array['Qizil avtomobil', 'Oq avtomobil sariq bilan bir vaqtda', 'Sariq avtomobil'], 1, 'q056.jpeg', 'draft', 'docx-geometry'
+       array['Qizil avtomobil', 'Oq avtomobil sariq bilan bir vaqtda', 'Sariq avtomobil'], 1, 'q056.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -603,7 +603,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A058', t.id, 'Qaysi transport vositasiga harakatlanish taqiqlangan?',
-       array['Motosiklga', 'Hech kimga taqiqlanmagam', 'Yuk avtomobiliga'], 2, 'q058.jpeg', 'draft', 'docx-geometry'
+       array['Motosiklga', 'Hech kimga taqiqlanmagam', 'Yuk avtomobiliga'], 2, 'q058.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -623,7 +623,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A060', t.id, 'Ushbu yo‘l belgisi:',
-       array['Qatnov qismida to‘suvchi qurilma borligini bildiradi', 'Temir yo‘l kesishmasi oldida to‘suvchi qurilma borligini bildiradi', 'Chorraha oldida to‘suvchi qurilma borligini bildiradi'], 1, 'q060.jpeg', 'draft', 'docx-geometry'
+       array['Qatnov qismida to‘suvchi qurilma borligini bildiradi', 'Temir yo‘l kesishmasi oldida to‘suvchi qurilma borligini bildiradi', 'Chorraha oldida to‘suvchi qurilma borligini bildiradi'], 1, 'q060.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -643,7 +643,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A062', t.id, 'Rasmda ko‘rsatilgan chorahha-...',
-       array['Tartibga solinmagan, teng ahamiyatga ega bo‘lmagan yo‘llar kesishgan chorraha', 'Tartibga solinmagan, teng ahamiyatga ega bo‘lgan yo‘llar kesishgan chorraha', 'Tartibga solingan chorraha'], 2, 'q062.jpeg', 'draft', 'docx-geometry'
+       array['Tartibga solinmagan, teng ahamiyatga ega bo‘lmagan yo‘llar kesishgan chorraha', 'Tartibga solinmagan, teng ahamiyatga ega bo‘lgan yo‘llar kesishgan chorraha', 'Tartibga solingan chorraha'], 2, 'q062.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -653,7 +653,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A063', t.id, 'Avtomobil haydovchisi qayrilib olmoqchi:',
-       array['Chorrahaga birinchi bo‘lib o‘tadi', 'Tramvayga yo‘l berib qayrilib oladi'], 1, 'q063.jpeg', 'draft', 'docx-geometry'
+       array['Chorrahaga birinchi bo‘lib o‘tadi', 'Tramvayga yo‘l berib qayrilib oladi'], 1, 'q063.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -683,7 +683,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A066', t.id, 'Motosikl haydovchisi qo‘lini yuqoriga ko‘tarib nima haqida axborot berayapti:',
-       array['Harakatni davom ettirish haqida', 'O‘ngga burilmoqchi ekanligi haqida', 'To‘xtash haqida'], 2, 'q066.jpeg', 'draft', 'docx-geometry'
+       array['Harakatni davom ettirish haqida', 'O‘ngga burilmoqchi ekanligi haqida', 'To‘xtash haqida'], 2, 'q066.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -693,7 +693,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A067', t.id, 'Yo‘l to‘sig‘iga chizilgan tik chiziq nimani bildiradi?',
-       array['Temir yo‘l kesishmasiga yaqinlashayotganlik haqida', 'Xavfli chorrahaga yaqinlashayotganlik haqida', 'Yo‘lning kichik rauisli burilish, tik nishablik va boshqa xavfli joylarda yo‘l to‘siqlarining yon yuzalarini bildiradi'], 2, 'q067.jpeg', 'draft', 'docx-geometry'
+       array['Temir yo‘l kesishmasiga yaqinlashayotganlik haqida', 'Xavfli chorrahaga yaqinlashayotganlik haqida', 'Yo‘lning kichik rauisli burilish, tik nishablik va boshqa xavfli joylarda yo‘l to‘siqlarining yon yuzalarini bildiradi'], 2, 'q067.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -703,7 +703,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A068', t.id, 'Qaysi belgilar axborot-ko‘rsatkich belgilari?',
-       array['1 va 2', '3 va 4', '2 va 3', '1 va 4'], 2, 'q068.jpeg', 'draft', 'docx-geometry'
+       array['1 va 2', '3 va 4', '2 va 3', '1 va 4'], 2, 'q068.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -713,7 +713,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A069', t.id, 'Qaysi yo‘l belgilari yo‘lning tor qismida haydovchiga ustunlik beradi?',
-       array['Faqat "B"', '"A" va "B"', '"Б" va "B"', '"Б" va "Г"'], 3, 'q069.jpeg', 'draft', 'docx-geometry'
+       array['Faqat "B"', '"A" va "B"', '"Б" va "B"', '"Б" va "Г"'], 3, 'q069.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -723,7 +723,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A070', t.id, 'Ushbu yo‘l belgilari qanday maqsadda qo‘llaniladi?',
-       array['Majburiy tarzda tezlikni kamaytirish uchun', 'Keskin tormoz berish uchun', 'Ehtiyot choralarini ko‘rish uchun'], 0, 'q070.jpeg', 'draft', 'docx-geometry'
+       array['Majburiy tarzda tezlikni kamaytirish uchun', 'Keskin tormoz berish uchun', 'Ehtiyot choralarini ko‘rish uchun'], 0, 'q070.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -733,7 +733,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A071', t.id, 'Qaysi belgi yo‘lning kichik radiusli xavfli burilish joyiga yaqinlashayotganlik haqida ogohlantiradi?',
-       array['1', '2', '3', '4'], 3, 'q071.jpeg', 'draft', 'docx-geometry'
+       array['1', '2', '3', '4'], 3, 'q071.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -743,7 +743,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A072', t.id, 'Rasmda ko‘rsatilgan chorhha-...',
-       array['Tartibga solinmagan, teng ahamiyatga ega bo‘lmagan yo‘llar kesishadigan chorraha', 'Tartibga solinmagan, teng ahamiyatga ega bo‘lgan yo‘llar kesishadigan chorraha', 'Tartibga solingan chorraha'], 0, 'q072.jpeg', 'draft', 'docx-geometry'
+       array['Tartibga solinmagan, teng ahamiyatga ega bo‘lmagan yo‘llar kesishadigan chorraha', 'Tartibga solinmagan, teng ahamiyatga ega bo‘lgan yo‘llar kesishadigan chorraha', 'Tartibga solingan chorraha'], 0, 'q072.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -763,7 +763,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A074', t.id, 'Ushbu qo‘shimcha yo‘l belgisi bildiradi :',
-       array['Belgi ta‘sir oralig‘ida to‘xtagan transport vositalari majburiy evakuatsiya qilinishini ko‘rsatadi', 'Belgi ta‘sir oralig‘ida to‘xtagan transport vositalarini evakuatsiya qilinish ruxsat etilganligini bildiradi', 'Belgi ta‘sir oralig‘ida to‘xtagan transport vositalarini evakuatsiya qilin taqiqlanganligini bildiradi'], 0, 'q074.jpeg', 'draft', 'docx-geometry'
+       array['Belgi ta‘sir oralig‘ida to‘xtagan transport vositalari majburiy evakuatsiya qilinishini ko‘rsatadi', 'Belgi ta‘sir oralig‘ida to‘xtagan transport vositalarini evakuatsiya qilinish ruxsat etilganligini bildiradi', 'Belgi ta‘sir oralig‘ida to‘xtagan transport vositalarini evakuatsiya qilin taqiqlanganligini bildiradi'], 0, 'q074.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -773,7 +773,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A075', t.id, 'Qaysi belgi ikkinchi darajali yo‘l bilan tutashuvni bildiradi?',
-       array['1', '2', '3', '4'], 1, 'q075.jpeg', 'draft', 'docx-geometry'
+       array['1', '2', '3', '4'], 1, 'q075.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -803,7 +803,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A078', t.id, 'Ushbu qo‘shimcha axborot yo‘l belgisi:',
-       array['Ob‘yektgacha bo‘lgan masofani bildiradi', 'Belgining ta‘sir oralig‘ini bildiradi'], 0, 'q078.jpeg', 'draft', 'docx-geometry'
+       array['Ob‘yektgacha bo‘lgan masofani bildiradi', 'Belgining ta‘sir oralig‘ini bildiradi'], 0, 'q078.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -813,7 +813,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A079', t.id, 'Ko‘k avtomobil chorahhani kesib o‘tadi:',
-       array['Birinchi bo‘lib', 'Ikkinchi bo‘lib', 'Oxirgi bo‘lib'], 2, 'q079.jpeg', 'draft', 'docx-geometry'
+       array['Birinchi bo‘lib', 'Ikkinchi bo‘lib', 'Oxirgi bo‘lib'], 2, 'q079.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -833,7 +833,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A081', t.id, 'Yo‘nalishli bo‘lmagan transport vositalari "A" xarfi bilan belgilangan o‘ng bo‘lakda qaysi holatlarda harakatlanishlari mumkin?',
-       array['O‘nga burilishda', 'Yo‘lovchilarni chiqarish va tushirishda', 'Yuqoridagi barcha holatlarda aragda yo‘nalishli transport vositalariga xalaqit bermasa'], 2, 'q081.jpeg', 'draft', 'docx-geometry'
+       array['O‘nga burilishda', 'Yo‘lovchilarni chiqarish va tushirishda', 'Yuqoridagi barcha holatlarda aragda yo‘nalishli transport vositalariga xalaqit bermasa'], 2, 'q081.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -843,7 +843,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A082', t.id, 'Qaysi rasmda ikkita qatnov qismiga ega bo‘lgan yo‘l ko‘rsatilgan?',
-       array['"A" rasmda', '"Б" rasmda', 'Hech qaysi rasmda'], 2, 'q082.jpeg', 'draft', 'docx-geometry'
+       array['"A" rasmda', '"Б" rasmda', 'Hech qaysi rasmda'], 2, 'q082.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -853,7 +853,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A083', t.id, 'Ushbu yo‘l nechta qatnov qismiga ega?',
-       array['1', '2', '3'], 0, 'q083.jpeg', 'draft', 'docx-geometry'
+       array['1', '2', '3'], 0, 'q083.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -863,7 +863,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A084', t.id, 'Bu vaziyatda siz o‘ngga burilayotib, Siz:',
-       array['Faqat transport vositalariga yo‘l berasiz', 'Barcha qatnov qismidagi piyodalarga yo‘l berasiz', 'Harakat yo;nalishi boyicha va burilayotgan ko‘chani kesib o‘tayotgan piyodalarga hamda boshqa transport vositalariga yo‘l barasiz'], 2, 'q084.jpeg', 'draft', 'docx-geometry'
+       array['Faqat transport vositalariga yo‘l berasiz', 'Barcha qatnov qismidagi piyodalarga yo‘l berasiz', 'Harakat yo;nalishi boyicha va burilayotgan ko‘chani kesib o‘tayotgan piyodalarga hamda boshqa transport vositalariga yo‘l barasiz'], 2, 'q084.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -873,7 +873,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A085', t.id, 'Yuk avtomobili haydovchisiga qaysi yo‘nalishda harakatlanishga ruxsat beriladi?',
-       array['To‘g‘riga va o‘ngga', 'O‘ngga chapga va orqaga', 'Faqat o‘ngga', 'Barcha yo‘nalishlarga'], 0, 'q085.jpeg', 'draft', 'docx-geometry'
+       array['To‘g‘riga va o‘ngga', 'O‘ngga chapga va orqaga', 'Faqat o‘ngga', 'Barcha yo‘nalishlarga'], 0, 'q085.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -883,7 +883,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A086', t.id, 'Qaysi transport vositalariga harakatlanishga ruxsat berilgan?',
-       array['Motosikl va yengil avtomobilga to‘g‘riga va o‘nga', 'Motosiklga o‘nga va yengil avtomobilga barcha yo‘nalishlarga', 'Yengil avtomobilga to‘g‘riga va o‘nga'], 2, 'q086.jpeg', 'draft', 'docx-geometry'
+       array['Motosikl va yengil avtomobilga to‘g‘riga va o‘nga', 'Motosiklga o‘nga va yengil avtomobilga barcha yo‘nalishlarga', 'Yengil avtomobilga to‘g‘riga va o‘nga'], 2, 'q086.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -903,7 +903,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A088', t.id, 'Ushbu svetafor qaysi yo‘nalishda harakatlanishga ruxsat beradi?',
-       array['Faqat chapga', 'To‘g‘riga va chapga', 'To‘g‘riga va o‘ngga', 'Faqat o‘ngga'], 2, 'q088.jpeg', 'draft', 'docx-geometry'
+       array['Faqat chapga', 'To‘g‘riga va chapga', 'To‘g‘riga va o‘ngga', 'Faqat o‘ngga'], 2, 'q088.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -913,7 +913,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A089', t.id, 'Qaysi brlgi yo‘lning ko‘rsatilgan yo‘nalishida oxiri berk ko‘chaligini bildiradi',
-       array['1F4. 4', '2F5. 5', '3'], 0, 'q089.jpeg', 'draft', 'docx-geometry'
+       array['1F4. 4', '2F5. 5', '3'], 0, 'q089.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -933,7 +933,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A091', t.id, 'Qaysi belgi ikkinchi darajali yo‘l bilan kesishuvni bildiradi?',
-       array['1F4. 4', '2F5. 5', '3'], null, 'q091.jpeg', 'draft', 'docx-geometry'
+       array['1F4. 4', '2F5. 5', '3'], null, 'q091.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -943,7 +943,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A092', t.id, 'To‘xtash qoidasini qaysi transport vositasining haydovchisi buzdi?',
-       array['Har ikkala haydovchi ham', 'Faqat ko‘k avtomobil haydovchisi', 'Faqat qizil avtomobil haydovchisi'], 2, 'q092.jpeg', 'draft', 'docx-geometry'
+       array['Har ikkala haydovchi ham', 'Faqat ko‘k avtomobil haydovchisi', 'Faqat qizil avtomobil haydovchisi'], 2, 'q092.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -953,7 +953,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A093', t.id, 'Ushbu vaziyatda siz o‘ngga bo‘lakda harakatlanmoqdasiz, sizning bo‘lagingizda qayta tizilayotgan transport vositasiga yo‘l berishingiz kerakmi?',
-       array['Kerak emas', 'Kerak'], 0, 'q093.jpeg', 'draft', 'docx-geometry'
+       array['Kerak emas', 'Kerak'], 0, 'q093.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -963,7 +963,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A094', t.id, 'Ushbu yo‘l belgisi qaysi transport vositalarining harakatlanishini taqiqlanadi?',
-       array['Ruxsat etilgan to‘la vazni 3,5 tonnadan ortiq bo‘lgan yuk avtomobillarini', 'Xavfli yuk tashiyotgan transport vositalarining harakatlanishini', 'Portlovchi va tez alangalanuvchi yukni tashiyotgan transport vositalarining harakatlanishi'], 1, 'q094.jpeg', 'draft', 'docx-geometry'
+       array['Ruxsat etilgan to‘la vazni 3,5 tonnadan ortiq bo‘lgan yuk avtomobillarini', 'Xavfli yuk tashiyotgan transport vositalarining harakatlanishini', 'Portlovchi va tez alangalanuvchi yukni tashiyotgan transport vositalarining harakatlanishi'], 1, 'q094.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -983,7 +983,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A096', t.id, 'Qizil avtomobil chorrahani nechanchi bo‘lib kesib o‘tadi?',
-       array['Oxirgi bo‘lib', 'Ikkinchi bo‘lib', 'Birinchi bo‘lib'], 0, 'q096.jpeg', 'draft', 'docx-geometry'
+       array['Oxirgi bo‘lib', 'Ikkinchi bo‘lib', 'Birinchi bo‘lib'], 0, 'q096.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -993,7 +993,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A097', t.id, 'Ushbu vaziyatda siz:',
-       array['To‘xtamasdan harakatni davom ettirishingiz mumkin', 'Belgi oldida to‘xtashingiz va svetaforning ruxsat beruvchi ishorasini kutishingiz kerak'], 1, 'q097.jpeg', 'draft', 'docx-geometry'
+       array['To‘xtamasdan harakatni davom ettirishingiz mumkin', 'Belgi oldida to‘xtashingiz va svetaforning ruxsat beruvchi ishorasini kutishingiz kerak'], 1, 'q097.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1003,7 +1003,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A098', t.id, 'Bu joyda yo‘lovchilarni chiqarish yoki tushirish maqsadida to‘xtash mumkinmi?',
-       array['Ha', 'Yo‘q'], 0, 'q098.jpeg', 'draft', 'docx-geometry'
+       array['Ha', 'Yo‘q'], 0, 'q098.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1013,7 +1013,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A099', t.id, 'Qanday hollarda sizga 50 km/s dan yuqori tezlikda harakatlanish taqiqlangan?',
-       array['Faqat qatnov qismi nam bo‘lsa', 'Har qanday holatda ham'], 0, 'q099.jpeg', 'draft', 'docx-geometry'
+       array['Faqat qatnov qismi nam bo‘lsa', 'Har qanday holatda ham'], 0, 'q099.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'tezlik-rejimi'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1023,7 +1023,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A100', t.id, 'Qaysi belgi to‘siqni o‘ng yoki chap tomonidan chetlab o‘tishga ruxsat etilishini bildiradi?',
-       array['1F4. 4', '2F5. 5', '3'], 1, 'q100.jpeg', 'draft', 'docx-geometry'
+       array['1F4. 4', '2F5. 5', '3'], 1, 'q100.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1073,7 +1073,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A105', t.id, 'Ushbu ko‘rsatilgan holatda kim yo‘l berishi kerak?',
-       array['Avtomobil haydovchisi', 'Motosikl haydovchisi'], 1, 'q105.jpeg', 'draft', 'docx-geometry'
+       array['Avtomobil haydovchisi', 'Motosikl haydovchisi'], 1, 'q105.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1113,7 +1113,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A109', t.id, 'Ushbu belgilardan qaysi biri oldinda yo‘l qoplamasi istida sun‘iy notekislik borligi haqida ogohlantiradi?',
-       array['А', 'В', 'С', 'А va С'], 1, 'q109.jpeg', 'draft', 'docx-geometry'
+       array['А', 'В', 'С', 'А va С'], 1, 'q109.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1163,7 +1163,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A114', t.id, 'Ushbu qo‘shimcha axborot yo‘l belgisi bildiradi:',
-       array['Barcha turdagi transport vositalarining to‘xtab turish uchun yo‘lning qatnov qismida, trotuar yoniga qo‘yish usulini', 'Yengil avtomobillarning to‘xtab turish joyini', 'Mexanik transport vositalarining to‘xtab turish joyini'], 0, 'q114.jpeg', 'draft', 'docx-geometry'
+       array['Barcha turdagi transport vositalarining to‘xtab turish uchun yo‘lning qatnov qismida, trotuar yoniga qo‘yish usulini', 'Yengil avtomobillarning to‘xtab turish joyini', 'Mexanik transport vositalarining to‘xtab turish joyini'], 0, 'q114.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1183,7 +1183,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A116', t.id, 'Ushbu chorrahada avtobus haydovchisi kimga yo‘l berishi kerak?',
-       array['Hech kimga', 'Qizil avtomobilga', 'Ko‘k avtomobilga'], 2, 'q116.jpeg', 'draft', 'docx-geometry'
+       array['Hech kimga', 'Qizil avtomobilga', 'Ko‘k avtomobilga'], 2, 'q116.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1263,7 +1263,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A124', t.id, 'Ushbu yo‘l belgisi nimani bildiradi?',
-       array['Xavfli yuktashiyotgan transport vositalari harakatini taqiqlaydi', 'Og‘ir yuk tashiyotgan transport vositalari harakatini taqiqlaydi', 'Portlovchi va tez alangalanadigan yuk tashiyotgan transport vositalari harakatini taqiqlaydi'], 0, 'q124.jpeg', 'draft', 'docx-geometry'
+       array['Xavfli yuktashiyotgan transport vositalari harakatini taqiqlaydi', 'Og‘ir yuk tashiyotgan transport vositalari harakatini taqiqlaydi', 'Portlovchi va tez alangalanadigan yuk tashiyotgan transport vositalari harakatini taqiqlaydi'], 0, 'q124.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1283,7 +1283,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A126', t.id, 'Ushbu chorrahada haydovchi orqaga harakatlanib ko‘rsatilgan manyovrni bajarishga ruxsat etiladimi?',
-       array['Ruxsat etiladi', 'Taqiqlanadi'], 1, 'q126.jpeg', 'draft', 'docx-geometry'
+       array['Ruxsat etiladi', 'Taqiqlanadi'], 1, 'q126.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1299,13 +1299,13 @@ on conflict (ref) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A128', t.id, 'Ushbu tik chiziq nimani bildiradi?',
-       array['Temir yo‘l kesishmasiga yaqinlashganlik haqida', 'Xavfli chorrahaga yaqinlashganlik haqida', 'Yo‘lning kichik radiusli burilish, tik nishablik va boshqa xavfli joylarda yo‘l to‘siqlarining yon yuzalarini bildiradi'], null, 'q128.jpeg', 'draft', 'docx-geometry'
+       array['Temir yo‘l kesishmasiga yaqinlashganlik haqida', 'Xavfli chorrahaga yaqinlashganlik haqida', 'Yo‘lning kichik radiusli burilish, tik nishablik va boshqa xavfli joylarda yo‘l to‘siqlarining yon yuzalarini bildiradi'], null, 'q128.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A129', t.id, 'Qaysi yo‘l belgilari yo‘lning tor qismida xaydovchiga ustunlik beradi?',
-       array['Faqat В', 'А va В', 'Faqat Д', 'Faqat С'], 2, 'q129.jpeg', 'draft', 'docx-geometry'
+       array['Faqat В', 'А va В', 'Faqat Д', 'Faqat С'], 2, 'q129.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1315,7 +1315,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A130', t.id, 'Ushbu yo‘l belgisi qanday maqsadda qo‘llaniladi?',
-       array['Majburiy tarzda tezlikni kamaytirish uchun', 'To‘xtamasdan o‘tishni taqiqlaydi', 'Ehtiyot choralarini ko‘rish uchun'], 1, 'q130.jpeg', 'draft', 'docx-geometry'
+       array['Majburiy tarzda tezlikni kamaytirish uchun', 'To‘xtamasdan o‘tishni taqiqlaydi', 'Ehtiyot choralarini ko‘rish uchun'], 1, 'q130.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1375,7 +1375,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A136', t.id, 'Yengil avtomobilga qaysi yo‘nalishlarda harakatlanishga ruxsat etiladi?',
-       array['Faqat to‘g‘riga', 'Faqat o‘ng va chapga', 'Istalgan yo‘nalishda'], null, 'q136.jpeg', 'draft', 'docx-geometry'
+       array['Faqat to‘g‘riga', 'Faqat o‘ng va chapga', 'Istalgan yo‘nalishda'], null, 'q136.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1385,7 +1385,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A137', t.id, 'Ushbu holatda ko‘k avtomobilКому следует уступить дорогу синий haydovchisi kimga yo‘l berishi lozim?',
-       array['Faqat avtobusga', 'Hech kimga', 'Faqat yengil avtomobilga'], 0, 'q137.jpeg', 'draft', 'docx-geometry'
+       array['Faqat avtobusga', 'Hech kimga', 'Faqat yengil avtomobilga'], 0, 'q137.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1405,7 +1405,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A139', t.id, 'Ushbu belgilardan qaysi biri «Notekis yo‘q» deb nomlanadi?',
-       array['«А»', '«В»', '«C»'], 2, 'q139.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«В»', '«C»'], 2, 'q139.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1425,7 +1425,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A141', t.id, 'Ushbu belgi nimani bildiradi?',
-       array['Oldinda tik balandlik borligini', 'Oldinda ko‘tarma ko‘prik borligini', 'Sun‘iy yo‘l notekisligini'], 2, 'q141.jpeg', 'draft', 'docx-geometry'
+       array['Oldinda tik balandlik borligini', 'Oldinda ko‘tarma ko‘prik borligini', 'Sun‘iy yo‘l notekisligini'], 2, 'q141.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1475,7 +1475,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A146', t.id, 'Ushbu belgilardan qaysi biri, bir yoki bir nechta bo‘laklarda harakatlanish yo‘nalishi qarama-qarshi tomonga o‘zgarishi mumkin bo‘lgan yo‘l qismining boshlanishini biliradi?',
-       array['«А»', '«Б»', '«В»'], 2, 'q146.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«Б»', '«В»'], 2, 'q146.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1485,7 +1485,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A147', t.id, 'Chorrahada qaysi avtomobil yo‘l berishi kerak?',
-       array['Ko‘k avtomobil', 'Qizil avtomobil'], 1, 'q147.jpeg', 'draft', 'docx-geometry'
+       array['Ko‘k avtomobil', 'Qizil avtomobil'], 1, 'q147.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1515,7 +1515,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A150', t.id, 'Qaysi belgi temir yo‘l kesishmasini to‘suvchi qurilma bilan jihozlanganligi haqida ogohlantiradi?',
-       array['«А»', '«В»', '«C»', '«Д»'], 2, 'q150.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«В»', '«C»', '«Д»'], 2, 'q150.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1565,7 +1565,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A155', t.id, 'Ko‘rsatilgan qaysi belgi yo‘lning o‘ta sirpanchiq bo‘lgan qismini bildiradi?',
-       array['Faqat «А»', '«А» va «В»', 'Faqat «В»'], 2, 'q155.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «А»', '«А» va «В»', 'Faqat «В»'], 2, 'q155.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1585,7 +1585,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A157', t.id, 'Ushbu holatda qaysi transport vositasi yo‘l berishi kerak?',
-       array['Yengil avtomobil', 'Yuk avtomobili'], 1, 'q157.jpeg', 'draft', 'docx-geometry'
+       array['Yengil avtomobil', 'Yuk avtomobili'], 1, 'q157.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1595,7 +1595,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A158', t.id, 'Qaysi belgi svetaforning (tartibga soluvchining) taqiqlovchi ishorasida transport vositalari to‘xtaydigan joyni bildiradi?',
-       array['«А»', '«Б»', '«В»', '«Г»'], 2, 'q158.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«Б»', '«В»', '«Г»'], 2, 'q158.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'svetofor'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1615,7 +1615,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A160', t.id, 'Qaysi belgi falokatli holatlar uchun kirish yo‘lini bildiradi?',
-       array['«А» va «Д»', '«В»', '«C»'], 1, 'q160.jpeg', 'draft', 'docx-geometry'
+       array['«А» va «Д»', '«В»', '«C»'], 1, 'q160.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1685,7 +1685,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A167', t.id, 'Ushbu holatda qaysi transport vositasi yo‘l berishi kerak?',
-       array['Yengil avtomobil', 'Avtobus'], 1, 'q167.jpeg', 'draft', 'docx-geometry'
+       array['Yengil avtomobil', 'Avtobus'], 1, 'q167.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1695,7 +1695,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A168', t.id, 'Qaysi belgilar yuk avtomobillarida quvib o‘tish taqiqlangan hududning oxirini bildiradi?',
-       array['Faqat «А»', 'Faqat «Б»', 'Faqat «А» , «Б»', '«А», «Б», «В»'], 3, 'q168.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «А»', 'Faqat «Б»', 'Faqat «А» , «Б»', '«А», «Б», «В»'], 3, 'q168.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1725,7 +1725,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A171', t.id, 'Qaysi belgi to‘xtash chizig‘i oldida, u bo‘maganda, kesib o‘tiladigan qatnov qismining chetida to‘xtamasdan harakatlanishni taqiqlaydi?',
-       array['«А»', '«Б»', '«Б» ва «В»', '«А» ва «Г»', '«Г»'], 1, 'q171.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«Б»', '«Б» ва «В»', '«А» ва «Г»', '«Г»'], 1, 'q171.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1755,7 +1755,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A174', t.id, 'Quvib o‘tishga taalluqli belgilarni ko‘rsating?',
-       array['«А» va «В»', '«В» va «C»', '«А» va «C»'], 2, 'q174.jpeg', 'draft', 'docx-geometry'
+       array['«А» va «В»', '«В» va «C»', '«А» va «C»'], 2, 'q174.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1775,7 +1775,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A176', t.id, 'Qaysi belgi velosiped yo‘lkasini ko‘rsatadi?',
-       array['«А»', '«В»', '«C»'], 2, 'q176.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«В»', '«C»'], 2, 'q176.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1785,7 +1785,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A177', t.id, 'Ushbu chorrahada kim yo‘l beradi?',
-       array['Ko‘k avtomobil', 'Mototsikl va sariq avtomobil'], null, 'q177.jpeg', 'draft', 'docx-geometry'
+       array['Ko‘k avtomobil', 'Mototsikl va sariq avtomobil'], null, 'q177.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1795,7 +1795,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A178', t.id, 'Xavfsiz oraliq masofani ko‘rsating:',
-       array['«А» ва «В»', '«В»', '«Б»'], 2, 'q178.jpeg', 'draft', 'docx-geometry'
+       array['«А» ва «В»', '«В»', '«Б»'], 2, 'q178.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'tezlik-rejimi'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1805,7 +1805,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A179', t.id, 'Ushbu belgi qaysi turdagi transport vositalarini to‘xtamasdan o‘tishlarini taqiqlaydi?',
-       array['Yuk avtomobillarini', 'Yengil avtomobillarini', 'Barcha turdagi transport vositalarini'], 2, 'q179.jpeg', 'draft', 'docx-geometry'
+       array['Yuk avtomobillarini', 'Yengil avtomobillarini', 'Barcha turdagi transport vositalarini'], 2, 'q179.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1825,7 +1825,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A181', t.id, 'Qaysi belgi «Xavfli yuk tashiyotgan transport vositalarining harakatlanishi taqiqlangan» deb nomlanadi?',
-       array['«А»', '«В»', '«C»'], null, 'q181.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«В»', '«C»'], null, 'q181.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1875,7 +1875,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A186', t.id, 'Qaysi belgi yo‘lning tor qisimlarida ro‘paradan kelayotgan transport vositasiga yo‘l berish lozimligini bildiradi?',
-       array['«А»', '«Б»', '«Б» va «В»', '«А» va «Г»', '«Г»'], 0, 'q186.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«Б»', '«Б» va «В»', '«А» va «Г»', '«Г»'], 0, 'q186.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1905,7 +1905,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A189', t.id, 'Ushbu belgilardan qaysi biri haydovchining shu joydagi yashash yoki ishlash joyiga yetib borishiga monelik qilmaydi?',
-       array['«A»', '«B»', '«C»', '«B» va «C»'], 2, 'q189.jpeg', 'draft', 'docx-geometry'
+       array['«A»', '«B»', '«C»', '«B» va «C»'], 2, 'q189.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1915,7 +1915,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A190', t.id, 'Ko‘rsatilgan yo‘l belgilaridan qaysi biri taqiqlovchi belgilar ilgari kiritgan barcha cheklovlarni bekor qiladi?',
-       array['Faqat «В»', '«А» va «Б»', '«В» va «Г»', 'Barchasi'], 0, 'q190.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «В»', '«А» va «Б»', '«В» va «Г»', 'Barchasi'], 0, 'q190.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1955,7 +1955,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A194', t.id, 'Quyidagi belgilardan qaysi biri haydovchini boshqa xavf-xatarlar to‘g‘risida ogohlantiradi?',
-       array['Faqat «A»', 'Faqat «Б»', 'Faqat «В»'], 2, 'q194.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «A»', 'Faqat «Б»', 'Faqat «В»'], 2, 'q194.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1975,7 +1975,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A196', t.id, 'Harakatlanishga ruxsat berilgan:',
-       array['Qizil, ko‘k, yashil va sariq avtomobilga', 'Qizil va sariq avtomobilga', 'Qizil, sariq va yashil avtomobilga'], 1, 'q196.jpeg', 'draft', 'docx-geometry'
+       array['Qizil, ko‘k, yashil va sariq avtomobilga', 'Qizil va sariq avtomobilga', 'Qizil, sariq va yashil avtomobilga'], 1, 'q196.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -1985,7 +1985,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A197', t.id, 'Siz chorrahadan chapga burilishda qaysi transport vositasiga yo‘l berishingiz lozim?',
-       array['Avtobusga', 'Yengil avtomobilga', 'Hech kimga'], 2, 'q197.jpeg', 'draft', 'docx-geometry'
+       array['Avtobusga', 'Yengil avtomobilga', 'Hech kimga'], 2, 'q197.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2015,7 +2015,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A200', t.id, 'Ushbu yotiq chiziq nimani bildiradi?',
-       array['Velosiped yo‘lkasini', 'Sun‘iy yo‘l notekisligini', 'Yo‘nalishli taksilar to‘xtaydigan joyni'], 1, 'q200.jpeg', 'draft', 'docx-geometry'
+       array['Velosiped yo‘lkasini', 'Sun‘iy yo‘l notekisligini', 'Yo‘nalishli taksilar to‘xtaydigan joyni'], 1, 'q200.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2025,7 +2025,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A201', t.id, 'Ushbu belgi . . .',
-       array['Oldinda harakatlanish serqatnovligi haqida ogohlantiradi', 'Oldinda transport vositalarining tirbandligi haqida ogohlantiradi', 'Oldinda transport vositalari orasida xafiz oraliqni ta‘minlash lozimligi haqida ogohlantiradi'], null, 'q201.png', 'draft', 'docx-geometry'
+       array['Oldinda harakatlanish serqatnovligi haqida ogohlantiradi', 'Oldinda transport vositalarining tirbandligi haqida ogohlantiradi', 'Oldinda transport vositalari orasida xafiz oraliqni ta‘minlash lozimligi haqida ogohlantiradi'], null, 'q201.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2045,7 +2045,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A203', t.id, 'To‘xtab turish qoidasini kim buzdi?',
-       array['Faqat «А»', 'Faqat «Б»', '«А» va «Б»'], 1, 'q203.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «А»', 'Faqat «Б»', '«А» va «Б»'], 1, 'q203.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2075,7 +2075,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A206', t.id, 'Qaysi yo‘l belgilari qayrilib olishga ruxsat beradi?',
-       array['Faqat «Б»', 'Faqat «Б» va «Г»', 'Faqat «А», «Б» va «В»', 'Barchasi'], 3, 'q206.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «Б»', 'Faqat «Б» va «Г»', 'Faqat «А», «Б» va «В»', 'Barchasi'], 3, 'q206.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2085,7 +2085,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A207', t.id, 'Ushbu yo‘l belgisi ta‘sir oralig‘ida sizga odam tushirish (chiqarish)ga yoki yuk ortish (tushurish)ga ruxsat etiladimi?средства в зоне действия этого знака?',
-       array['Ha', 'Yo‘q'], null, 'q207.jpeg', 'draft', 'docx-geometry'
+       array['Ha', 'Yo‘q'], null, 'q207.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2095,7 +2095,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A208', t.id, 'Yengil avtomobilda qaysi yo‘nalishlarda harakatlanishga ruxsat etiladi?',
-       array['Faqat to‘g‘riga', 'Faqat o‘ngga va chapga', 'Istalgan yo‘nalishda'], 2, 'q208.jpeg', 'draft', 'docx-geometry'
+       array['Faqat to‘g‘riga', 'Faqat o‘ngga va chapga', 'Istalgan yo‘nalishda'], 2, 'q208.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2135,7 +2135,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A212', t.id, 'Yo‘nalishli transport vositasi bekatidan tashqarida yo‘l chetidan qo‘zg‘alayotgan yo‘nalishli transport vositasiga yo‘l berishingiz kerakmi?',
-       array['Ha', 'Yo‘q'], 1, 'q212.jpeg', 'draft', 'docx-geometry'
+       array['Ha', 'Yo‘q'], 1, 'q212.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2155,7 +2155,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A214', t.id, 'Sizga ko‘rsatilgan joyda yengil avtomobilda to‘xtashga ruxsat etiladimi?',
-       array['Ha', 'Yo‘q'], 1, 'q214.jpeg', 'draft', 'docx-geometry'
+       array['Ha', 'Yo‘q'], 1, 'q214.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2175,7 +2175,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A216', t.id, 'Ushbu vaziyatda quvib o‘tishdan so‘ng siz o‘rta bo‘lakda qolishingiz mumkinmi?',
-       array['Ha', 'Yo‘q'], 1, 'q216.jpeg', 'draft', 'docx-geometry'
+       array['Ha', 'Yo‘q'], 1, 'q216.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'quvib-otish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2195,7 +2195,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A218', t.id, 'Ushbu holatda siz bajarishingiz lozim:',
-       array['Belgi oldida to‘xtash', 'To‘xtash chizig‘i oldida to‘xtash', 'Boshqa transport vositalari bo‘lmasa, horrahadan to‘xtamasdan o‘tib ketish'], 1, 'q218.jpeg', 'draft', 'docx-geometry'
+       array['Belgi oldida to‘xtash', 'To‘xtash chizig‘i oldida to‘xtash', 'Boshqa transport vositalari bo‘lmasa, horrahadan to‘xtamasdan o‘tib ketish'], 1, 'q218.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2245,7 +2245,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A223', t.id, 'Ushbu holatda sizga temir yo‘l kesishmasiga chiqishga ruxsat etiladimi?',
-       array['Ha', 'Ha, yaqinlashib kelayotgan poyezd yo‘q bo‘lsa', 'Taqiqlanadi'], 2, 'q223.jpeg', 'draft', 'docx-geometry'
+       array['Ha', 'Ha, yaqinlashib kelayotgan poyezd yo‘q bo‘lsa', 'Taqiqlanadi'], 2, 'q223.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2255,7 +2255,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A224', t.id, 'Ko‘k avtomobil chapga burilmoqchi. Kimga yo‘l berishi kerak?',
-       array['Faqat avtobusga', 'Faqat yuk avtomobiliga', 'Har ikki transport vositasiga'], 2, 'q224.jpeg', 'draft', 'docx-geometry'
+       array['Faqat avtobusga', 'Faqat yuk avtomobiliga', 'Har ikki transport vositasiga'], 2, 'q224.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2275,7 +2275,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A226', t.id, 'Chorrahaning ko‘rsatilgan joyida sizga to‘xtashga ruxsat etiladimi?',
-       array['Ruxsat etiladi', 'Taqiqlanadi', 'Ruxsat etiladi, agarda sizning transport vositangiz bilan sidirg‘a chiziq orasidagi masofa 3 metrdan ortiq bo‘lsa'], 1, 'q226.jpeg', 'draft', 'docx-geometry'
+       array['Ruxsat etiladi', 'Taqiqlanadi', 'Ruxsat etiladi, agarda sizning transport vositangiz bilan sidirg‘a chiziq orasidagi masofa 3 metrdan ortiq bo‘lsa'], 1, 'q226.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2285,7 +2285,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A227', t.id, 'Siz ro‘paradan yaqinlashayotgan yuk avtomobiliga yo‘l berishingiz kerakmi?',
-       array['Ha', 'Yo‘q'], 1, 'q227.jpeg', 'draft', 'docx-geometry'
+       array['Ha', 'Yo‘q'], 1, 'q227.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2325,7 +2325,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A231', t.id, 'Ko‘rsatilgan qaysi joyda siz avtomobilni qoidaga binoan to‘xtatishingiz mumkin?',
-       array['Фақат «А»', 'Фақат «Б»', 'Фақат «Б» ва «В»', 'Ҳеч қайсисида'], 1, 'q231.jpeg', 'draft', 'docx-geometry'
+       array['Фақат «А»', 'Фақат «Б»', 'Фақат «Б» ва «В»', 'Ҳеч қайсисида'], 1, 'q231.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2345,7 +2345,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A233', t.id, 'Ko‘rsatilgan yo‘l belgilaridan qaysi biri ruxsat etilgan to‘la vazni 3,5 tonnadan kam bo‘lgan yuk avtomobiliga o‘ngga harakatlanishni buyuradi?',
-       array['Faqat «А»', 'Faqat «Б»', '«А» va «Б»', '«Б» va «В»'], 1, 'q233.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «А»', 'Faqat «Б»', '«А» va «Б»', '«Б» va «В»'], 1, 'q233.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2425,7 +2425,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A241', t.id, 'Chorrahaga kirishda siz:',
-       array['Mototsiklga yo‘l berishingiz kerak', 'Har ikkisiga ham yo‘l berishingiz kerak', 'Birinchi o‘tish huquqiga egasiz'], 1, 'q241.jpeg', 'draft', 'docx-geometry'
+       array['Mototsiklga yo‘l berishingiz kerak', 'Har ikkisiga ham yo‘l berishingiz kerak', 'Birinchi o‘tish huquqiga egasiz'], 1, 'q241.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2435,7 +2435,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A242', t.id, 'Qaysi yo‘l belgisi barcha transport vositalarining harakatini istisnosiz taqiqlaydi?',
-       array['«А»', '«Б»', '«В»'], 1, 'q242.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«Б»', '«В»'], 1, 'q242.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2465,7 +2465,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A245', t.id, 'Qaysi qo‘shimcha axborot belgilari birga qo‘llanilganda belgilarning ta‘sir oralig‘ini ko‘rsatadi?',
-       array['Faqat «А»', 'Faqat «Б»', '«Б» va «В»'], 2, 'q245.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «А»', 'Faqat «Б»', '«Б» va «В»'], 2, 'q245.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2485,7 +2485,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A247', t.id, 'Qaysi yo‘l belgisi piyodalar yo‘lkasini bildiradi?',
-       array['Faqat «Б»', 'Faqat «Б» va «В»', 'Barcha belgilar'], 0, 'q247.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «Б»', 'Faqat «Б» va «В»', 'Barcha belgilar'], 0, 'q247.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2505,7 +2505,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A249', t.id, 'Qaysi belgilarda qarama-qarshi harakatlanishda o‘tib ketsh qiyin bo‘lsa, siz yo‘l berishingiz kerak?',
-       array['Faqat «В»', '«А» va «В»', '«Б» va «В»', '«Б» va «Г»'], 1, 'q249.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «В»', '«А» va «В»', '«Б» va «В»', '«Б» va «Г»'], 1, 'q249.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2545,7 +2545,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A253', t.id, 'Qaysi transport vositasining haydovchisi qoidani buzib burilmoqda?',
-       array['Faqat yengil avtomobil haydovchisi', 'Faqat mototsikl haydovchisi', 'Ikkisi ham buzmoqda'], 2, 'q253.jpeg', 'draft', 'docx-geometry'
+       array['Faqat yengil avtomobil haydovchisi', 'Faqat mototsikl haydovchisi', 'Ikkisi ham buzmoqda'], 2, 'q253.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2555,7 +2555,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A254', t.id, 'Ushbu yo‘lda sizga yo‘l belgisidan keyin qaysi bo‘laklarda harakatlanishga ruxsat beriladi?',
-       array['Istalgan bo‘lakdan', 'O‘ng bo‘lakdan', 'Faqat chap bo‘lakdan'], 1, 'q254.jpeg', 'draft', 'docx-geometry'
+       array['Istalgan bo‘lakdan', 'O‘ng bo‘lakdan', 'Faqat chap bo‘lakdan'], 1, 'q254.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2565,7 +2565,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A255', t.id, 'Qaysi yo‘l belgilari chapga burilishni taqiqlaydi?',
-       array['Faqat «А»', 'Faqat «А» va «Б»', 'Faqat «А» va «Г»', 'Barchasi'], 2, 'q255.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «А»', 'Faqat «А» va «Б»', 'Faqat «А» va «Г»', 'Barchasi'], 2, 'q255.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2605,7 +2605,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A259', t.id, 'Chorrahadagi uzuq-uzuq chiziqlar nimani bildiradi?',
-       array['Majburiy harakatni', 'Chorrahada harakatlanish bo‘lagini chegarasini'], 1, 'q259.jpeg', 'draft', 'docx-geometry'
+       array['Majburiy harakatni', 'Chorrahada harakatlanish bo‘lagini chegarasini'], 1, 'q259.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2645,7 +2645,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A263', t.id, 'Qaysi yo‘nalishda harakatlanishni davom ettirishingiz mumkin?',
-       array['Faqat chapga', 'Chapga va orqaga qayrilib olishga', 'O‘ngga, chapga va orqaga qayrilib olishga'], 2, 'q263.jpeg', 'draft', 'docx-geometry'
+       array['Faqat chapga', 'Chapga va orqaga qayrilib olishga', 'O‘ngga, chapga va orqaga qayrilib olishga'], 2, 'q263.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2695,7 +2695,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A268', t.id, 'Ushbu yo‘l chizig‘i sizga qanday manyovr bajarishni taqiqlaydi?',
-       array['Quvib o‘tishni', 'Aylanib o‘tishni', 'Qayralib olishni', 'Sanab o‘tilgan barcha manevrlarga ruxsat beriladi'], 3, 'q268.jpeg', 'draft', 'docx-geometry'
+       array['Quvib o‘tishni', 'Aylanib o‘tishni', 'Qayralib olishni', 'Sanab o‘tilgan barcha manevrlarga ruxsat beriladi'], 3, 'q268.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'quvib-otish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2705,7 +2705,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A269', t.id, 'Ushbu belgi axborot beradi:',
-       array['Siz o‘ngga yoki chapga burilishingiz kerakligini ko‘rsatadi', 'Reversiv harakatlanish yo‘liga chiqish haqida', 'Chorrahadan o‘ngga va chapga bir tomonlama harakat tashkil qilingan'], 1, 'q269.jpeg', 'draft', 'docx-geometry'
+       array['Siz o‘ngga yoki chapga burilishingiz kerakligini ko‘rsatadi', 'Reversiv harakatlanish yo‘liga chiqish haqida', 'Chorrahadan o‘ngga va chapga bir tomonlama harakat tashkil qilingan'], 1, 'q269.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2725,7 +2725,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A271', t.id, 'Sizga ruxsat etilgan to‘la vazni 3,5 tonnadan ortiq yuk avtomobilida harakatlanish:',
-       array['Faqat to‘g‘riga', 'To‘g‘riga va o‘ngga', 'Barcha yo‘nalishlarda'], 0, 'q271.jpeg', 'draft', 'docx-geometry'
+       array['Faqat to‘g‘riga', 'To‘g‘riga va o‘ngga', 'Barcha yo‘nalishlarda'], 0, 'q271.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2745,7 +2745,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A273', t.id, 'Ko‘rsatilgan qaysi belgi reversiv harakat boshlanishi haqida axborot beradi?',
-       array['«А»', '«Б»', '«В»'], 1, 'q273.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«Б»', '«В»'], 1, 'q273.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2755,7 +2755,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A274', t.id, 'Shatakka olib harakatlanishingiz mumkin:',
-       array['Faqat «A» yo‘nalishi bo‘yicha', 'Faqat «B» yo‘nalish bo‘yicha', 'Ko‘rsatilgan barcha yo‘nalish bo‘yicha'], 0, 'q274.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «A» yo‘nalishi bo‘yicha', 'Faqat «B» yo‘nalish bo‘yicha', 'Ko‘rsatilgan barcha yo‘nalish bo‘yicha'], 0, 'q274.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'shatak-yuk'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2765,7 +2765,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A275', t.id, 'Ushbu yo‘l belgisi chorrahaga yaqinlashayotganlik to‘g‘risida ogohlantiradi, bunda Siz:',
-       array['Birinchi bo‘lib o‘tish huquqiga egasiz', 'Kesib o‘tayotgan yo‘ldagi transport vositalariga yo‘l berishingiz kerak', 'Faqatgina o‘ng tomondan yaqinlashib kelayotgan transport vositalariga yo‘l berishingiz kerak'], 2, 'q275.jpeg', 'draft', 'docx-geometry'
+       array['Birinchi bo‘lib o‘tish huquqiga egasiz', 'Kesib o‘tayotgan yo‘ldagi transport vositalariga yo‘l berishingiz kerak', 'Faqatgina o‘ng tomondan yaqinlashib kelayotgan transport vositalariga yo‘l berishingiz kerak'], 2, 'q275.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2805,7 +2805,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A279', t.id, 'Yo‘l harakati qoidalari bo‘yicha «yonlama oraliq masofa»ni ko‘rsating:',
-       array['Faqat «А»', 'Faqat «Б»', 'Faqat «В»', '«А» va «В»'], 3, 'q279.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «А»', 'Faqat «Б»', 'Faqat «В»', '«А» va «В»'], 3, 'q279.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'tezlik-rejimi'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2815,7 +2815,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A280', t.id, 'Ushbu ko‘rsatilgan vaziyatda sizga hovliga orqa bilan kirib qayrilib olishga ruxsat beriladimi?',
-       array['Har qanday hollarda ruxsat beriladi', 'Ruxsat beriladi agarda bunda harakatning boshqa ishtirokchilariga halaqit berilmasa', 'Taqiqlanadi'], 1, 'q280.jpeg', 'draft', 'docx-geometry'
+       array['Har qanday hollarda ruxsat beriladi', 'Ruxsat beriladi agarda bunda harakatning boshqa ishtirokchilariga halaqit berilmasa', 'Taqiqlanadi'], 1, 'q280.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2825,7 +2825,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A281', t.id, 'Haydovchi chapga burilishda qaysi yo‘nalish bo‘yicha qoidani buzmoqda?',
-       array['Faqat «A» yo‘nalishi bo‘yicha', 'Faqat «B» yo‘nalishi bo‘yicha', 'Ko‘rsatilgan barcha yo‘nalish bo‘yicha'], 2, 'q281.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «A» yo‘nalishi bo‘yicha', 'Faqat «B» yo‘nalishi bo‘yicha', 'Ko‘rsatilgan barcha yo‘nalish bo‘yicha'], 2, 'q281.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'manyovr'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2835,7 +2835,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A282', t.id, 'Ko‘rsatilgan belgilardan qaysi biri yo‘lning ko‘rinish masofasi cheklangan joylarda majburan to‘xtagan transport vositalarini belgilash uchun qo‘llaniladi?',
-       array['«А»', '«Б»', '«В»'], 0, 'q282.jpeg', 'draft', 'docx-geometry'
+       array['«А»', '«Б»', '«В»'], 0, 'q282.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2855,7 +2855,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A284', t.id, 'Ko‘rsatilgan qaysi belgilar sizga yashash manzilingizga avtomobilda o‘tishga ruxsat beradi?',
-       array['Faqat «A»', 'Faqat «B»', 'Faqat «A» va «B»', 'Barchasi'], null, 'q284.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «A»', 'Faqat «B»', 'Faqat «A» va «B»', 'Barchasi'], null, 'q284.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2875,13 +2875,13 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A286', t.id, 'Yuk avtomobili haydovchisi to‘xtab turish qoidasini buzdimi?',
-       array['Buzdi', 'Buzmadi, agar uning ruxsat etilgan to‘liq vazni 3,5 tonnadan oshmasa', 'Xato qilmadi'], null, 'q286.jpeg', 'draft', 'docx-geometry'
+       array['Buzdi', 'Buzmadi, agar uning ruxsat etilgan to‘liq vazni 3,5 tonnadan oshmasa', 'Xato qilmadi'], null, 'q286.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A287', t.id, 'Ko‘rsatilganyo‘l belgilaridan qaysi biri faqat yo‘lqoplamasinam bo‘lganda ta‘sir etadi?',
-       array['Faqat «A»', 'Faqat «A» va «Б»', 'Barchasi'], null, 'q287.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «A»', 'Faqat «A» va «Б»', 'Barchasi'], null, 'q287.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2931,7 +2931,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A292', t.id, 'Qaysi haydovchi to‘xtab turish qoidasini buzdi?',
-       array['Mototsikl haydovchisi', 'Trotuarda to‘ xtab turgan avtomobil haydovchisi', 'Hech kim buzmadi'], null, 'q292.jpeg', 'draft', 'docx-geometry'
+       array['Mototsikl haydovchisi', 'Trotuarda to‘ xtab turgan avtomobil haydovchisi', 'Hech kim buzmadi'], null, 'q292.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2951,7 +2951,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A294', t.id, 'Ushbu yo‘l nechta harakatlanish bo‘lagiga ega?',
-       array['Bitta harakatlanish bo‘lagiga', 'Ikkita harakatlanish bo‘lagiga', 'Uchta harakatlanish bo‘lagiga'], 1, 'q294.jpeg', 'draft', 'docx-geometry'
+       array['Bitta harakatlanish bo‘lagiga', 'Ikkita harakatlanish bo‘lagiga', 'Uchta harakatlanish bo‘lagiga'], 1, 'q294.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2961,7 +2961,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A295', t.id, 'Ushbu belgilardan qaysi biri bir tomonlama xarakat tashkil qilingan yo‘lning boshida o‘pnatiladi?',
-       array['Faqat «A»', 'Faqat «Б»', '«Б» va «Г»', '«Б» yoki «В»'], 1, 'q295.jpeg', 'draft', 'docx-geometry'
+       array['Faqat «A»', 'Faqat «Б»', '«Б» va «Г»', '«Б» yoki «В»'], 1, 'q295.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'yol-belgilari'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -2981,7 +2981,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A297', t.id, 'Ushbuko‘rsatilganholatda mototsikl haydovchisi sizga yo‘l berishi kerakmi?',
-       array['Yo‘q', 'Ha'], 1, 'q297.jpeg', 'draft', 'docx-geometry'
+       array['Yo‘q', 'Ha'], 1, 'q297.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'umumiy-qoidalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -3001,7 +3001,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A299', t.id, 'Siz chorrahadan chapga burilmoqchisiz. Ushbu vaziyatda kimga yo‘l berasiz?',
-       array['Faqat avtobusga', 'Faqat qizil avtomobilga', 'Hech kimga'], null, 'q299.jpeg', 'draft', 'docx-geometry'
+       array['Faqat avtobusga', 'Faqat qizil avtomobilga', 'Hech kimga'], null, 'q299.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -3011,7 +3011,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A300', t.id, 'Siz chorrahadan to‘g‘riga o‘tmoqchisiz. Ushbu vaziyatda Sizning harakatingiz?',
-       array['Chorrahaga birinchi kirgan qizil avtomobilga yo‘l berish', 'Qizil avtomobil yo‘l berayotganiga ishonch xosil qilib chorrahadan birinchi o‘tish'], 1, 'q300.jpeg', 'draft', 'docx-geometry'
+       array['Chorrahaga birinchi kirgan qizil avtomobilga yo‘l berish', 'Qizil avtomobil yo‘l berayotganiga ishonch xosil qilib chorrahadan birinchi o‘tish'], 1, 'q300.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'chorrahalar'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)
@@ -3021,7 +3021,7 @@ on conflict (question_id, lang) do nothing;
 
 insert into public.questions (ref, topic_id, text, options, correct, image, state, key_source)
 select '#A301', t.id, 'Ushbu joyda avtomobilni to‘xtab turish uchun qo‘yishga ruxsat etiladimi?',
-       array['Ha', 'Yo‘q'], 1, 'q301.jpeg', 'draft', 'docx-geometry'
+       array['Ha', 'Yo‘q'], 1, 'q301.webp', 'draft', 'docx-geometry'
 from public.topics t where t.slug = 'toxtab-turish'
 on conflict (ref) do nothing;
 insert into public.question_translations (question_id, lang, text, options)

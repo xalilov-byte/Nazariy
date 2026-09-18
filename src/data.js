@@ -21,7 +21,14 @@
 
 (function () {
   const CACHE_KEY = 'nz-questions';
-  const CACHE_VERSION = 1;
+  /* Versiya oshirilsa saqlangan nusxa tashlab yuboriladi. 1 → 2: savolga
+     `image` maydoni qo'shildi va variant soni 4 dan 2..5 ga o'tdi. Eski
+     keshda rasm yo'q — u tozalanmasa, yangilangan ilova ham rasmsiz
+     savollarni ko'rsatib turardi. */
+  const CACHE_VERSION = 2;
+  /* Bazadagi cheklov bilan bir xil (0004_bank.sql: 2..5). Harflar ham
+     shuncha: A, B, C, D, E. */
+  const MAX_OPTIONS = 5;
   const TIMEOUT_MS = 8000;
   /* Saqlangan nusxa shu muddatdan yosh boʻlsa, tarmoqqa UMUMAN
      chiqilmaydi. Sabab: savollar bazasi kuniga bir necha marta
@@ -83,9 +90,18 @@
       r && typeof r === 'object'
       && (typeof r.ref === 'string' || typeof r.id === 'string')
       && typeof r.text === 'string' && r.text.trim() !== ''
-      && Array.isArray(r.options) && r.options.length === 4
-      && r.options.every(o => typeof o === 'string')
-      && typeof r.correct === 'number' && r.correct >= 0 && r.correct <= 3
+      /* Variant soni 2..5. Ilgari bu yerda "aynan 4" yozilgan edi va
+         rasmiy avtotest to'plami kelganda 2 va 3 variantli savollarning
+         hammasi jimgina tashlab yuborilardi — bank 301 tadan 50 taga
+         tushib qolardi. Chegara MAX_OPTIONS bazadagi cheklov bilan bir
+         xil (0004_bank.sql: array_length between 2 and 5). */
+      && Array.isArray(r.options)
+      && r.options.length >= 2 && r.options.length <= MAX_OPTIONS
+      && r.options.every(o => typeof o === 'string' && o.trim() !== '')
+      /* Kalit massiv uzunligiga bog'liq: 2 variantli savolda correct=3
+         bo'sh javobni to'g'ri deb ko'rsatardi. */
+      && typeof r.correct === 'number'
+      && r.correct >= 0 && r.correct < r.options.length
     );
     if (!ok.length) return null;
     if (ok.length < rows.length) {
@@ -127,7 +143,7 @@
     // Savollar va rus tarjimalari — ikki soʻrov. Koʻrinish (view) FK
     // ma'lumotini saqlamaydi, shuning uchun ichma-ich select ishlamaydi.
     const rows = await get(
-      'published_questions?select=id,ref,text,options,correct,explain,sign,topic_name,sort_order' +
+      'published_questions?select=id,ref,text,options,correct,explain,sign,image,topic_name,sort_order' +
       '&order=sort_order.asc,ref.asc');
     if (!Array.isArray(rows) || !rows.length) throw new Error('bazada nashr etilgan savol yoʻq');
 
@@ -164,10 +180,19 @@
       ref: row.ref || row.id,
       topic: row.topic_name,
       text: t ? t.text : row.text,
-      options: (t && Array.isArray(t.options) && t.options.length === 4) ? t.options : row.options,
+      /* Tarjima variantlari soni asl savolnikiga TENG bo'lishi shart.
+         Kalit — o'rin raqami, matn esa boshqa massivda: sonlar mos
+         kelmasa rus tilidagi foydalanuvchi boshqa javobni bosadi.
+         Bazada buni trigger ham tekshiradi (0004_bank.sql), lekin
+         klient bazaga ishonmaydi — kesh buzilgan bo'lishi mumkin. */
+      options: (t && Array.isArray(t.options) && t.options.length === row.options.length)
+        ? t.options : row.options,
       correct: row.correct,
       explain: t ? (t.explain || row.explain) : row.explain,
       sign: row.sign || undefined,
+      /* Yo'l vaziyati rasmi (fayl nomi). Rasmsiz savol "qaysi avtomobil
+         birinchi o'tadi?" degan javobsiz savolga aylanadi. */
+      image: (typeof row.image === 'string' && row.image) ? row.image : undefined,
     };
   }
 

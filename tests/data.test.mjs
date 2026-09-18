@@ -29,6 +29,13 @@ const SRC = fs.readFileSync(new URL('../src/data.js', import.meta.url), 'utf8');
 
 const CACHE_KEY = 'nz-questions';
 
+/* Kesh versiyasi manbadan OʻQILADI, bu yerga yozib qoʻyilmaydi.
+   Sababi: data.js da versiya oshirilganda (masalan savolga `image`
+   maydoni qoʻshilganda) bu yerdagi qattiq raqam eskirib qolardi va
+   keshga tegishli beshta test bir yoʻla yiqilardi — oʻzgarish
+   toʻgʻri boʻlsa ham. */
+const CACHE_VERSION = Number(/CACHE_VERSION = (\d+)/.exec(SRC)[1]);
+
 /* APK ichidagi to'plam taqlidi — uchta savol yetarli. */
 function bundled() {
   return [
@@ -131,7 +138,7 @@ test('buzuq kesh oʻchiriladi va ilova oʻsha ochilishdayoq tuzaladi', async () 
   /* Eng muhim tekshiruv. Ilgari: buzuq kesh "yangi" boʻlgani uchun
      tarmoqqa umuman chiqilmasdi va ilova oʻzi tuzala olmasdi. */
   const e = env({
-    cache: { v: 1, at: Date.now(), rows: [{ id: 'u1', text: null, options: null }], ru: {} },
+    cache: { v: CACHE_VERSION, at: Date.now(), rows: [{ id: 'u1', text: null, options: null }], ru: {} },
     reply: p => (p.startsWith('published_questions') ? [goodRow(1)] : []),
   });
 
@@ -148,7 +155,7 @@ test('buzuq kesh oʻchiriladi va ilova oʻsha ochilishdayoq tuzaladi', async () 
 
 test('buzuq kesh + tarmoq ham yoʻq: APK toʻplami bilan ishlayveradi', async () => {
   const e = env({
-    cache: { v: 1, at: Date.now(), rows: [{ id: 'u1', text: null, options: null }], ru: {} },
+    cache: { v: CACHE_VERSION, at: Date.now(), rows: [{ id: 'u1', text: null, options: null }], ru: {} },
     reply: () => new Error('tarmoq yoʻq'),
   });
 
@@ -163,8 +170,13 @@ test('buzuq kesh + tarmoq ham yoʻq: APK toʻplami bilan ishlayveradi', async ()
 test('qisman buzuq javob: faqat buzuq qatorlar tashlanadi', async () => {
   const e = env({
     reply: p => (p.startsWith('published_questions')
-      ? [goodRow(1), { id: 'u2', ref: '#902', text: 'Uch variantli', options: ['a', 'b', 'c'], correct: 0 },
-         goodRow(3), { id: 'u4', ref: '#904', text: 'Kaliti tashqarida', options: ['a', 'b', 'c', 'd'], correct: 9 }]
+      ? [goodRow(1),
+         { id: 'u2', ref: '#902', text: 'Bitta variantli savol', options: ['a'], correct: 0 },
+         goodRow(3),
+         { id: 'u4', ref: '#904', text: 'Kaliti tashqarida', options: ['a', 'b', 'c', 'd'], correct: 9 },
+         { id: 'u5', ref: '#905', text: 'Olti variantli savol',
+           options: ['a', 'b', 'c', 'd', 'e', 'f'], correct: 0 },
+         { id: 'u6', ref: '#906', text: 'Boʻsh variantli savol', options: ['a', '  ', 'c'], correct: 0 }]
       : []),
   });
 
@@ -176,9 +188,105 @@ test('qisman buzuq javob: faqat buzuq qatorlar tashlanadi', async () => {
 });
 
 
+/* ── Variant soni 2..5 ─────────────────────────────────────────────────
+   Bu yerdagi xato eng qimmatga tushadigan turdan: `sane()` da "aynan 4
+   variant" yozilgan edi va rasmiy avtotest to'plami kelganda 301 ta
+   savolning 251 tasi (2, 3 va 5 variantlilar) JIMGINA tashlab
+   yuborilardi — na xato, na ogohlantirish. */
+test('2 va 5 variantli savollar qabul qilinadi', async () => {
+  const e = env({
+    reply: p => (p.startsWith('published_questions')
+      ? [{ id: 'u1', ref: '#A1', topic_name: 'Toʻxtab turish', sort_order: 1,
+           text: 'Haydovchi qoidani buzdimi?', options: ['Buzdi', 'Buzmadi'], correct: 1 },
+         { id: 'u2', ref: '#A2', topic_name: 'Tezlik rejimi', sort_order: 2,
+           text: 'Ruxsat etilgan eng katta tezlik qancha?',
+           options: ['20', '40', '60', '70', '90'], correct: 4 }]
+      : []),
+  });
+
+  const status = await e.data.sync('uz', always, noop);
+
+  assert.equal(status, 'live');
+  assert.equal(e.ctx.QUESTIONS.length, 2);
+  assert.equal(e.ctx.QUESTIONS[0].options.length, 2);
+  assert.equal(e.ctx.QUESTIONS[1].options.length, 5);
+  assert.equal(e.ctx.QUESTIONS[1].correct, 4, '5-variant kaliti saqlanishi kerak');
+});
+
+
+test('kalit massiv uzunligiga bogʻliq: 2 variantda correct=2 tashlanadi', async () => {
+  /* Chegara "0..3" qattiq yozilgan boʻlsa bu qator oʻtib ketardi va
+     ilova mavjud boʻlmagan variantni "toʻgʻri javob" deb koʻrsatardi. */
+  const e = env({
+    reply: p => (p.startsWith('published_questions')
+      ? [{ id: 'u1', ref: '#A1', topic_name: 'Toʻxtab turish', sort_order: 1,
+           text: 'Ikki variantli savol matni', options: ['Buzdi', 'Buzmadi'], correct: 2 }]
+      : []),
+  });
+
+  const status = await e.data.sync('uz', always, noop);
+
+  assert.equal(status, 'error', 'birorta yaroqli qator qolmadi');
+  assert.equal(e.ctx.QUESTIONS[0].ref, '#001', 'APK toʻplami oʻz oʻrnida');
+});
+
+
+test('eski versiyadagi kesh tashlab yuboriladi', async () => {
+  /* Savolga `image` maydoni qoʻshilganda kesh versiyasi oshirildi. Agar
+     eski kesh "yangi" hisoblansa, yangilangan ilova tarmoqqa chiqmaydi
+     va rasmga bogʻliq 140 ta savolni RASMSIZ koʻrsatib turardi. */
+  const e = env({
+    cache: { v: CACHE_VERSION - 1, at: Date.now(), rows: [goodRow(1)], ru: {} },
+    reply: p => (p.startsWith('published_questions') ? [goodRow(1), goodRow(2)] : []),
+  });
+
+  const status = await e.data.sync('uz', always, noop);
+
+  assert.equal(status, 'live', 'eski kesh tarmoqqa chiqishni toʻsmasligi kerak');
+  assert.equal(e.ctx.QUESTIONS.length, 2);
+  assert.equal(e.cache().v, CACHE_VERSION, 'kesh yangi versiya bilan qayta yozilishi kerak');
+});
+
+
+/* ── Savol rasmi ───────────────────────────────────────────────────────
+   Rasmga bogʻliq 140 ta savol bor ("Qaysi avtomobil birinchi oʻtadi?").
+   Rasm nomi bank qatoridan ilovaga yetib bormasa, savol javobsiz
+   qoladi — ekranda faqat "qaysi avtomobil?" degan matn turadi. */
+test('rasm nomi savolga oʻtadi, rasmsiz savolda undefined boʻladi', async () => {
+  const e = env({
+    reply: p => (p.startsWith('published_questions')
+      ? [{ ...goodRow(1), image: 'q002.webp' }, goodRow(2)]
+      : []),
+  });
+
+  await e.data.sync('uz', always, noop);
+
+  assert.equal(e.ctx.QUESTIONS[0].image, 'q002.webp');
+  assert.equal(e.ctx.QUESTIONS[1].image, undefined);
+});
+
+
+test('tarjima variantlari soni mos kelmasa — oʻzbekchasi qoladi', async () => {
+  /* Kalit — oʻrin raqami. Tarjimada variant soni boshqa boʻlsa, rus
+     tilidagi foydalanuvchi BOSHQA javobni toʻgʻri deb koʻradi. */
+  const e = env({
+    reply: p => (p.startsWith('published_questions')
+      ? [goodRow(1)]
+      : [{ question_id: 'uuid-1', text: 'Русский вопрос',
+           options: ['А', 'Б'], explain: 'Пояснение' }]),
+  });
+
+  await e.data.sync('ru', always, noop);
+
+  assert.equal(e.ctx.QUESTIONS[0].text, 'Русский вопрос', 'matn tarjima qilinadi');
+  assert.deepEqual(e.ctx.QUESTIONS[0].options, ['A', 'B', 'C', 'D'],
+    'variantlar soni mos kelmagani uchun oʻzbekchasi qolishi kerak');
+});
+
+
 test('yangi kesh: tarmoqqa chiqilmaydi', async () => {
   const e = env({
-    cache: { v: 1, at: Date.now(), rows: [goodRow(1)], ru: {} },
+    cache: { v: CACHE_VERSION, at: Date.now(), rows: [goodRow(1)], ru: {} },
     reply: p => (p.startsWith('published_questions') ? [goodRow(1), goodRow(2)] : []),
   });
 
@@ -194,7 +302,7 @@ test('eski kesh: avval kesh koʻrsatiladi, keyin bazadan yangilanadi', async () 
   const ETTI_SOAT = 7 * 60 * 60 * 1000;
   const kordi = [];
   const e = env({
-    cache: { v: 1, at: Date.now() - ETTI_SOAT, rows: [goodRow(1)], ru: {} },
+    cache: { v: CACHE_VERSION, at: Date.now() - ETTI_SOAT, rows: [goodRow(1)], ru: {} },
     reply: p => (p.startsWith('published_questions') ? [goodRow(1), goodRow(2)] : []),
   });
 
@@ -266,7 +374,7 @@ test('test davom etayotganda bank almashtirilmaydi, lekin kesh yoziladi', async 
 
 test('HTTP xatosi: toʻplam va kesh tegilmaydi', async () => {
   const e = env({
-    cache: { v: 1, at: Date.now() - 7 * 60 * 60 * 1000, rows: [goodRow(1)], ru: {} },
+    cache: { v: CACHE_VERSION, at: Date.now() - 7 * 60 * 60 * 1000, rows: [goodRow(1)], ru: {} },
     reply: () => ({ httpStatus: 500 }),
   });
 

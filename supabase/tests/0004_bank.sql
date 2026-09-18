@@ -192,6 +192,26 @@ begin
 end $$;
 
 
+-- ═══ 8. Klient koʻrinishida `image` ustuni bor ═════════════════════════
+--
+--  published_questions — KO'RINISH (view). PostgreSQL ko'rinishi yangi
+--  ustunni o'zi olmaydi: u yaratilgan paytdagi ro'yxatni eslab qoladi.
+--  Ustun bo'lmasa klient `select=...,image` deb so'raganda 400 oladi va
+--  savollar UMUMAN yuklanmaydi — ilova APK ichidagi 10 savolda qolib
+--  ketadi. Shuning uchun 0005_image_view.sql yozilgan.
+do $$
+declare n int;
+begin
+  select count(*) into n from information_schema.columns
+   where table_schema = 'public' and table_name = 'published_questions'
+     and column_name = 'image';
+  if n <> 1 then
+    raise exception 'XATO: published_questions koʻrinishida image ustuni yoʻq — klient savollarni yuklay olmaydi';
+  end if;
+  raise notice '8 ✔ published_questions koʻrinishi image ustunini beradi';
+end $$;
+
+
 -- ── Tozalash ──
 delete from public.questions where ref like '#T4%';
 

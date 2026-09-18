@@ -119,6 +119,13 @@
       correct: q.correct,
       explain: q.explain || '',
       sign: q.sign || null,
+      /* Yo'l vaziyati rasmi va kalitning manbasi. Ikkalasi ham admin
+         uchun SHART: 301 ta savol hujjatdan avtomatik olingan kalit
+         bilan keldi va moderator kalitni tasdiqlashi kerak. Rasmni
+         ko'rmasa "qaysi avtomobil birinchi o'tadi?" degan savolning
+         kalitini tekshirib bo'lmaydi. */
+      image: q.image || null,
+      keySource: q.key_source || 'human',
       author: author,
       updated: shortDate(q.updated_at),
       // Sifat bayrog'i statistikadan keladi (DIF/DIS) — u hali
@@ -247,6 +254,9 @@
              kirgan savol izohsiz qolardi. */
           explain: it.explain || null,
           sign: it.sign || null,
+          /* Rasm nomi ham yuboriladi — CSV'da ustun bor, bazada ustun
+             bor, o'rtada tushib qolsa import rasmni jimgina yo'qotardi. */
+          image: it.image || null,
           state: 'draft',
         });
       });
@@ -267,7 +277,7 @@
     loadAll: async function () {
       const [topics, questions, audit] = await Promise.all([
         rest('topics?select=id,slug,name,sort_order&order=sort_order.asc'),
-        rest('questions?select=id,ref,text,options,correct,explain,sign,state,topic_id,updated_at,' +
+        rest('questions?select=id,ref,text,options,correct,explain,sign,image,key_source,state,topic_id,updated_at,' +
              'topics(name),' +
              'author:profiles!questions_author_id_fkey(name),' +
              'updater:profiles!questions_updated_by_fkey(name)' +
